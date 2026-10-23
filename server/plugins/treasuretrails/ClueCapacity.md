@@ -65,8 +65,8 @@ remain separate.
 
 Item IDs and case varbits come from the installed cache's named identifiers.
 The thirteen consumed flags are registered for persistence and sent on login.
-Opening a Mimic includes its canonical scroll-case tertiary only when the case
-service answers eligible; an unavailable service preserves the casket.
+The case-eligibility query is available for Mimic reward integration; this
+standalone change does not alter Mimic payouts or acquisition.
 
 Sources checked23 October2026:
 
@@ -89,6 +89,6 @@ rules remain pending. Do not describe this as
 complete Treasure Trails or Mimic parity. No generated reward artifact is edited.
 
 Verification: `node --test tests/clue-capacity.test.cjs
-tests/beginner-treasure-trails.test.cjs tests/mimic-payout.test.cjs
-tests/mimic-session-state.test.cjs tests/ground-item-policy.test.cjs`. Regressions use the real cache, Inventory,
+tests/ground-item-transfer.test.cjs tests/ground-item-policy.test.cjs`.
+Regressions use the real cache, Inventory,
 PlayerSave round trips and actual skilling/vessel handlers; no live account.

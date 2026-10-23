@@ -66,11 +66,21 @@ invalid saved progress leaves the casket and completion count unchanged. The
 clicked stack is rechecked after preparation callbacks, and recursive callbacks
 cannot open it twice.
 
-**Unresolved fidelity gap:** the online game's anti-bot restriction
-on unique rewards for accounts under ten hours is not implemented. Every local account
-uses the same complete published reward table from its first casket. The Wiki
-does not describe the online replacement policy, and this implementation does
-not invent one or silently discard a unique reward.
+Unique rewards unlock when the saved account creation timestamp is at least ten
+hours old, following the Wiki's account-age wording. That timestamp now survives
+save/load instead of resetting whenever a Player is constructed. Saves that lack
+a valid timestamp start their measured age on the first load after this change;
+their earlier age cannot be reconstructed. Future or corrupt dates do not unlock
+uniques. Ordinary rewards and completion milestones remain available from the
+first casket, and eligible accounts retain the full canonical distribution.
+
+**Review assumption:** Jagex's published material confirms the restriction but
+does not describe the ineligible-unique replacement algorithm or independently
+disambiguate the timer clock. This implementation uses elapsed account age and
+samples non-unique entries with their existing relative weights before eligibility.
+It does not assert that this conditional distribution reproduces an unpublished
+online branch. The assumption is explicit so this working implementation can be
+reviewed without presenting guessed replacement behaviour as confirmed parity.
 
 Minor/major beginner scroll cases are awarded at 50/100 completions, and Explore
 unlocks at 600. The shared capacity service retains those saved upgrades. Before
@@ -79,8 +89,8 @@ increase to five with consumed minor, major and Mimic cases. It counts carried
 and banked clue forms across all six tiers. NPC drops and implemented skilling
 sources select boxes after the quest. Box opening refuses a second active clue
 in inventory, bank, grave, Death's Office or an implemented retrieval service.
-An unopened full stack is preserved when no slot is available. Ground/Telegrab
-capacity enforcement and its warnings remain pending; see
+An unopened full stack is preserved when no slot is available. Walking and Telegrab
+enforce capacity; successful-drop warning settings remain pending. See
 `server/plugins/treasuretrails/ClueCapacity.md` for the exact implemented scope.
 
 ## Sources
@@ -91,6 +101,7 @@ capacity enforcement and its warnings remain pending; see
 - [Device temperature bands](https://oldschool.runescape.wiki/w/Strange_device)
 - [Hot/cold dig area](https://oldschool.runescape.wiki/w/Treasure_Trails/Guide/Hot_Cold/Beginner)
 - [Reward table](https://oldschool.runescape.wiki/w/Reward_casket_(beginner))
+- [Mod Ash's ten-hour clarification](https://x.com/JagexAsh/status/1418876325192929281)
 - Installed cache gamevals, clue-helper database and item definitions, revision 241.
 
 Direct Wiki requests were blocked by robots; indexed rendered Wiki results were
@@ -98,6 +109,11 @@ used for behavior evidence. The reward exporter preserves its reviewed capture,
 input hashes and reproducible output. No generated JSON was edited by hand.
 
 ## Verification
+
+`tests/beginner-unique-eligibility.test.cjs` covers the exact eligibility boundary,
+serialized creation dates, corrupt/legacy save defaults and every weighted reward
+entry. `tests/player-saves.test.cjs` verifies committed account-date round trips
+through the installed SQLite and JSON persistence backends.
 
 From `server/`, `node --test tests/beginner-treasure-trails.test.cjs` exercises every step
 family against the real cache, all Charlie requests, all map and hot/cold

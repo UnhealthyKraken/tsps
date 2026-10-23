@@ -5,7 +5,6 @@ import { AttackTimerPlugin } from "../../../game/plugins/attacktimer/AttackTimer
 import { CameraPlugin } from "../../../game/plugins/camera/CameraPlugin";
 import { QuestHelperPlugin } from "../../../game/plugins/questhelper/QuestHelperPlugin";
 import { NPCIndicatorsPlugin } from "../../../game/plugins/npcindicators/NPCIndicatorsPlugin";
-import { XPTrackerPlugin } from "../../../game/plugins/xptracker/XPTrackerPlugin";
 import { FirstPersonPlugin } from "../../../game/plugins/firstperson/FirstPersonPlugin";
 import { GameFrame317Plugin } from "../../../game/plugins/gameframe317/GameFrame317Plugin";
 import { GpuPlugin } from "../../../game/plugins/gpu/GpuPlugin";
@@ -66,7 +65,6 @@ export const CORE_PLUGINS: ReadonlyArray<PluginClass> = [
     CameraPlugin,
     QuestHelperPlugin,
     NPCIndicatorsPlugin,
-    XPTrackerPlugin,
 ];
 
 /** Legacy `osrs.plugin.*.v1` localStorage blobs to fold into rl.config. */

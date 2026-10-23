@@ -8,8 +8,6 @@ import { EventBus } from "@runelite/client/eventbus/EventBus";
 import { GameTick } from "@runelite/api/events";
 import { TileHighlightManager } from "../game/highlights/TileHighlightManager";
 import { NPCIndicatorsPlugin, NPCIndicatorsConfig } from "../game/plugins/npcindicators/NPCIndicatorsPlugin";
-import { InventoryTagsPlugin, InventoryTagsConfig, inventoryTagBounds } from "../game/plugins/inventorytags/InventoryTagsPlugin";
-import { InventoryTagsPanel } from "../game/plugins/inventorytags/InventoryTagsPanel";
 import { XPTrackerPlugin, XPTrackerConfig, XPSession } from "../game/plugins/xptracker/XPTrackerPlugin";
 import { XPTrackerPanel } from "../game/plugins/xptracker/XPTrackerPanel";
 
@@ -48,29 +46,6 @@ async function main() {
     client.playerEcs.getLevel = () => 0; npc.onGameTick(); await npc.stop();
     assert.equal(client.tileHighlightManager.getRenderEntries().length, 0, "disable removes owned markers");
 
-    const tags = injector.runWith(() => new InventoryTagsPlugin());
-    tags.setGroups([{ name: "Combat", color: "#ff0000", itemIds: [4151, 4151, 11840] }]);
-    assert.equal(tags.colorForItem(4151), 0xff0000);
-    const restored = injector.runWith(() => new InventoryTagsPlugin());
-    assert.deepEqual(restored.getGroups()[0].itemIds, [4151, 11840], "persisted without duplicates");
-    assert.throws(() => tags.setGroups([{ name: "Broken", color: "red", itemIds: [1] }]));
-    assert.equal(config.getConfig(InventoryTagsConfig).groups().includes("Combat"), true, "invalid edit preserves stored settings");
-    const widgets: any[] = [{ uid: 149 << 16, itemId: 4151, _absX: 5, _absY: 8, _absWidth: 32, _absHeight: 32,
-        children: [{ uid: 2, itemId: 11840, isHidden: true, _absX: 8, _absY: 8, _absWidth: 32, _absHeight: 32 }] }];
-    assert.equal(inventoryTagBounds(widgets, client.widgetManager, (id) => tags.colorForItem(id)).length, 1);
-    widgets[0].children.push(widgets[0]);
-    assert.equal(inventoryTagBounds(widgets, client.widgetManager, (id) => tags.colorForItem(id)).length, 1, "cycles safe");
-    client.widgetManager.getWidgetsForGroup = () => widgets;
-    assert.equal(tags.widgetOverlay.signature(), "", "stopped overlay never draws");
-    await tags.start();
-    assert.match(renderToStaticMarkup(React.createElement(InventoryTagsPanel, { plugin: tags })), /Item IDs/);
-    assert.match(renderToStaticMarkup(React.createElement(InventoryTagsPanel, { plugin: tags })), /Combat/);
-    const calls: any[] = [];
-    const rects = tags.widgetOverlay.draw({ renderer: { drawRect: (...args: any[]) => calls.push(args) } } as any);
-    assert.equal(rects.length, 1); assert.equal(calls.length, 4, "four borders highlight actual slot");
-    client.widgetManager.getInterfaceParentContainerUid = () => undefined;
-    assert.equal(tags.widgetOverlay.signature(), "", "closed inventory never leaves ghost borders");
-    await tags.stop(); assert.equal(tags.widgetOverlay.signature(), "");
 
     const session = new XPSession();
     session.update("alice", [1000], 0); session.update("alice", [1100], 3600000);

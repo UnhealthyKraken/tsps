@@ -5,7 +5,6 @@ import { AttackTimerPlugin } from "../../../game/plugins/attacktimer/AttackTimer
 import { CameraPlugin } from "../../../game/plugins/camera/CameraPlugin";
 import { QuestHelperPlugin } from "../../../game/plugins/questhelper/QuestHelperPlugin";
 import { NPCIndicatorsPlugin } from "../../../game/plugins/npcindicators/NPCIndicatorsPlugin";
-import { InventoryTagsPlugin } from "../../../game/plugins/inventorytags/InventoryTagsPlugin";
 import { XPTrackerPlugin } from "../../../game/plugins/xptracker/XPTrackerPlugin";
 import { FirstPersonPlugin } from "../../../game/plugins/firstperson/FirstPersonPlugin";
 import { GameFrame317Plugin } from "../../../game/plugins/gameframe317/GameFrame317Plugin";
@@ -15,6 +14,7 @@ import { GroundItemsPlugin } from "../../../game/plugins/grounditems/GroundItems
 import { HdPlugin } from "../../../game/plugins/hd/HdPlugin";
 import { InteractHighlightConfig } from "../../../game/plugins/interacthighlight/InteractHighlightConfig";
 import { InteractHighlightPlugin } from "../../../game/plugins/interacthighlight/InteractHighlightPlugin";
+import { InventoryTagsPlugin } from "../../../game/plugins/inventorytags/InventoryTagsPlugin";
 import { MenuSwapperPlugin } from "../../../game/plugins/menuswapper/MenuSwapperPlugin";
 import { NotesConfig } from "../../../game/plugins/notes/NotesPlugin";
 import { NotesPlugin } from "../../../game/plugins/notes/NotesPlugin";
@@ -47,6 +47,8 @@ export const CORE_PLUGINS: ReadonlyArray<PluginClass> = [
     InteractHighlightPlugin,
     TileMarkersPlugin,
     MenuSwapperPlugin,
+    // After Menu Swapper: its "Inventory tag" submenu joins the swapped menu.
+    InventoryTagsPlugin,
     NotesPlugin,
     SplitPrivateChatPlugin,
     AnimationSmoothingPlugin,
@@ -64,7 +66,6 @@ export const CORE_PLUGINS: ReadonlyArray<PluginClass> = [
     CameraPlugin,
     QuestHelperPlugin,
     NPCIndicatorsPlugin,
-    InventoryTagsPlugin,
     XPTrackerPlugin,
 ];
 

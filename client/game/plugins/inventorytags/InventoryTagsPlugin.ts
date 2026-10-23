@@ -1,100 +1,284 @@
-import { ConfigGroup, ConfigItem } from "@runelite/client/config/ConfigItem";
-import { ConfigManager } from "@runelite/client/config/ConfigManager";
-import { Plugin } from "@runelite/client/plugins/Plugin";
-import { CLIENT_TOKEN, inject } from "@runelite/client/plugins/PluginInjector";
-import { ClientToolbar } from "@runelite/client/ui/ClientToolbar";
-import type { NavigationButton } from "@runelite/client/ui/NavigationButton";
+import { GameState } from "@runelite/api/GameState";
 import { ConfigChanged } from "@runelite/api/events";
+import { ConfigManager } from "@runelite/client/config/ConfigManager";
+import { Plugin, type PluginDescriptor } from "@runelite/client/plugins/Plugin";
+import { CLIENT_TOKEN, inject } from "@runelite/client/plugins/PluginInjector";
+import { ClientState } from "../../ClientState";
 import type { OsrsClient } from "../../OsrsClient";
-import type { WidgetOverlay } from "../ClientPluginManager";
-import { createInventoryTagsNavigationButton } from "./InventoryTagsPanel";
+import type { MenuTransformContext } from "../../../ui/menu/menuTransforms";
+import type { SimpleMenuEntry } from "../../../ui/menu/MenuEngine";
+import type { WidgetOverlay, WidgetOverlayDrawContext } from "../ClientPluginManager";
+import { InventoryTagsConfig, clampFillOpacity, type InventoryTagsDisplay } from "./InventoryTagsConfig";
+import {
+    TAG_KEY_PREFIX,
+    TAGGED_INTERFACES,
+    addInventoryTagMenu,
+    canonicalItemId,
+    colorHex,
+    parseTag,
+    serializeTag,
+    tagSpriteRgba,
+} from "./inventoryTags";
 
-export type InventoryTagGroup = { name: string; color: string; itemIds: number[] };
-export const InventoryTagsConfig = ConfigGroup("inventorytags", {
-    groups: ConfigItem({ name: "Item groups (JSON)", description: 'Example: [{"name":"Combat","color":"#ff0000","itemIds":[4151,11840]}]. Exact item IDs; first matching group wins. Invalid edits hide tags until corrected.', textArea: true, default: "[]" }),
-});
+type TaggedItem = {
+    itemId: number;
+    quantity: number;
+    quantityMode: number;
+    color: number;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+};
 
-export function parseInventoryTagGroups(raw: string): InventoryTagGroup[] {
-    const groups: unknown = JSON.parse(raw);
-    if (!Array.isArray(groups) || groups.length > 64) throw new Error("Enter an array of at most 64 item groups.");
-    return groups.map((group) => {
-        if (!group || typeof group.name !== "string" || !group.name.trim() || !/^#[0-9a-f]{6}$/i.test(group.color) || !Array.isArray(group.itemIds) || group.itemIds.length > 4096 || group.itemIds.some((id: unknown) => !Number.isInteger(id) || Number(id) < 0)) {
-            throw new Error("Each group needs a name, #RRGGBB colour and non-negative integer itemIds.");
-        }
-        return { name: group.name.trim(), color: group.color.toLowerCase(), itemIds: [...new Set<number>(group.itemIds)] };
-    });
-}
+type Rect = { x: number; y: number; w: number; h: number };
 
-export type TagRect = { x: number; y: number; w: number; h: number; color: number };
-/** Read current IF3 item widgets, including dynamic slots, without changing their sprites or settings. */
-export function inventoryTagBounds(widgets: readonly any[], manager: { isEffectivelyHidden(uid: number): boolean }, colorForItem: (id: number) => number | undefined): TagRect[] {
-    const result: TagRect[] = [];
-    const seen = new Set<object>();
-    const visit = (widget: any) => {
-        if (!widget || seen.has(widget)) return;
-        seen.add(widget);
-        if (widget.isHidden || widget.hidden || manager.isEffectivelyHidden(widget.uid)) return;
-        const color = colorForItem(widget.itemId ?? -1);
-        const { _absX: x, _absY: y, _absWidth: w, _absHeight: h } = widget;
-        if (color !== undefined && [x, y, w, h].every(Number.isFinite) && w > 0 && h > 0) result.push({ x, y, w, h, color });
-        for (const child of widget.children ?? []) visit(child);
-    };
-    for (const widget of widgets) visit(widget);
-    return result;
-}
+/** Sprite textures kept per item, quantity, colour and kind; cleared past this many. */
+const MAX_TAG_TEXTURES = 256;
+const TEXTURE_KEY_PREFIX = "inventorytags:";
 
+/**
+ * RuneLite 1.13.3 Inventory Tags. Shift + right-click an item in the inventory, worn equipment
+ * or another inventory-like interface for "Inventory tag": a colour already in use, Pick or
+ * Reset. Tagged items are outlined, filled and/or underlined in their tag colour.
+ */
 export class InventoryTagsPlugin extends Plugin {
-    static descriptor = { name: "Inventory Tags", description: "Colour the inventory items in your saved item groups.", tags: ["inventory", "items", "tags"], configKey: "inventorytagsplugin", enabledByDefault: false };
-    static config = InventoryTagsConfig;
-    private readonly manager = inject(ConfigManager);
-    private readonly config = this.manager.getConfig(InventoryTagsConfig);
-    private readonly toolbar = inject(ClientToolbar);
-    private readonly listeners = new Set<() => void>();
-    private nav?: NavigationButton;
-    private state: { groups: InventoryTagGroup[]; error?: string };
-    private readonly client: OsrsClient;
-    private cachedRaw?: string;
-    private colors = new Map<number, number>();
-    constructor(client?: OsrsClient) { super(); this.client = client ?? inject<OsrsClient>(CLIENT_TOKEN); this.state = this.readState(); }
-    private readState(): { groups: InventoryTagGroup[]; error?: string } {
-        try { return { groups: parseInventoryTagGroups(String(this.config.groups())) }; }
-        catch (error) { return { groups: [], error: error instanceof Error ? error.message : "Invalid groups" }; }
-    }
-    getState() { return this.state; }
-    subscribe(listener: () => void): () => void { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; }
-    private commit(): void { this.state = this.readState(); for (const listener of this.listeners) listener(); }
-    onConfigChanged(event: ConfigChanged): void { if (event.getGroup() === InventoryTagsConfig.group) this.commit(); }
-    protected override async startUp(): Promise<void> { this.nav = createInventoryTagsNavigationButton(this); this.toolbar.addNavigation(this.nav); this.commit(); }
-    protected override async shutDown(): Promise<void> { if (this.nav) this.toolbar.removeNavigation(this.nav); this.nav = undefined; }
-    getGroups(): InventoryTagGroup[] { try { return parseInventoryTagGroups(String(this.config.groups())); } catch { return []; } }
-    setGroups(groups: InventoryTagGroup[]): void {
-        const normalized = parseInventoryTagGroups(JSON.stringify(groups));
-        this.manager.setConfigValue(InventoryTagsConfig, "groups", JSON.stringify(normalized));
-        this.commit();
-    }
-    colorForItem(id: number): number | undefined {
-        const raw = String(this.config.groups());
-        if (raw !== this.cachedRaw) {
-            this.cachedRaw = raw; this.colors.clear();
-            for (const group of this.getGroups()) for (const item of group.itemIds) if (!this.colors.has(item)) this.colors.set(item, parseInt(group.color.slice(1), 16));
-        }
-        return this.colors.get(id);
-    }
-    private bounds(): TagRect[] {
-        if (!this.isStarted() || this.client.gameState !== 30 || !this.client.widgetManager) return [];
-        const manager = this.client.widgetManager;
-        if (manager.rootInterface !== 149 && manager.getInterfaceParentContainerUid(149) === undefined) return [];
-        return inventoryTagBounds(manager.getWidgetsForGroup(149), manager, (id) => this.colorForItem(id));
-    }
-    readonly widgetOverlay: WidgetOverlay = {
-        signature: () => { const bounds = this.bounds(); return bounds.length ? JSON.stringify(bounds) : ""; },
-        draw: ({ renderer }) => this.bounds().map((rect) => {
-            const { x, y, w, h, color } = rect;
-            const rgba: [number, number, number, number] = [((color >> 16) & 255) / 255, ((color >> 8) & 255) / 255, (color & 255) / 255, 0.9];
-            const border = Math.min(2, w / 2, h / 2);
-            renderer.drawRect(x, y, w, border, rgba); renderer.drawRect(x, y + h - border, w, border, rgba);
-            renderer.drawRect(x, y, border, h, rgba); renderer.drawRect(x + w - border, y, border, h, rgba);
-            return { x, y, w, h };
-        }),
+    static descriptor: PluginDescriptor = {
+        name: "Inventory Tags",
+        description: "Add the ability to tag items in your inventory",
+        tags: ["highlight", "items", "overlay", "tagging"],
+        enabledByDefault: false,
+        configKey: "inventorytagsplugin",
     };
+
+    static config = InventoryTagsConfig;
+
+    private readonly configManager = inject(ConfigManager);
+    private readonly config = this.configManager.getConfig(InventoryTagsConfig);
+    private readonly osrsClient: OsrsClient;
+    /** Tag colour per canonical item id, read from the `tag_<id>` keys. */
+    private tags = new Map<number, number>();
+    private readonly textureKeys = new Set<string>();
+    private textureRenderer?: WidgetOverlayDrawContext["renderer"];
+
+    readonly widgetOverlay: WidgetOverlay = {
+        signature: () => {
+            const items = this.taggedItems();
+            if (items.length === 0) return "";
+            const d = this.display();
+            return JSON.stringify([d, items]);
+        },
+        draw: (context) => this.draw(context),
+    };
+
+    constructor(osrsClient?: OsrsClient) {
+        super();
+        this.osrsClient = osrsClient ?? inject<OsrsClient>(CLIENT_TOKEN);
+    }
+
+    protected async startUp(): Promise<void> {
+        this.loadTags();
+    }
+
+    protected async shutDown(): Promise<void> {
+        this.releaseTextures();
+    }
+
+    onConfigChanged(event: ConfigChanged): void {
+        if (event.getGroup() !== InventoryTagsConfig.group) return;
+        const key = String(event.getKey() ?? "");
+        if (!key || key.startsWith(TAG_KEY_PREFIX)) this.loadTags();
+        if (key === "fillOpacity") this.releaseTextures();
+    }
+
+    // ------------------------------------------------------------------ tags
+
+    getTag(itemId: number): number | undefined {
+        return this.tags.get(this.canonical(itemId));
+    }
+
+    setTag(itemId: number, color: number): void {
+        this.configManager.setConfiguration(InventoryTagsConfig.group, TAG_KEY_PREFIX + this.canonical(itemId), serializeTag(color));
+        this.loadTags();
+    }
+
+    unsetTag(itemId: number): void {
+        this.configManager.unsetConfiguration(InventoryTagsConfig.group, TAG_KEY_PREFIX + this.canonical(itemId));
+        this.loadTags();
+    }
+
+    private loadTags(): void {
+        const tags = new Map<number, number>();
+        const prefix = `${InventoryTagsConfig.group}.${TAG_KEY_PREFIX}`;
+        for (const full of this.configManager.getConfigurationKeys(prefix)) {
+            const key = full.slice(InventoryTagsConfig.group.length + 1);
+            const itemId = Number(key.slice(TAG_KEY_PREFIX.length));
+            if (!Number.isInteger(itemId) || itemId < 0) continue;
+            const color = parseTag(this.configManager.getConfiguration(InventoryTagsConfig.group, key));
+            if (color !== undefined) tags.set(itemId, color);
+        }
+        this.tags = tags;
+    }
+
+    private canonical(itemId: number): number {
+        const loader: any = (this.osrsClient as any)?.objTypeLoader;
+        return canonicalItemId(itemId, loader ? (id) => loader.load(id) : undefined);
+    }
+
+    /** Colours of the tagged items carried or worn: RuneLite's quick picks. */
+    private colorsInUse(): number[] {
+        const colors = new Set<number>();
+        for (const inventory of [this.osrsClient.inventory, this.osrsClient.equipment]) {
+            for (const slot of inventory?.getSlots?.() ?? []) {
+                if (!(slot.itemId >= 0)) continue;
+                const tag = this.getTag(slot.itemId);
+                if (tag !== undefined) colors.add(tag);
+            }
+        }
+        return [...colors];
+    }
+
+    // ------------------------------------------------------------------ menu
+
+    transformMenuEntries(entries: SimpleMenuEntry[], context: MenuTransformContext): SimpleMenuEntry[] {
+        if (!this.isStarted() || !context.menu || !ClientState.isShiftPressed()) return entries;
+        const itemId = context.surface === "world" ? -1 : context.itemId ?? -1;
+        const widgetId = context.surface === "world" ? 0 : context.widgetId ?? 0;
+        if (!(itemId >= 0) || !TAGGED_INTERFACES.has(widgetId >>> 16)) return entries;
+        if (entries.some((e) => e.option === "Inventory tag")) return entries;
+        const examine = entries.find((e) => String(e.option).toLowerCase() === "examine");
+        const target = examine?.target ?? (context.surface === "inventory" ? context.target.name : "");
+        return addInventoryTagMenu(entries, target, {
+            tag: this.getTag(itemId),
+            colors: this.colorsInUse(),
+            setTag: (color) => this.setTag(itemId, color),
+            pick: () => this.pickColor(itemId),
+            reset: () => this.unsetTag(itemId),
+        });
+    }
+
+    /** RuneLite opens a colour chooser; here it is the browser's own colour picker. */
+    private pickColor(itemId: number): void {
+        if (typeof document === "undefined") return;
+        const input = document.createElement("input");
+        input.type = "color";
+        input.value = `#${colorHex(this.getTag(itemId) ?? 0xffffff)}`;
+        Object.assign(input.style, { position: "fixed", left: "-100px", top: "0", opacity: "0", pointerEvents: "none" });
+        const done = () => input.remove();
+        input.addEventListener("change", () => {
+            const color = parseInt(input.value.slice(1), 16);
+            if (Number.isInteger(color)) this.setTag(itemId, color);
+            done();
+        }, { once: true });
+        input.addEventListener("blur", () => setTimeout(done, 0), { once: true });
+        document.body.appendChild(input);
+        input.click();
+    }
+
+    // ------------------------------------------------------------------ overlay
+
+    private display(): InventoryTagsDisplay {
+        return {
+            outline: this.config.showTagOutline() !== false,
+            underline: this.config.tagUnderline() === true,
+            fill: this.config.tagFill() === true,
+            fillOpacity: clampFillOpacity(this.config.fillOpacity()),
+        };
+    }
+
+    /** Every visible tagged item in the tagged interfaces, in device pixels. */
+    private taggedItems(): TaggedItem[] {
+        const client: any = this.osrsClient;
+        const manager = client?.widgetManager;
+        if (!this.isStarted() || this.tags.size === 0 || !manager) return [];
+        if (client.gameState !== GameState.LOGGED_IN) return [];
+        const items: TaggedItem[] = [];
+        const seen = new Set<any>();
+        const visit = (widget: any, parentHidden: boolean): void => {
+            if (!widget || seen.has(widget)) return;
+            seen.add(widget);
+            const hidden = parentHidden || widget.hidden === true || widget.isHidden === true;
+            if (hidden) return;
+            const itemId = typeof widget.itemId === "number" ? widget.itemId : -1;
+            if (itemId >= 0) {
+                const color = this.getTag(itemId);
+                const { _absX: x, _absY: y, _absWidth: w, _absHeight: h } = widget;
+                if (color !== undefined && [x, y, w, h].every(Number.isFinite) && w > 0 && h > 0) {
+                    items.push({
+                        itemId,
+                        quantity: (widget.itemQuantity ?? 1) | 0,
+                        quantityMode: (widget.itemQuantityMode ?? 2) | 0,
+                        color, x, y, w, h,
+                    });
+                }
+            }
+            for (const child of widget.children ?? []) visit(child, hidden);
+        };
+        for (const group of TAGGED_INTERFACES) {
+            for (const widget of manager.getWidgetsForGroup?.(group) ?? []) {
+                if (typeof widget?.uid === "number" && manager.isEffectivelyHidden?.(widget.uid)) continue;
+                visit(widget, false);
+            }
+        }
+        return items;
+    }
+
+    private draw(context: WidgetOverlayDrawContext): Rect[] {
+        const items = this.taggedItems();
+        if (items.length === 0) return [];
+        const { renderer } = context;
+        if (this.textureRenderer !== renderer) {
+            this.textureKeys.clear();
+            this.textureRenderer = renderer;
+        }
+        const d = this.display();
+        const rects: Rect[] = [];
+        for (const item of items) {
+            const [r, g, b] = [(item.color >> 16) & 0xff, (item.color >> 8) & 0xff, item.color & 0xff];
+            if (d.fill && d.fillOpacity > 0) {
+                const tex = this.texture(renderer, item, "fill", d.fillOpacity);
+                if (tex) renderer.drawTexture(tex, item.x, item.y, item.w, item.h);
+            }
+            if (d.outline) {
+                const tex = this.texture(renderer, item, "outline", 255);
+                if (tex) renderer.drawTexture(tex, item.x, item.y, item.w, item.h);
+            }
+            if (d.underline) {
+                // RuneLite draws a one-pixel line two pixels below the item.
+                const scale = item.h / 32;
+                const thickness = Math.max(1, Math.round(scale));
+                renderer.drawRect(item.x, item.y + item.h + 2 * scale, item.w, thickness, [r / 255, g / 255, b / 255, 1]);
+            }
+            rects.push({ x: item.x, y: item.y, w: item.w, h: item.h + Math.ceil(3 * (item.h / 32)) });
+        }
+        return rects;
+    }
+
+    /** The outline or fill of one item sprite as a texture, built once per item/colour. */
+    private texture(renderer: WidgetOverlayDrawContext["renderer"], item: TaggedItem, kind: "outline" | "fill", alpha: number) {
+        const key = `${TEXTURE_KEY_PREFIX}${kind}:${item.itemId}:${item.quantity}:${item.quantityMode}:${colorHex(item.color)}:${alpha}`;
+        const cached = renderer.getTexture(key);
+        if (cached) return cached;
+        const icons: any = (this.osrsClient as any)?.renderer?.itemIconRenderer;
+        const sprite = icons?.createSprite?.(item.itemId, item.quantity, 0, 0, item.quantityMode, false, 512);
+        if (!sprite || typeof document === "undefined") return undefined;
+        const { width, height } = sprite;
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return undefined;
+        const image = ctx.createImageData(width, height);
+        image.data.set(tagSpriteRgba(sprite.pixels, width, height, kind, item.color, alpha));
+        ctx.putImageData(image, 0, 0);
+        if (this.textureKeys.size >= MAX_TAG_TEXTURES) this.releaseTextures();
+        this.textureKeys.add(key);
+        return renderer.createTextureFromCanvas(key, canvas);
+    }
+
+    private releaseTextures(): void {
+        const renderer = this.textureRenderer;
+        for (const key of this.textureKeys) renderer?.deleteTexture(key);
+        this.textureKeys.clear();
+    }
 }

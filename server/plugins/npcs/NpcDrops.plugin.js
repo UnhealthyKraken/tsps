@@ -608,22 +608,16 @@ function rollOnce(table, entries, player, first = true, npc = null, context = nu
 }
 
 /**
- * One kill: guaranteed drops, then a pre-roll (which replaces the main roll when it hits),
- * then a single weighted main-table roll, then independent separate/tertiary rolls. A table
- * with `rolls` repeats everything but the guaranteed, tertiary and `once_per_kill` drops that many times.
- */
-/**
- * What this kill was, for quantities the source makes conditional: a perfect Desert Treasure II
- * kill, an active bounty task, the Chasm of Fire preferred method. Built once per kill and
- * offered through "npc-drops:context" { player, npc, npcId, context } so the plugin that knows
- * (a boss engine, Sailing, Slayer) can set the flag; nothing sets one yet, so defaults apply.
+ * Plugins fill source-stated conditions for this kill. `handledItemIds` contains
+ * rewards already owned by a quest/encounter handler, including bundled/shared loot.
  */
 function killContext(player, npc) {
-  const context = { perfectKill: false, bountyTask: null, preferredMethodLocation: null };
+  const context = { perfectKill: false, bountyTask: null, preferredMethodLocation: null, handledItemIds: new Set() };
   pluginApi?.emitCustomEvent("npc-drops:context", { player, npc, npcId: npc?.getId?.() ?? null, context });
   return context;
 }
 
+/** One kill: guaranteed loot, exclusive pre-roll/main pools, then separate/tertiary rolls. */
 function rollTable(table, player, npc, context = killContext(player, npc)) {
   const drops = [];
   const entries = Array.isArray(table.entries) ? table.entries : [];
@@ -654,7 +648,9 @@ function rollTable(table, player, npc, context = killContext(player, npc)) {
     }
   }
 
-  return drops;
+  return context?.handledItemIds?.size
+    ? drops.filter(drop => !context.handledItemIds.has(drop.itemId))
+    : drops;
 }
 
 /**

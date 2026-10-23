@@ -129,10 +129,42 @@ export class NpcIndicatorsPlugin extends Plugin {
 
     /** RuneLite's migrate(): the old highlightMenuNames switch becomes highlightMenuStyle. */
     private migrate(): void {
+        this.migrateLocalPlugin();
         const old = this.configManager.getConfiguration(GROUP, "highlightMenuNames");
         if (old === undefined || old === null) return;
         this.configManager.unsetConfiguration(GROUP, "highlightMenuNames");
         this.configManager.setConfiguration(GROUP, "highlightMenuStyle", old === "true" ? "BOTH" : "NONE");
+    }
+
+    /**
+     * Local install only: the earlier local NPC Indicators kept "Name|#colour" lines in
+     * `names`, a default `color` and a `fill` percentage. The names become RuneLite's list and
+     * the colour its highlight colour; per-name colours have no RuneLite equivalent (it colours
+     * by NPC id), so they are dropped.
+     */
+    private migrateLocalPlugin(): void {
+        const names = this.configManager.getConfiguration(GROUP, "names");
+        if (names !== undefined && names !== null) {
+            const current = fromCSV(String(this.configManager.getConfiguration(GROUP, "npcToHighlight") ?? ""));
+            if (current.length === 0) {
+                const seen = new Set<string>();
+                const list = String(names)
+                    .split(/[\n,]/)
+                    .map((line) => line.split("|")[0].trim())
+                    .filter((name) => name.length > 0 && !seen.has(name.toLowerCase()) && seen.add(name.toLowerCase()));
+                if (list.length > 0) this.configManager.setConfiguration(GROUP, "npcToHighlight", toCSV(list));
+            }
+            this.configManager.unsetConfiguration(GROUP, "names");
+        }
+        const color = this.configManager.getConfiguration(GROUP, "color");
+        if (color !== undefined && color !== null) {
+            const rgb = parseInt(String(color).replace(/^#/, ""), 16);
+            if (Number.isFinite(rgb) && this.configManager.getConfiguration(GROUP, "npcColor") == null) {
+                this.configManager.setConfiguration(GROUP, "npcColor", `#${(rgb & 0xffffff).toString(16).padStart(6, "0")}`);
+            }
+            this.configManager.unsetConfiguration(GROUP, "color");
+        }
+        this.configManager.unsetConfiguration(GROUP, "fill");
     }
 
     // ------------------------------------------------------------------ npc facts

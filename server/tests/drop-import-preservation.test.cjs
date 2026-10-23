@@ -73,11 +73,16 @@ test('the Thermonuclear smoke devil keeps the occult necklace at 1/350', () => {
 });
 
 test('Mimic rewards come from complete elite and master tables, not the NPC table', () => {
+    // These five rows scale with failed attempts; losing their per-attempt quantities
+    // would silently pay a flat amount, so the set is pinned, not just checked if present.
+    const PER_ATTEMPT = ['Blood rune', 'Death rune', 'Grimy ranarr weed', 'Raw manta ray', 'Wine of Zamorak'];
     for (const tier of ['elite', 'master']) {
         const table = rewards.tables[`the_mimic_${tier}`];
         assert.equal(table.entries.length, 31, tier);
-        for (const row of table.entries) {
-            if (row.quantity_options) assert.equal(row.quantity_options.length, State.ATTEMPTS[tier], `${tier} ${row.name}`);
+        const scaled = table.entries.filter(row => row.quantity_options);
+        assert.deepEqual(scaled.map(row => row.name).sort(), PER_ATTEMPT, `${tier} per-attempt rows`);
+        for (const row of scaled) {
+            assert.equal(row.quantity_options.length, State.ATTEMPTS[tier], `${tier} ${row.name}`);
         }
     }
     const registered = [];

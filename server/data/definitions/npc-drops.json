@@ -52914,7 +52914,7 @@
       "label": "Drops",
       "table_name": "Commander Zilyana Drops",
       "wiki_page": "Commander Zilyana",
-      "main_max_roll": 129,
+      "main_max_roll": 127,
       "entries": [
         {
           "item_id": 526,
@@ -52949,8 +52949,8 @@
             1
           ],
           "weight": 1,
-          "out_of": 129,
-          "rarity": 0.0077519,
+          "out_of": 127,
+          "rarity": 0.007874,
           "section": "Uniques"
         },
         {
@@ -52961,8 +52961,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -52973,8 +52973,8 @@
             40
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -52985,8 +52985,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -52997,8 +52997,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -53009,8 +53009,8 @@
             3
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Potions"
         },
         {
@@ -53021,8 +53021,8 @@
             3
           ],
           "weight": 6,
-          "out_of": 129,
-          "rarity": 0.0465116,
+          "out_of": 127,
+          "rarity": 0.0472441,
           "section": "Potions",
           "notes": [
             "Saradomin brews and Super restore potions are dropped together"
@@ -53046,8 +53046,8 @@
             3
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Potions",
           "notes": [
             "Super defence potions and magic potions are dropped together"
@@ -53070,10 +53070,12 @@
             19500,
             20000
           ],
-          "weight": 31,
-          "out_of": 129,
-          "rarity": 0.2403101,
+          "weight": 29,
+          "out_of": 127,
+          "rarity": 0.2283465,
           "section": "Other",
+          "weight_basis": "remainder",
+          "published_rarity": "31.2/127",
           "notes": [
             "Coins come from rolls on all loot tables, including the unique table, GDT and RDT."
           ]
@@ -53086,8 +53088,8 @@
             6
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "noted": true
         },
@@ -53099,8 +53101,8 @@
             100
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {
@@ -53111,8 +53113,8 @@
             5
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "noted": true
         },
@@ -53124,8 +53126,8 @@
             2
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {
@@ -53136,8 +53138,8 @@
             1
           ],
           "weight": 1,
-          "out_of": 129,
-          "rarity": 0.0077519,
+          "out_of": 127,
+          "rarity": 0.007874,
           "section": "Other"
         },
         {
@@ -82389,7 +82391,7 @@
       "label": "Drops",
       "table_name": "General Graardor Drops",
       "wiki_page": "General Graardor",
-      "main_max_roll": 129,
+      "main_max_roll": 127,
       "entries": [
         {
           "item_id": 532,
@@ -82424,8 +82426,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -82436,8 +82438,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -82448,8 +82450,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -82460,8 +82462,8 @@
             1
           ],
           "weight": 6,
-          "out_of": 129,
-          "rarity": 0.0465116,
+          "out_of": 127,
+          "rarity": 0.0472441,
           "section": "Weapons and armour"
         },
         {
@@ -82471,10 +82473,12 @@
             19500,
             20000
           ],
-          "weight": 32,
-          "out_of": 129,
-          "rarity": 0.248062,
+          "weight": 30,
+          "out_of": 127,
+          "rarity": 0.2362205,
           "section": "Other",
+          "weight_basis": "remainder",
+          "published_rarity": "31.7/127",
           "notes": [
             "Coins come from rolls on multiple loot tables, including GDT and RDT."
           ]
@@ -82487,8 +82491,8 @@
             3
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "noted": true
         },
@@ -82500,8 +82504,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {
@@ -82512,8 +82516,8 @@
             3
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {
@@ -82524,8 +82528,8 @@
             20
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "noted": true
         },
@@ -82537,8 +82541,8 @@
             120
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "noted": true
         },
@@ -82550,8 +82554,8 @@
             20
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "noted": true
         },
@@ -82563,8 +82567,8 @@
             70
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {
@@ -82575,8 +82579,8 @@
             20600
           ],
           "weight": 1,
-          "out_of": 129,
-          "rarity": 0.0077519,
+          "out_of": 127,
+          "rarity": 0.007874,
           "section": "Other",
           "notes": [
             "Coins come from rolls on the unique tables, including the hilt table and the godsword shard table."
@@ -115893,7 +115897,7 @@
       "label": "Drops",
       "table_name": "Kree'arra Drops",
       "wiki_page": "Kree'arra",
-      "main_max_roll": 129,
+      "main_max_roll": 127,
       "entries": [
         {
           "item_id": 532,
@@ -115939,8 +115943,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -115951,8 +115955,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -115963,8 +115967,8 @@
             601
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Runes and ammunition",
           "notes": [
             "The quantity of mind runes dropped is equal to the number of feathers dropped + 585."
@@ -115978,8 +115982,8 @@
             105
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Runes and ammunition"
         },
         {
@@ -115990,8 +115994,8 @@
             25
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Runes and ammunition"
         },
         {
@@ -116002,8 +116006,8 @@
             10
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Runes and ammunition"
         },
         {
@@ -116013,10 +116017,12 @@
             19500,
             20000
           ],
-          "weight": 44,
-          "out_of": 129,
-          "rarity": 0.3410853,
+          "weight": 42,
+          "out_of": 127,
+          "rarity": 0.3307087,
           "section": "Other",
+          "weight_basis": "remainder",
+          "published_rarity": "43.7/127",
           "notes": [
             "Coins come from rolls on multiple loot tables, including GDT and RDT."
           ]
@@ -116029,8 +116035,8 @@
             3
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "notes": [
             "Ranging potions and super defence potions are dropped together."
@@ -116054,8 +116060,8 @@
             13
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "noted": true
         },
@@ -116067,8 +116073,8 @@
             2
           ],
           "weight": 8,
-          "out_of": 129,
-          "rarity": 0.0620155,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {
@@ -116079,8 +116085,8 @@
             21000
           ],
           "weight": 1,
-          "out_of": 129,
-          "rarity": 0.0077519,
+          "out_of": 127,
+          "rarity": 0.007874,
           "section": "Other",
           "notes": [
             "Coins come from rolls on the unique tables, including the hilt table and the godsword shard table."
@@ -116094,8 +116100,8 @@
             1
           ],
           "weight": 1,
-          "out_of": 129,
-          "rarity": 0.0077519,
+          "out_of": 127,
+          "rarity": 0.007874,
           "section": "Other"
         },
         {
@@ -116106,8 +116112,8 @@
             1
           ],
           "weight": 1,
-          "out_of": 129,
-          "rarity": 0.0077519,
+          "out_of": 127,
+          "rarity": 0.007874,
           "section": "Other"
         },
         {
@@ -116284,7 +116290,7 @@
       "label": "Drops",
       "table_name": "K'ril Tsutsaroth Drops",
       "wiki_page": "K'ril Tsutsaroth",
-      "main_max_roll": 130,
+      "main_max_roll": 127,
       "entries": [
         {
           "item_id": 25778,
@@ -116319,8 +116325,8 @@
             1
           ],
           "weight": 1,
-          "out_of": 130,
-          "rarity": 0.0076923,
+          "out_of": 127,
+          "rarity": 0.007874,
           "section": "Uniques"
         },
         {
@@ -116331,8 +116337,8 @@
             1
           ],
           "weight": 1,
-          "out_of": 130,
-          "rarity": 0.0076923,
+          "out_of": 127,
+          "rarity": 0.007874,
           "section": "Uniques"
         },
         {
@@ -116343,8 +116349,8 @@
             300
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -116355,8 +116361,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -116367,8 +116373,8 @@
             1
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Weapons and armour"
         },
         {
@@ -116379,8 +116385,8 @@
             1
           ],
           "weight": 7,
-          "out_of": 130,
-          "rarity": 0.0538462,
+          "out_of": 127,
+          "rarity": 0.0551181,
           "section": "Weapons and armour"
         },
         {
@@ -116391,8 +116397,8 @@
             1
           ],
           "weight": 2,
-          "out_of": 130,
-          "rarity": 0.0153846,
+          "out_of": 127,
+          "rarity": 0.015748,
           "section": "Weapons and armour"
         },
         {
@@ -116403,8 +116409,8 @@
             3
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Potions",
           "notes": [
             "Super attack and Super strength potions are always dropped together."
@@ -116428,8 +116434,8 @@
             3
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Potions",
           "notes": [
             "Super restore potions and Zamorak brews are always dropped together."
@@ -116452,10 +116458,12 @@
             19500,
             20000
           ],
-          "weight": 37,
-          "out_of": 130,
-          "rarity": 0.2846154,
+          "weight": 34,
+          "out_of": 127,
+          "rarity": 0.2677165,
           "section": "Other",
+          "weight_basis": "remainder",
+          "published_rarity": "36.7/127",
           "notes": [
             "Coins come from rolls on all loot tables, including the unique table, GDT and RDT."
           ]
@@ -116468,8 +116476,8 @@
             10
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other",
           "noted": true
         },
@@ -116481,8 +116489,8 @@
             3
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {
@@ -116493,8 +116501,8 @@
             125
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {
@@ -116505,8 +116513,8 @@
             85
           ],
           "weight": 8,
-          "out_of": 130,
-          "rarity": 0.0615385,
+          "out_of": 127,
+          "rarity": 0.0629921,
           "section": "Other"
         },
         {

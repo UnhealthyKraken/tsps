@@ -37,7 +37,22 @@ General Graardor, Commander Zilyana, K'ril Tsutsaroth and Kree'arra now roll 8/1
 - Coins replace the empty rolls.
 - The ring of wealth doesn't affect them, because they are not in `RING_OF_WEALTH_TABLES`.
 
-The pools now total 129 (K'ril 130), not 127. Each page's coin row already includes those tables' coins, and the canonical exporter records this rather than inventing a split (`osrsreboxed-db/scripts/drops/QUANTITY_REVIEW.md`). Imported `npc-drops.json` SHA-256: `38e7059c26af8cb09cc086d10476b45ff65122cd3f3ff1bd3ee64dc8da065651`. Imported `npc-drop-subtables.json` SHA-256: `355f429aaa102fc119467c545e1ea492cd6d2b8cc42e58c568e22eafc6f2b47f`. `tests/drop-import-preservation.test.cjs` pins the accesses, the pools and every slot of the three tables.
+The pools stay at 127.
+
+Each page publishes one coin rate whose footnote says it includes the GDT and RDT coins, and those tables now roll their own coins. So the canonical exporter makes that coin row the remainder of the pool (`weight_basis: "remainder"`, with the page's rate kept in `published_rarity`):
+
+| Boss | Published | Remainder |
+|---|---|---|
+| Zilyana | 31.2/127 | 29/127 |
+| Graardor | 31.7/127 | 30/127 |
+| K'ril | 36.7/127 | 34/127 |
+| Kree'arra | 43.7/127 | 42/127 |
+
+Graardor's and Kree'arra's separate unique-table coin rows stay at 1/127. Every other row keeps its published x/127. See `osrsreboxed-db/scripts/drops/QUANTITY_REVIEW.md`.
+
+Imported `npc-drops.json` SHA-256: `ce08e84061b293480d33dfb54276cb1a0a74868c9f36414c587e93f976fc05b1`. Imported `npc-drop-subtables.json` SHA-256: `355f429aaa102fc119467c545e1ea492cd6d2b8cc42e58c568e22eafc6f2b47f`.
+
+`tests/drop-import-preservation.test.cjs` pins the accesses, the 127-slot pools, the remainder coin rows and every slot of the three tables.
 
 Sources: [Drop table](https://oldschool.runescape.wiki/w/Drop_table), [Aberrant spectre](https://oldschool.runescape.wiki/w/Aberrant_spectre), [Chaos druid](https://oldschool.runescape.wiki/w/Chaos_druid), [Skeletal Wyvern](https://oldschool.runescape.wiki/w/Skeletal_wyvern), [Pinball](https://oldschool.runescape.wiki/w/Pinball), [Flippa dialogue](https://oldschool.runescape.wiki/w/Transcript:Flippa), [Goblin](https://oldschool.runescape.wiki/w/Goblin), [Energy potion](https://oldschool.runescape.wiki/w/Energy_potion).
 

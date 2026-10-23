@@ -37,12 +37,12 @@ test('Nex keeps her two paired supply slots in a 12-slot pool', () => {
 });
 
 const BUNDLED = [
-    // The God Wars pools hold the 8/127 + 2/127 variant table accesses on top of
-    // coin rows that already count those tables' coins, so they exceed 127.
-    ['commander_zilyana', [[163, 3042], [6687, 3024]], 129, 129],
-    ['kril_tsutsaroth', [[145, 157], [3026, 189]], 130, 130],
-    ['kreearra', [[169, 163]], 129, 129],
-    ['general_graardor', [], 129, 129],
+    // The God Wars pools hold the 8/127 + 2/127 variant table accesses, with the
+    // main table's coins as the remainder of the 127 slots.
+    ['commander_zilyana', [[163, 3042], [6687, 3024]], 127, 127],
+    ['kril_tsutsaroth', [[145, 157], [3026, 189]], 127, 127],
+    ['kreearra', [[169, 163]], 127, 127],
+    ['general_graardor', [], 127, 127],
     ['ammonite_crab', [[21543, 21545]], 128, 128],
     ['chaos_fanatic', [[1035, 1033]], 133, 133],
     ['ancient_zygomite', [[21545, 21543]], 118, 89],
@@ -70,6 +70,25 @@ test('the God Wars bosses roll their own rare drop and gem tables, not the regul
             .map(e => [e.shared_table, e.weight, e.out_of]);
         assert.deepEqual(shared, [['gwdRareDrop', 8, 127], ['gwdGem', 2, 127]], id);
     }
+});
+
+test('the God Wars coin rows are the remainder of the pool, not the published blended rate', () => {
+    // The published coin rate also counts the variant tables' coins, which those tables roll.
+    const REMAINDER = {
+        commander_zilyana: [29, '31.2/127'],
+        kril_tsutsaroth: [34, '36.7/127'],
+        kreearra: [42, '43.7/127'],
+        general_graardor: [30, '31.7/127'],
+    };
+    for (const id of GWD_BOSSES) {
+        const [weight, published] = REMAINDER[id];
+        const filled = dump.tables[id].entries.filter(e => e.weight_basis === 'remainder');
+        assert.deepEqual(filled.map(e => [e.item_id, e.weight, e.out_of, e.published_rarity]),
+            [[995, weight, 127, published]], id);
+    }
+    const others = Object.entries(dump.tables)
+        .filter(([id, table]) => !GWD_BOSSES.includes(id) && table.entries.some(e => e.weight_basis));
+    assert.deepEqual(others, []);
 });
 
 test('the God Wars variant tables load whole and every slot lands, ring of wealth or not', (t) => {

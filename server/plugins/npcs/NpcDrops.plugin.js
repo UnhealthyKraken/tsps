@@ -266,6 +266,18 @@ function loadDrops() {
   applyOverrides(dump, subtables, readJson(OVERRIDES_FILE) || {});
   applyWikiCorrections(tableById);
 
+  // Rows whose source lists several quantities but no rule for choosing roll uniformly among
+  // them; that is an assumption, so say how many once rather than silently.
+  let assumedQuantityRows = 0;
+  for (const table of Object.values(tableById)) {
+    for (const entry of [...(table.entries || []), ...(table.tertiary || [])]) {
+      if (entry.quantity_selection === "unknown") assumedQuantityRows++;
+    }
+  }
+  if (assumedQuantityRows > 0) {
+    console.log(`[NpcDrops] ${assumedQuantityRows} rows roll uniformly among their listed quantities (assumed distribution)`);
+  }
+
   for (const [npcId, npc] of Object.entries(dump.npcs)) {
     const id = Number(npcId);
     if (!Number.isInteger(id) || !Array.isArray(npc.tables) || npc.tables.length === 0) {
@@ -331,6 +343,7 @@ function loadDrops() {
     tables: tableCount,
     shared: sharedTables.size,
     unusableSubtableRows,
+    assumedQuantityRows,
   };
 }
 
@@ -338,8 +351,53 @@ function randomInt(bound) {
   return Math.floor(Math.random() * bound);
 }
 
-function rollQuantity(entry) {
-  const quantity = Array.isArray(entry.quantity) ? entry.quantity : parseQuantityRaw(entry.quantity_raw);
+const unknownConditionTypes = new Set();
+
+/**
+ * Whether a source-stated quantity condition holds for this kill. `context` is the kill
+ * context plugins filled through npc-drops:context; a flag nobody set is false, so the
+ * source's first-listed quantity applies.
+ */
+function conditionHolds(condition, context) {
+  if (!condition || !context) return false;
+  switch (condition.type) {
+    case "perfect_kill":
+      return context.perfectKill === true;
+    case "bounty_task":
+      return typeof context.bountyTask === "string" &&
+        context.bountyTask.toLowerCase() === String(condition.monster || "").toLowerCase();
+    case "preferred_method":
+      return context.preferredMethodLocation === condition.location;
+    default:
+      if (!unknownConditionTypes.has(condition.type)) {
+        unknownConditionTypes.add(condition.type);
+        console.warn(`[NpcDrops] unknown quantity condition type '${condition.type}' never applies`);
+      }
+      return false;
+  }
+}
+
+/**
+ * The quantity alternative this kill awards. The export lists the source's quantities in
+ * order with the conditions it states; the first alternative is the default. Rows whose
+ * source publishes no rule (`quantity_selection: "unknown"`) roll uniformly among the listed
+ * quantities: an assumed distribution, counted at load.
+ */
+function chooseAlternative(entry, context) {
+  const alternatives = entry.quantity_alternatives;
+  if (!Array.isArray(alternatives) || alternatives.length === 0) return null;
+  if (entry.quantity_selection === "unknown") return alternatives[randomInt(alternatives.length)];
+  for (const alternative of alternatives.slice(1)) {
+    if (conditionHolds(alternative.condition, context)) return alternative;
+  }
+  return alternatives[0];
+}
+
+function rollQuantity(entry, context = null) {
+  const alternative = chooseAlternative(entry, context);
+  const quantity = alternative
+    ? alternative.quantity
+    : Array.isArray(entry.quantity) ? entry.quantity : parseQuantityRaw(entry.quantity_raw);
   if (!quantity || quantity.length === 0) {
     return 1;
   }
@@ -432,7 +490,7 @@ function rollSharedTable(name, player, depth = 0, npc = null) {
   return [];
 }
 
-function resolveEntry(entry, player, npc = null) {
+function resolveEntry(entry, player, npc = null, context = null) {
   if (entry.nothing) {
     return [];
   }
@@ -460,7 +518,7 @@ function resolveEntry(entry, player, npc = null) {
   if (!Number.isInteger(entry.item_id)) {
     return [];
   }
-  const drops = [{ itemId: entry.item_id, amount: rollQuantity(entry), noted: entry.noted === true }];
+  const drops = [{ itemId: entry.item_id, amount: rollQuantity(entry, context), noted: entry.noted === true }];
   for (const bonus of entry.bonus_drops || []) {
     if (Number.isInteger(bonus.item_id)) {
       drops.push({ itemId: bonus.item_id, amount: rollQuantity(bonus), noted: bonus.noted === true });
@@ -473,7 +531,7 @@ function resolveEntry(entry, player, npc = null) {
  * One roll on a table: its pre-roll, main roll and separate rolls. Separate rolls marked
  * `once_per_kill` are made on the first of a table's `rolls` only.
  */
-function rollOnce(table, entries, player, first = true, npc = null) {
+function rollOnce(table, entries, player, first = true, npc = null, context = null) {
   const drops = [];
   const main = [];
   const separateGroups = new Map();
@@ -490,7 +548,7 @@ function rollOnce(table, entries, player, first = true, npc = null) {
       for (const entry of preRollPool) {
         roll -= entry.weight;
         if (roll < 0) {
-          drops.push(...resolveEntry(entry, player, npc));
+          drops.push(...resolveEntry(entry, player, npc, context));
           preRollHit = true;
           break;
         }
@@ -503,7 +561,7 @@ function rollOnce(table, entries, player, first = true, npc = null) {
       continue;
     } else if (entry.pre_roll) {
       if (entry.separate_roll && !preRollHit && hits(entry)) {
-        drops.push(...resolveEntry(entry, player, npc));
+        drops.push(...resolveEntry(entry, player, npc, context));
         preRollHit = true;
       }
     } else if (entry.separate_roll) {
@@ -513,7 +571,7 @@ function rollOnce(table, entries, player, first = true, npc = null) {
         group.push(entry);
         separateGroups.set(entry.roll_group, group);
       } else if (hits(entry)) {
-        drops.push(...resolveEntry(entry, player, npc));
+        drops.push(...resolveEntry(entry, player, npc, context));
       }
     } else if (Number.isInteger(entry.weight)) {
       main.push(entry);
@@ -526,7 +584,7 @@ function rollOnce(table, entries, player, first = true, npc = null) {
     for (const entry of group) {
       roll -= entry.weight;
       if (roll < 0) {
-        drops.push(...resolveEntry(entry, player, npc));
+        drops.push(...resolveEntry(entry, player, npc, context));
         break;
       }
     }
@@ -540,7 +598,7 @@ function rollOnce(table, entries, player, first = true, npc = null) {
     for (const entry of main) {
       roll -= entry.weight;
       if (roll < 0) {
-        drops.push(...resolveEntry(entry, player, npc));
+        drops.push(...resolveEntry(entry, player, npc, context));
         break;
       }
     }
@@ -554,17 +612,29 @@ function rollOnce(table, entries, player, first = true, npc = null) {
  * then a single weighted main-table roll, then independent separate/tertiary rolls. A table
  * with `rolls` repeats everything but the guaranteed, tertiary and `once_per_kill` drops that many times.
  */
-function rollTable(table, player, npc) {
+/**
+ * What this kill was, for quantities the source makes conditional: a perfect Desert Treasure II
+ * kill, an active bounty task, the Chasm of Fire preferred method. Built once per kill and
+ * offered through "npc-drops:context" { player, npc, npcId, context } so the plugin that knows
+ * (a boss engine, Sailing, Slayer) can set the flag; nothing sets one yet, so defaults apply.
+ */
+function killContext(player, npc) {
+  const context = { perfectKill: false, bountyTask: null, preferredMethodLocation: null };
+  pluginApi?.emitCustomEvent("npc-drops:context", { player, npc, npcId: npc?.getId?.() ?? null, context });
+  return context;
+}
+
+function rollTable(table, player, npc, context = killContext(player, npc)) {
   const drops = [];
   const entries = Array.isArray(table.entries) ? table.entries : [];
   for (const entry of entries) {
     if (entry.always) {
-      drops.push(...resolveEntry(entry, player, npc));
+      drops.push(...resolveEntry(entry, player, npc, context));
     }
   }
   const rolls = Number.isInteger(table.rolls) && table.rolls > 1 ? table.rolls : 1;
   for (let roll = 0; roll < rolls; roll++) {
-    drops.push(...rollOnce(table, entries, player, roll === 0, npc));
+    drops.push(...rollOnce(table, entries, player, roll === 0, npc, context));
   }
 
   const rules = table.tertiary?.length ? tertiaryRules(player, npc) : [];
@@ -580,7 +650,7 @@ function rollTable(table, player, npc) {
     }
     if (entry.name === LOOTING_BAG && !lootingBagDrops(npc)) continue;
     if (hits(entry, tertiaryMultiplier(entry, rules))) {
-      drops.push(...resolveEntry(entry, player, npc));
+      drops.push(...resolveEntry(entry, player, npc, context));
     }
   }
 

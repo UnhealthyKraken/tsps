@@ -140,9 +140,37 @@ function sendQuestHeaderStats(player) {
   packet.sendVarbit(QUESTS_TOTAL_VARBIT, list.length);
 }
 
+/**
+ * Players whose login hooks are running: player -> whether a refresh was asked for. Nearly
+ * every quest refreshes the list from its login hook, so a login rebuilt and sent the whole
+ * list about 140 times; it is sent once instead, after the login bootstrap.
+ */
+const loginQuestLists = new WeakMap();
+
 /** Sends the quest list and its row flags; call when the quest tab (re)mounts. */
 function refreshQuestList(player) {
+  if (loginQuestLists.has(player)) {
+    loginQuestLists.set(player, true);
+    return;
+  }
   sendQuestList(player);
+}
+
+/** Login started: hold quest list refreshes until the bootstrap completes. */
+function holdLoginQuestList({ player }) {
+  loginQuestLists.set(player, false);
+}
+
+/** Login bootstrap done: send the held quest list once, if anything asked for it. */
+function sendLoginQuestList({ player }) {
+  const requested = loginQuestLists.get(player);
+  loginQuestLists.delete(player);
+  if (requested) sendQuestList(player);
+}
+
+/** A login that ends before its bootstrap leaves no hold behind. */
+function releaseLoginQuestList({ player }) {
+  loginQuestLists.delete(player);
 }
 
 function refreshQuestRequirements({ player }) {
@@ -315,6 +343,10 @@ function registerQuestWidgets(api) {
   api.onCustomEvent("quest:is-complete", answerIsComplete);
   api.onCustomEvent("quest:is-started", answerIsStarted);
   api.onCustomEvent("quest:get-stage", answerGetStage);
+  // Registered with the first quest, so this runs before every quest's own login hook.
+  api.onPlayerLogin(holdLoginQuestList);
+  api.onCustomEvent("player:bootstrap-complete", sendLoginQuestList);
+  api.onPlayerLogout?.(releaseLoginQuestList);
   // The character summary shows the same header stats without opening the list.
   api.onPlayerLogin(({ player }) => sendQuestHeaderStats(player));
   api.onPlayerLogin(sendQuestVarps);

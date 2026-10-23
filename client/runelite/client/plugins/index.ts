@@ -31,6 +31,7 @@ import { TileMarkersConfig } from "../../../game/plugins/tilemarkers/TileMarkers
 import { TileMarkersPlugin } from "../../../game/plugins/tilemarkers/TileMarkersPlugin";
 import { VengeanceTimerPlugin } from "../../../game/plugins/vengeancetimer/VengeanceTimerPlugin";
 import { WeatherPlugin } from "../../../game/plugins/weather/WeatherPlugin";
+import { XpTrackerPlugin } from "../../../game/plugins/xptracker/XpTrackerPlugin";
 import type { LegacyConfigMigration } from "../../impl/LegacyConfigMigration";
 import { ConfigPlugin } from "./config/ConfigPlugin";
 import type { PluginClass } from "./Plugin";
@@ -65,6 +66,7 @@ export const CORE_PLUGINS: ReadonlyArray<PluginClass> = [
     CameraPlugin,
     QuestHelperPlugin,
     NPCIndicatorsPlugin,
+    XpTrackerPlugin,
 ];
 
 /** Legacy `osrs.plugin.*.v1` localStorage blobs to fold into rl.config. */

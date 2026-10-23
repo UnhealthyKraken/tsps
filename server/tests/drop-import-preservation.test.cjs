@@ -1,9 +1,15 @@
 // Guards on the imported drop data: a regenerated import that loses the paired
-// supply bundles, the Mimic reward path, or the hand-verified tables fails here
-// instead of silently changing loot.
+// supply bundles, the Mimic reward path, the God Wars rare drop tables, or the
+// hand-verified tables fails here instead of silently changing loot.
+// Run after `yarn build`: node --test tests/drop-import-preservation.test.cjs
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
+const { Server } = require('../dist/Server');
+Server.installProductionPathResolver();
+const { _test: drops } = require('../plugins/npcs/NpcDrops.plugin');
+const { isWearingRingOfWealth } = require('../plugins/items/RingOfWealth.plugin');
 const dump = require('../data/definitions/npc-drops.json');
+const subtables = require('../data/definitions/npc-drop-subtables.json');
 const rewards = require('../plugins/bosses/data/reward-tables.json');
 const State = require('../plugins/bosses/mimic/State.Mimic');
 const Reward = require('../plugins/bosses/mimic/Reward.Mimic');
@@ -31,10 +37,12 @@ test('Nex keeps her two paired supply slots in a 12-slot pool', () => {
 });
 
 const BUNDLED = [
-    ['commander_zilyana', [[163, 3042], [6687, 3024]], 127, 119],
-    ['kril_tsutsaroth', [[145, 157], [3026, 189]], 127, 120],
-    ['kreearra', [[169, 163]], 127, 119],
-    ['general_graardor', [], 127, 119],
+    // The God Wars pools hold the 8/127 + 2/127 variant table accesses on top of
+    // coin rows that already count those tables' coins, so they exceed 127.
+    ['commander_zilyana', [[163, 3042], [6687, 3024]], 129, 129],
+    ['kril_tsutsaroth', [[145, 157], [3026, 189]], 130, 130],
+    ['kreearra', [[169, 163]], 129, 129],
+    ['general_graardor', [], 129, 129],
     ['ammonite_crab', [[21543, 21545]], 128, 128],
     ['chaos_fanatic', [[1035, 1033]], 133, 133],
     ['ancient_zygomite', [[21545, 21543]], 118, 89],
@@ -51,6 +59,41 @@ for (const [id, expected, maxRoll, used] of BUNDLED) {
         assert.ok(!table.entries.some(e => partners.has(e.item_id)));
     });
 }
+
+const GWD_BOSSES = ['commander_zilyana', 'kril_tsutsaroth', 'kreearra', 'general_graardor'];
+const GWD_TABLES = ['gwdRareDrop', 'gwdGem', 'gwdMegaRare'];
+
+test('the God Wars bosses roll their own rare drop and gem tables, not the regular ones', () => {
+    for (const id of GWD_BOSSES) {
+        const shared = dump.tables[id].entries
+            .filter(e => e.shared_table)
+            .map(e => [e.shared_table, e.weight, e.out_of]);
+        assert.deepEqual(shared, [['gwdRareDrop', 8, 127], ['gwdGem', 2, 127]], id);
+    }
+});
+
+test('the God Wars variant tables load whole and every slot lands, ring of wealth or not', (t) => {
+    drops.loadDrops();
+    const { rollSharedTable } = require('../plugins/npcs/NpcDrops.plugin').__internals;
+    const plain = { getEquipment: () => ({ get: () => null }) };
+    const wealthy = { getEquipment: () => ({ get: () => ({ getId: () => 11980 }) }) };
+    assert.ok(isWearingRingOfWealth(wealthy));
+    let value = 0;
+    t.mock.method(Math, 'random', () => value);
+    for (const key of GWD_TABLES) {
+        const rows = drops.sharedTables.get(key);
+        assert.ok(rows, key);
+        assert.equal(rows.length, subtables[key].entries.length, `${key} lost rows on load`);
+        assert.equal(rows.reduce((sum, row) => sum + row.weight, 0), 128, key);
+        assert.ok(rows.every(row => row.outOf === 128 && !row.nothing), key);
+        for (let slot = 0; slot < 128; slot++) {
+            value = (slot + 0.5) / 128;
+            const drop = rollSharedTable(key, plain);
+            assert.equal(drop.length, 1, `${key} slot ${slot}`);
+            assert.deepEqual(rollSharedTable(key, wealthy), drop, `${key} slot ${slot} with a ring of wealth`);
+        }
+    }
+});
 
 test('the Scavenger beast secondary ingredients stay three slots of 2/18', () => {
     const rows = dump.tables.scavenger_beast.entries.filter(e => e.weight === 2 && e.out_of === 18);

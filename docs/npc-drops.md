@@ -30,6 +30,15 @@ Thirty NPC IDs have alternative tables while the generic runtime currently choos
 
 Current Wiki comparison found stale/assumed energy-potion entries on Goblin and standard human tables, including Man/Woman. Those cached-source rows were not silently replaced with invented probabilities. Correctness work remains for these source refreshes and conditional rules; do not describe all drop tables as exact current OSRS.
 
+### God Wars rare drop tables
+
+General Graardor, Commander Zilyana, K'ril Tsutsaroth and Kree'arra now roll 8/127 on `gwdRareDrop` and 2/127 on `gwdGem`. Those are the [God Wars Dungeon-variant tables](https://oldschool.runescape.wiki/w/God_Wars_Dungeon-variant_rare_drop_table), with `gwdMegaRare` nested under both. They are not the regular rare drop and gem tables:
+- A rune sword replaces the runite bar.
+- Coins replace the empty rolls.
+- The ring of wealth doesn't affect them, because they are not in `RING_OF_WEALTH_TABLES`.
+
+The pools now total 129 (K'ril 130), not 127. Each page's coin row already includes those tables' coins, and the canonical exporter records this rather than inventing a split (`osrsreboxed-db/scripts/drops/QUANTITY_REVIEW.md`). Imported `npc-drops.json` SHA-256: `38e7059c26af8cb09cc086d10476b45ff65122cd3f3ff1bd3ee64dc8da065651`. Imported `npc-drop-subtables.json` SHA-256: `355f429aaa102fc119467c545e1ea492cd6d2b8cc42e58c568e22eafc6f2b47f`. `tests/drop-import-preservation.test.cjs` pins the accesses, the pools and every slot of the three tables.
+
 Sources: [Drop table](https://oldschool.runescape.wiki/w/Drop_table), [Aberrant spectre](https://oldschool.runescape.wiki/w/Aberrant_spectre), [Chaos druid](https://oldschool.runescape.wiki/w/Chaos_druid), [Skeletal Wyvern](https://oldschool.runescape.wiki/w/Skeletal_wyvern), [Pinball](https://oldschool.runescape.wiki/w/Pinball), [Flippa dialogue](https://oldschool.runescape.wiki/w/Transcript:Flippa), [Goblin](https://oldschool.runescape.wiki/w/Goblin), [Energy potion](https://oldschool.runescape.wiki/w/Energy_potion).
 
 `server/plugins/npcs/NpcDrops.plugin.js` rolls an NPC's drops from three files in `server/data/definitions/`:

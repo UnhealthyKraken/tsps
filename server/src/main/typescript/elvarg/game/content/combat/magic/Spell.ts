@@ -5,7 +5,35 @@ import { MagicSpellbook } from "../../../model/MagicSpellbook";
 import { Skill } from "../../../model/Skill";
 import { PluginManager } from "../../../../plugins/PluginManager";
 
+/** Runtime-only, per-paid-cast plugin snapshots; never shared with later casts or saves. */
+export interface SpellCastContext {
+    readonly spell: Spell;
+    readonly tick: number;
+    readonly data: Map<string, unknown>;
+}
+
 export abstract class Spell {
+    private static readonly castContexts = new WeakMap<Mobile, SpellCastContext>();
+    private static readonly calculationContexts = new WeakMap<Mobile, SpellCastContext>();
+    public static getCastContext(caster: Mobile, spell: Spell | null): SpellCastContext | null {
+        const context = Spell.castContexts.get(caster);
+        return context && context.spell === spell && context.tick === World.getProcessCycle() ? context : null;
+    }
+    /** Explicit synchronous roll scope keeps paid-cast snapshots out of later previews. */
+    public static withCastContext<T>(caster: Mobile, context: SpellCastContext | null, action: () => T): T {
+        const previous = Spell.calculationContexts.get(caster);
+        if (context) Spell.calculationContexts.set(caster, context);
+        else Spell.calculationContexts.delete(caster);
+        try { return action(); }
+        finally {
+            if (previous) Spell.calculationContexts.set(caster, previous);
+            else Spell.calculationContexts.delete(caster);
+        }
+    }
+    public static getCalculationContext(caster: Mobile, spell: Spell | null): SpellCastContext | null {
+        const context = Spell.calculationContexts.get(caster);
+        return context && context.spell === spell ? context : null;
+    }
     private static readonly NEXT_CAST_AT = "magic:next-cast-at";
     private static readonly CAST_DELAY_MS = 600;
 
@@ -158,6 +186,10 @@ export abstract class Spell {
         if (cooldown != null) {
             player.setAttribute(cooldown.attribute, now + cooldown.duration);
         }
+
+        const context: SpellCastContext = { spell: this, tick: now, data: new Map() };
+        Spell.castContexts.set(player, context);
+        PluginManager.emitCustomEvent("magic:cast-committed", { player, spell: this, context, runesSaved: runeSaving.saved });
 
         return true;
     }

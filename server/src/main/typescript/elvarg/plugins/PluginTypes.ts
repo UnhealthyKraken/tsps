@@ -1370,6 +1370,7 @@ export interface PluginCoreApi {
   PlayerDeathTask: any;
   /** Which items poison, and how strongly. */
   CombatPoisonData: any;
+  CombatPoisonEffect: any;
   CacheDefinitions: any;
   readTemplateRegion: typeof import("../game/collision/TemplateRegionData").readTemplateRegion;
   Wilderness: any;

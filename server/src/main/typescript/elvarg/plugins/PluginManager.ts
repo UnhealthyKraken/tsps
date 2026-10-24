@@ -2261,6 +2261,7 @@ export class PluginManager {
       EquipPacketListener: require("../net/packet/impl/EquipPacketListener").EquipPacketListener,
       PlayerDeathTask: require("../game/task/impl/PlayerDeath").PlayerDeathTask,
       CombatPoisonData: require("../game/task/impl/CombatPoisonEffect").CombatPoisonData,
+      CombatPoisonEffect: require("../game/task/impl/CombatPoisonEffect").CombatPoisonEffect,
       CacheDefinitions: require("../game/cache/CacheDefinitions").CacheDefinitions,
       readTemplateRegion: require("../game/collision/TemplateRegionData").readTemplateRegion,
       Wilderness: require("../game/content/wilderness/Wilderness").Wilderness,

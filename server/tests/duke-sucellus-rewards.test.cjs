@@ -11,6 +11,7 @@ function fixture(t) {
   // Rendering and scheduling use the encounter harness; the context event bus,
   // Player/HitQueue, NPC lethal-damage path and canonical loot consumer are real.
   h.api.getItemOnGroundManager = () => ({});
+  require('../plugins/npcs/ForgottenFourRewards.plugin').register(h.api);
   Drops.register(h.api);
   const s = h.enter();
   s.fight.wake();
@@ -31,7 +32,8 @@ function fixture(t) {
   const loot = (player = h.p, npc = s.boss) => {
     // Slot zero selects the first canonical main-table row. Keep every other
     // entry/tertiary intact: there is no synthetic quantity or supplied context.
-    random.mock.mockImplementation(() => .005);
+    let access = 0;
+    random.mock.mockImplementation(() => access++ < 5 ? .99 : .005);
     const drops = Drops.__internals.rollTable(table, player, npc);
     const bronze = drops.find(drop => drop.itemId === 1103);
     assert.ok(bronze, 'full canonical Duke table rolled Bronze chainbody');

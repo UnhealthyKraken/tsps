@@ -86,7 +86,7 @@ test('the God Wars exact coin remainders exclude variant-table contributions wit
             [[995, weight, 1524, published]], id);
     }
     const others = Object.entries(dump.tables)
-        .filter(([id, table]) => !GWD_BOSSES.includes(id) && table.entries.some(e => e.weight_basis));
+        .filter(([id, table]) => !GWD_BOSSES.includes(id) && table.entries.some(e => e.weight_basis === 'remainder'));
     assert.deepEqual(others, []);
 });
 

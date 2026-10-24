@@ -173,8 +173,10 @@ test('every quantity resolves and exactly the known alternative rows carry condi
 });
 
 test('the import keeps its table and mapping counts', () => {
-    assert.equal(Object.keys(dump.tables).length, 1112);
-    assert.equal(Object.keys(dump.npcs).length, 3092);
+    // Exclude audited obsolete Wiki titles: five nonattackable cultists and the
+    // old manta variant lose stale mappings; current encounters remain intact.
+    assert.equal(Object.keys(dump.tables).length, 1105);
+    assert.equal(Object.keys(dump.npcs).length, 3086);
     for (const id of [8058, 8060, 13686]) assert.deepEqual(dump.npcs[id].tables, [], `quest-only NPC ${id}`);
 });
 

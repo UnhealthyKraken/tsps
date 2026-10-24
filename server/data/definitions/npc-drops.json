@@ -67842,7 +67842,7 @@
       "label": "Drops",
       "table_name": "Duke Sucellus Drops",
       "wiki_page": "Duke Sucellus",
-      "main_max_roll": 100,
+      "main_max_roll": 78,
       "entries": [
         {
           "item_id": 1103,
@@ -67871,10 +67871,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Weapons and armour",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1109,
@@ -67903,10 +67905,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Weapons and armour",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1111,
@@ -67935,10 +67939,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Weapons and armour",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 4087,
@@ -67967,9 +67973,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Weapons and armour"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Weapons and armour",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 7936,
@@ -67998,10 +68006,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 440,
@@ -68030,10 +68040,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 453,
@@ -68062,10 +68074,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
+          "out_of": 78,
+          "rarity": 0.1025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 447,
@@ -68094,10 +68108,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 449,
@@ -68126,10 +68142,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
+          "out_of": 78,
+          "rarity": 0.1025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 451,
@@ -68158,10 +68176,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
+          "out_of": 78,
+          "rarity": 0.025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         },
         {
           "item_id": 1607,
@@ -68190,10 +68210,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1605,
@@ -68222,10 +68244,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1603,
@@ -68254,10 +68278,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1619,
@@ -68286,10 +68312,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 5,
-          "out_of": 100,
-          "rarity": 0.05,
+          "out_of": 78,
+          "rarity": 0.0641026,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "5/100"
         },
         {
           "item_id": 1617,
@@ -68318,10 +68346,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 5,
-          "out_of": 100,
-          "rarity": 0.05,
+          "out_of": 78,
+          "rarity": 0.0641026,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "5/100"
         },
         {
           "item_id": 2349,
@@ -68350,10 +68380,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 11237,
@@ -68382,9 +68414,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         },
         {
           "item_id": 19580,
@@ -68413,9 +68447,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 19582,
@@ -68444,9 +68480,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 395,
@@ -68475,10 +68513,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 556,
@@ -68507,9 +68547,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 4695,
@@ -68538,9 +68580,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 562,
@@ -68569,9 +68613,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 9,
-          "out_of": 100,
-          "rarity": 0.09,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.1153846,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "9/100"
         },
         {
           "item_id": 566,
@@ -68600,174 +68646,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
-          "section": "Runes and ammunition"
-        },
-        {
-          "item_id": 28281,
-          "name": "Magus vestige",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 720,
-          "rarity": 0.0013889,
-          "section": "Uniques",
-          "notes": [
-            "To receive the magus vestige, the player must roll an invisible 1/240 drop on the tradeable unique table. The first roll will cause a gold ring to appear and increment a hidden variable, while the second drops two gold rings; when the third such roll occurs, the vestige is dropped and the variable is reset."
-          ]
-        },
-        {
-          "item_id": 28321,
-          "name": "Eye of the Duke",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 720,
-          "rarity": 0.0013889,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 28276,
-          "name": "Chromium ingot",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 3,
-          "out_of": 720,
-          "rarity": 0.0041667,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26241,
-          "name": "Virtus mask",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 2160,
-          "rarity": 0.000463,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26243,
-          "name": "Virtus robe top",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 2160,
-          "rarity": 0.000463,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26245,
-          "name": "Virtus robe bottom",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 2160,
-          "rarity": 0.000463,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 28333,
-          "name": "Frozen tablet",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 26,
-          "rarity": 0.0384615,
-          "section": "Secondary uniques",
-          "notes": [
-            "The frozen tablet will become more common at an unknown rate as kill count increases until the first drop is received. Afterwards, the item will no longer be dropped."
-          ]
-        },
-        {
-          "item_id": 28334,
-          "name": "Awakener's orb",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 49,
-          "rarity": 0.0204082,
-          "section": "Secondary uniques"
-        },
-        {
-          "item_id": 28270,
-          "name": "Ice quartz",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 207,
-          "rarity": 0.0048309,
-          "section": "Secondary uniques",
-          "notes": [
-            "If the player has not yet received their first ice quartz, its drop rate scales from 1/200 to 1/50 as the player's kill count increases, where the best rate is reached at 300 kill count. Once players obtain their first ice quartz, the drop rate is reverted back to 1/200."
-          ]
-        },
-        {
-          "item_id": 2301,
-          "name": "Pineapple pizza",
-          "quantity": [
-            3,
-            4
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
-        },
-        {
-          "item_id": 139,
-          "name": "Prayer potion(3)",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
-        },
-        {
-          "item_id": 12699,
-          "name": "Super combat potion(2)",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
+          "out_of": 78,
+          "rarity": 0.025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         }
       ],
       "tertiary": [
@@ -68812,73 +68695,326 @@
           "notes": [
             "Only when defeated in the awakened encounter as the '''last''' of the four."
           ]
-        },
+        }
+      ],
+      "reward_chain": {
+        "type": "ordered_exclusive",
+        "state_domain": "forgotten_four",
+        "stages": [
+          {
+            "key": "tradeable_uniques",
+            "weight": 1,
+            "out_of": 90,
+            "main_max_roll": 24,
+            "entries": [
+              {
+                "item_id": 28281,
+                "name": "Magus vestige",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 9,
+                "out_of": 24,
+                "rarity": 0.375,
+                "section": "Uniques",
+                "published_rarity": "1/720",
+                "notes": [
+                  "To receive the magus vestige, the player must roll an invisible 1/240 drop on the tradeable unique table. The first roll will cause a gold ring to appear and increment a hidden variable, while the second drops two gold rings; when the third such roll occurs, the vestige is dropped and the variable is reset."
+                ],
+                "progression": {
+                  "type": "cyclic_hits",
+                  "state_key": "vestige:28281",
+                  "hits": 3,
+                  "intermediate_item_id": 1635,
+                  "intermediate_quantities": [
+                    1,
+                    2
+                  ]
+                }
+              },
+              {
+                "item_id": 28276,
+                "name": "Chromium ingot",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 9,
+                "out_of": 24,
+                "rarity": 0.375,
+                "section": "Uniques",
+                "published_rarity": "3/720"
+              },
+              {
+                "item_id": 28321,
+                "name": "Eye of the Duke",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 3,
+                "out_of": 24,
+                "rarity": 0.125,
+                "section": "Uniques",
+                "published_rarity": "1/720"
+              },
+              {
+                "item_id": 26241,
+                "name": "Virtus mask",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/2160"
+              },
+              {
+                "item_id": 26243,
+                "name": "Virtus robe top",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/2160"
+              },
+              {
+                "item_id": 26245,
+                "name": "Virtus robe bottom",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/2160"
+              }
+            ]
+          },
+          {
+            "key": "orb",
+            "weight": 1,
+            "out_of": 48,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28334,
+                "name": "Awakener's orb",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/48.5"
+              }
+            ]
+          },
+          {
+            "key": "tablet",
+            "weight": 1,
+            "out_of": 25,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28333,
+                "name": "Frozen tablet",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/25.8",
+                "notes": [
+                  "The frozen tablet will become more common at an unknown rate as kill count increases until the first drop is received. Afterwards, the item will no longer be dropped."
+                ]
+              }
+            ],
+            "record_first_received": {
+              "state_key": "first:28333"
+            },
+            "source_scaling": {
+              "status": "unresolved",
+              "execution": "documented_base_only",
+              "before_first_received": true
+            },
+            "eligibility": {
+              "type": "until_first_received",
+              "state_key": "first:28333"
+            }
+          },
+          {
+            "key": "quartz",
+            "weight": 1,
+            "out_of": 200,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28270,
+                "name": "Ice quartz",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/206.6",
+                "notes": [
+                  "If the player has not yet received their first ice quartz, its drop rate scales from 1/200 to 1/50 as the player's kill count increases, where the best rate is reached at 300 kill count. Once players obtain their first ice quartz, the drop rate is reverted back to 1/200."
+                ]
+              }
+            ],
+            "record_first_received": {
+              "state_key": "first:28270"
+            },
+            "source_scaling": {
+              "status": "unresolved",
+              "execution": "documented_base_only",
+              "before_first_received": true,
+              "known_endpoint": {
+                "kill_count": 300,
+                "weight": 1,
+                "out_of": 50
+              },
+              "after_first_received": {
+                "weight": 1,
+                "out_of": 200
+              }
+            }
+          },
+          {
+            "key": "supplies",
+            "weight": 1,
+            "out_of": 5,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 2301,
+                "name": "Pineapple pizza",
+                "quantity": [
+                  3,
+                  4
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Supplies",
+                "published_rarity": "1/5.4",
+                "bonus_drops": [
+                  {
+                    "item_id": 139,
+                    "name": "Prayer potion(3)",
+                    "quantity": [
+                      1,
+                      1
+                    ]
+                  },
+                  {
+                    "item_id": 12699,
+                    "name": "Super combat potion(2)",
+                    "quantity": [
+                      1,
+                      1
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "tertiary_groups": [
         {
-          "item_id": 2677,
-          "name": "Clue scroll (easy)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The easy clue scroll drop rate increases to 1/152 after unlocking the easy Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 2801,
-          "name": "Clue scroll (medium)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The medium clue scroll drop rate increases to 1/152 after unlocking the medium Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 2722,
-          "name": "Clue scroll (hard)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The hard clue scroll drop rate increases to 1/152 after unlocking the hard Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 12113,
-          "name": "Clue scroll (elite)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The elite clue scroll drop rate increases to 1/152 after unlocking the elite Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+          "type": "exclusive",
+          "source_access": {
+            "weight": 1,
+            "out_of": 40
+          },
+          "entries": [
+            {
+              "item_id": 2677,
+              "name": "Clue scroll (easy)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The easy clue scroll drop rate increases to 1/152 after unlocking the easy Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 2801,
+              "name": "Clue scroll (medium)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The medium clue scroll drop rate increases to 1/152 after unlocking the medium Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 2722,
+              "name": "Clue scroll (hard)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The hard clue scroll drop rate increases to 1/152 after unlocking the hard Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 12113,
+              "name": "Clue scroll (elite)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The elite clue scroll drop rate increases to 1/152 after unlocking the elite Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            }
           ]
         }
       ],
@@ -180761,7 +180897,7 @@
       "label": "Drops",
       "table_name": "The Leviathan Drops",
       "wiki_page": "The Leviathan",
-      "main_max_roll": 100,
+      "main_max_roll": 78,
       "entries": [
         {
           "item_id": 30771,
@@ -180790,9 +180926,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 440,
@@ -180821,10 +180959,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 442,
@@ -180853,10 +180993,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 453,
@@ -180885,10 +181027,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
+          "out_of": 78,
+          "rarity": 0.1025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 444,
@@ -180917,10 +181061,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
+          "out_of": 78,
+          "rarity": 0.1025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 449,
@@ -180949,10 +181095,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 451,
@@ -180981,10 +181129,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
+          "out_of": 78,
+          "rarity": 0.025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         },
         {
           "item_id": 1607,
@@ -181013,10 +181163,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1605,
@@ -181045,10 +181197,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1603,
@@ -181077,10 +181231,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1619,
@@ -181109,10 +181265,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 5,
-          "out_of": 100,
-          "rarity": 0.05,
+          "out_of": 78,
+          "rarity": 0.0641026,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "5/100"
         },
         {
           "item_id": 1617,
@@ -181141,10 +181299,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 5,
-          "out_of": 100,
-          "rarity": 0.05,
+          "out_of": 78,
+          "rarity": 0.0641026,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "5/100"
         },
         {
           "item_id": 19582,
@@ -181173,9 +181333,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 21930,
@@ -181204,9 +181366,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         },
         {
           "item_id": 9194,
@@ -181235,9 +181399,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 389,
@@ -181266,10 +181432,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 13441,
@@ -181298,9 +181466,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 882,
@@ -181329,9 +181499,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 888,
@@ -181360,9 +181532,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 890,
@@ -181391,9 +181565,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 892,
@@ -181422,9 +181598,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 559,
@@ -181453,9 +181631,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 557,
@@ -181484,9 +181664,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 4697,
@@ -181515,9 +181697,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 566,
@@ -181546,174 +181730,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
-          "section": "Runes and ammunition"
-        },
-        {
-          "item_id": 28283,
-          "name": "Venator vestige",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 768,
-          "rarity": 0.0013021,
-          "section": "Uniques",
-          "notes": [
-            "To receive the venator vestige, the player must roll an invisible 1/256 drop on the tradeable unique table. The first roll will cause a gold ring to appear and increment a hidden variable, while the second drops two gold rings; when the third such roll occurs, the vestige is dropped and the variable is reset."
-          ]
-        },
-        {
-          "item_id": 28325,
-          "name": "Leviathan's lure",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 768,
-          "rarity": 0.0013021,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 28276,
-          "name": "Chromium ingot",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 3,
-          "out_of": 768,
-          "rarity": 0.0039062,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26241,
-          "name": "Virtus mask",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 2304,
-          "rarity": 0.000434,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26243,
-          "name": "Virtus robe top",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 2304,
-          "rarity": 0.000434,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26245,
-          "name": "Virtus robe bottom",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 2304,
-          "rarity": 0.000434,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 28332,
-          "name": "Scarred tablet",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 26,
-          "rarity": 0.0384615,
-          "section": "Secondary uniques",
-          "notes": [
-            "The scarred tablet will become more common at an unknown rate as kill count increases until the first drop is received. Afterwards, the item will no longer be dropped."
-          ]
-        },
-        {
-          "item_id": 28334,
-          "name": "Awakener's orb",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 54,
-          "rarity": 0.0185185,
-          "section": "Secondary uniques"
-        },
-        {
-          "item_id": 28274,
-          "name": "Smoke quartz",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 206,
-          "rarity": 0.0048544,
-          "section": "Secondary uniques",
-          "notes": [
-            "If the player has not yet received their first smoke quartz, its drop rate scales from 1/200 to 1/50 as the player's kill count increases, where the best rate is reached at 300 kill count. Once players obtain their first smoke quartz, the drop rate is reverted back to 1/200."
-          ]
-        },
-        {
-          "item_id": 139,
-          "name": "Prayer potion(3)",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
-        },
-        {
-          "item_id": 171,
-          "name": "Ranging potion(2)",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
-        },
-        {
-          "item_id": 397,
-          "name": "Sea turtle",
-          "quantity": [
-            3,
-            4
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
+          "out_of": 78,
+          "rarity": 0.025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         }
       ],
       "tertiary": [
@@ -181743,73 +181764,326 @@
           "notes": [
             "Only when defeated in the awakened encounter as the '''last''' of the four."
           ]
-        },
+        }
+      ],
+      "reward_chain": {
+        "type": "ordered_exclusive",
+        "state_domain": "forgotten_four",
+        "stages": [
+          {
+            "key": "tradeable_uniques",
+            "weight": 1,
+            "out_of": 96,
+            "main_max_roll": 24,
+            "entries": [
+              {
+                "item_id": 28283,
+                "name": "Venator vestige",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 9,
+                "out_of": 24,
+                "rarity": 0.375,
+                "section": "Uniques",
+                "published_rarity": "1/768",
+                "notes": [
+                  "To receive the venator vestige, the player must roll an invisible 1/256 drop on the tradeable unique table. The first roll will cause a gold ring to appear and increment a hidden variable, while the second drops two gold rings; when the third such roll occurs, the vestige is dropped and the variable is reset."
+                ],
+                "progression": {
+                  "type": "cyclic_hits",
+                  "state_key": "vestige:28283",
+                  "hits": 3,
+                  "intermediate_item_id": 1635,
+                  "intermediate_quantities": [
+                    1,
+                    2
+                  ]
+                }
+              },
+              {
+                "item_id": 28276,
+                "name": "Chromium ingot",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 9,
+                "out_of": 24,
+                "rarity": 0.375,
+                "section": "Uniques",
+                "published_rarity": "3/768"
+              },
+              {
+                "item_id": 28325,
+                "name": "Leviathan's lure",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 3,
+                "out_of": 24,
+                "rarity": 0.125,
+                "section": "Uniques",
+                "published_rarity": "1/768"
+              },
+              {
+                "item_id": 26241,
+                "name": "Virtus mask",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/2304"
+              },
+              {
+                "item_id": 26243,
+                "name": "Virtus robe top",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/2304"
+              },
+              {
+                "item_id": 26245,
+                "name": "Virtus robe bottom",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/2304"
+              }
+            ]
+          },
+          {
+            "key": "orb",
+            "weight": 1,
+            "out_of": 53,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28334,
+                "name": "Awakener's orb",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/53.6"
+              }
+            ]
+          },
+          {
+            "key": "tablet",
+            "weight": 1,
+            "out_of": 25,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28332,
+                "name": "Scarred tablet",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/25.8",
+                "notes": [
+                  "The scarred tablet will become more common at an unknown rate as kill count increases until the first drop is received. Afterwards, the item will no longer be dropped."
+                ]
+              }
+            ],
+            "record_first_received": {
+              "state_key": "first:28332"
+            },
+            "source_scaling": {
+              "status": "unresolved",
+              "execution": "documented_base_only",
+              "before_first_received": true
+            },
+            "eligibility": {
+              "type": "until_first_received",
+              "state_key": "first:28332"
+            }
+          },
+          {
+            "key": "quartz",
+            "weight": 1,
+            "out_of": 200,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28274,
+                "name": "Smoke quartz",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/206.0",
+                "notes": [
+                  "If the player has not yet received their first smoke quartz, its drop rate scales from 1/200 to 1/50 as the player's kill count increases, where the best rate is reached at 300 kill count. Once players obtain their first smoke quartz, the drop rate is reverted back to 1/200."
+                ]
+              }
+            ],
+            "record_first_received": {
+              "state_key": "first:28274"
+            },
+            "source_scaling": {
+              "status": "unresolved",
+              "execution": "documented_base_only",
+              "before_first_received": true,
+              "known_endpoint": {
+                "kill_count": 300,
+                "weight": 1,
+                "out_of": 50
+              },
+              "after_first_received": {
+                "weight": 1,
+                "out_of": 200
+              }
+            }
+          },
+          {
+            "key": "supplies",
+            "weight": 1,
+            "out_of": 5,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 139,
+                "name": "Prayer potion(3)",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Supplies",
+                "published_rarity": "1/5.4",
+                "bonus_drops": [
+                  {
+                    "item_id": 171,
+                    "name": "Ranging potion(2)",
+                    "quantity": [
+                      1,
+                      1
+                    ]
+                  },
+                  {
+                    "item_id": 397,
+                    "name": "Sea turtle",
+                    "quantity": [
+                      3,
+                      4
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "tertiary_groups": [
         {
-          "item_id": 2677,
-          "name": "Clue scroll (easy)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The easy clue scroll drop rate increases to 1/152 after unlocking the easy Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 2801,
-          "name": "Clue scroll (medium)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The medium clue scroll drop rate increases to 1/152 after unlocking the medium Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 2722,
-          "name": "Clue scroll (hard)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The hard clue scroll drop rate increases to 1/152 after unlocking the hard Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 12113,
-          "name": "Clue scroll (elite)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The elite clue scroll drop rate increases to 1/152 after unlocking the elite Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+          "type": "exclusive",
+          "source_access": {
+            "weight": 1,
+            "out_of": 40
+          },
+          "entries": [
+            {
+              "item_id": 2677,
+              "name": "Clue scroll (easy)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The easy clue scroll drop rate increases to 1/152 after unlocking the easy Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 2801,
+              "name": "Clue scroll (medium)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The medium clue scroll drop rate increases to 1/152 after unlocking the medium Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 2722,
+              "name": "Clue scroll (hard)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The hard clue scroll drop rate increases to 1/152 after unlocking the hard Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 12113,
+              "name": "Clue scroll (elite)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The elite clue scroll drop rate increases to 1/152 after unlocking the elite Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            }
           ]
         }
       ],
@@ -182436,7 +182710,7 @@
       "label": "Drops",
       "table_name": "The Whisperer Drops",
       "wiki_page": "The Whisperer",
-      "main_max_roll": 100,
+      "main_max_roll": 78,
       "entries": [
         {
           "item_id": 1291,
@@ -182465,10 +182739,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Weapons and armour",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1299,
@@ -182497,10 +182773,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Weapons and armour",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1301,
@@ -182529,10 +182807,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Weapons and armour",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1391,
@@ -182561,10 +182841,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
+          "out_of": 78,
+          "rarity": 0.025641,
           "section": "Weapons and armour",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         },
         {
           "item_id": 4585,
@@ -182593,9 +182875,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Weapons and armour"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Weapons and armour",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 7936,
@@ -182624,10 +182908,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 440,
@@ -182656,10 +182942,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 453,
@@ -182688,10 +182976,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
+          "out_of": 78,
+          "rarity": 0.1025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 444,
@@ -182720,10 +183010,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 447,
@@ -182752,10 +183044,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 449,
@@ -182784,10 +183078,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
+          "out_of": 78,
+          "rarity": 0.1025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 451,
@@ -182816,10 +183112,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
+          "out_of": 78,
+          "rarity": 0.025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         },
         {
           "item_id": 1607,
@@ -182848,10 +183146,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1605,
@@ -182880,10 +183180,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1603,
@@ -182912,10 +183214,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1619,
@@ -182944,10 +183248,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 5,
-          "out_of": 100,
-          "rarity": 0.05,
+          "out_of": 78,
+          "rarity": 0.0641026,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "5/100"
         },
         {
           "item_id": 1617,
@@ -182976,10 +183282,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 5,
-          "out_of": 100,
-          "rarity": 0.05,
+          "out_of": 78,
+          "rarity": 0.0641026,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "5/100"
         },
         {
           "item_id": 19582,
@@ -183008,9 +183316,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 9381,
@@ -183039,9 +183349,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 7944,
@@ -183070,10 +183382,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 555,
@@ -183102,9 +183416,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 4694,
@@ -183133,9 +183449,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 562,
@@ -183164,9 +183482,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 560,
@@ -183195,9 +183515,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 566,
@@ -183226,174 +183548,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
-          "section": "Runes and ammunition"
-        },
-        {
-          "item_id": 28279,
-          "name": "Bellator vestige",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 512,
-          "rarity": 0.0019531,
-          "section": "Uniques",
-          "notes": [
-            "To receive the bellator vestige, the player must roll an invisible ~1/170.66 drop on the tradeable unique table. The first roll will cause a gold ring to appear and increment a hidden variable, while the second drops two gold rings; when the third such roll occurs, the vestige is dropped and the variable is reset."
-          ]
-        },
-        {
-          "item_id": 28323,
-          "name": "Siren's staff",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 512,
-          "rarity": 0.0019531,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 28276,
-          "name": "Chromium ingot",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 3,
-          "out_of": 512,
-          "rarity": 0.0058594,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26241,
-          "name": "Virtus mask",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 1536,
-          "rarity": 0.000651,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26243,
-          "name": "Virtus robe top",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 1536,
-          "rarity": 0.000651,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26245,
-          "name": "Virtus robe bottom",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 1536,
-          "rarity": 0.000651,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 28331,
-          "name": "Sirenic tablet",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 26,
-          "rarity": 0.0384615,
-          "section": "Secondary uniques",
-          "notes": [
-            "The sirenic tablet will become more common at an unknown rate as kill count increases until the first drop is received. Afterwards, the item will no longer be dropped."
-          ]
-        },
-        {
-          "item_id": 28334,
-          "name": "Awakener's orb",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 35,
-          "rarity": 0.0285714,
-          "section": "Secondary uniques"
-        },
-        {
-          "item_id": 28272,
-          "name": "Shadow quartz",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 209,
-          "rarity": 0.0047847,
-          "section": "Secondary uniques",
-          "notes": [
-            "If the player has not yet received their first shadow quartz, its drop rate scales from 1/200 to 1/50 as the player's kill count increases, where the best rate is reached at 300 kill count. Once players obtain their first shadow quartz, the drop rate is reverted back to 1/200."
-          ]
-        },
-        {
-          "item_id": 26344,
-          "name": "Ancient brew(2)",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 6,
-          "rarity": 0.1666667,
-          "section": "Supplies"
-        },
-        {
-          "item_id": 139,
-          "name": "Prayer potion(3)",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 6,
-          "rarity": 0.1666667,
-          "section": "Supplies"
-        },
-        {
-          "item_id": 391,
-          "name": "Manta ray",
-          "quantity": [
-            3,
-            4
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 6,
-          "rarity": 0.1666667,
-          "section": "Supplies"
+          "out_of": 78,
+          "rarity": 0.025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         }
       ],
       "tertiary": [
@@ -183423,73 +183582,326 @@
           "out_of": 2000,
           "rarity": 0.0005,
           "section": "Tertiary"
-        },
+        }
+      ],
+      "reward_chain": {
+        "type": "ordered_exclusive",
+        "state_domain": "forgotten_four",
+        "stages": [
+          {
+            "key": "tradeable_uniques",
+            "weight": 1,
+            "out_of": 64,
+            "main_max_roll": 24,
+            "entries": [
+              {
+                "item_id": 28279,
+                "name": "Bellator vestige",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 9,
+                "out_of": 24,
+                "rarity": 0.375,
+                "section": "Uniques",
+                "published_rarity": "1/512",
+                "notes": [
+                  "To receive the bellator vestige, the player must roll an invisible ~1/170.66 drop on the tradeable unique table. The first roll will cause a gold ring to appear and increment a hidden variable, while the second drops two gold rings; when the third such roll occurs, the vestige is dropped and the variable is reset."
+                ],
+                "progression": {
+                  "type": "cyclic_hits",
+                  "state_key": "vestige:28279",
+                  "hits": 3,
+                  "intermediate_item_id": 1635,
+                  "intermediate_quantities": [
+                    1,
+                    2
+                  ]
+                }
+              },
+              {
+                "item_id": 28276,
+                "name": "Chromium ingot",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 9,
+                "out_of": 24,
+                "rarity": 0.375,
+                "section": "Uniques",
+                "published_rarity": "3/512"
+              },
+              {
+                "item_id": 28323,
+                "name": "Siren's staff",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 3,
+                "out_of": 24,
+                "rarity": 0.125,
+                "section": "Uniques",
+                "published_rarity": "1/512"
+              },
+              {
+                "item_id": 26241,
+                "name": "Virtus mask",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/1536"
+              },
+              {
+                "item_id": 26243,
+                "name": "Virtus robe top",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/1536"
+              },
+              {
+                "item_id": 26245,
+                "name": "Virtus robe bottom",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/1536"
+              }
+            ]
+          },
+          {
+            "key": "orb",
+            "weight": 1,
+            "out_of": 34,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28334,
+                "name": "Awakener's orb",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/34.5"
+              }
+            ]
+          },
+          {
+            "key": "tablet",
+            "weight": 1,
+            "out_of": 25,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28331,
+                "name": "Sirenic tablet",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/26.2",
+                "notes": [
+                  "The sirenic tablet will become more common at an unknown rate as kill count increases until the first drop is received. Afterwards, the item will no longer be dropped."
+                ]
+              }
+            ],
+            "record_first_received": {
+              "state_key": "first:28331"
+            },
+            "source_scaling": {
+              "status": "unresolved",
+              "execution": "documented_base_only",
+              "before_first_received": true
+            },
+            "eligibility": {
+              "type": "until_first_received",
+              "state_key": "first:28331"
+            }
+          },
+          {
+            "key": "quartz",
+            "weight": 1,
+            "out_of": 200,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28272,
+                "name": "Shadow quartz",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/209.3",
+                "notes": [
+                  "If the player has not yet received their first shadow quartz, its drop rate scales from 1/200 to 1/50 as the player's kill count increases, where the best rate is reached at 300 kill count. Once players obtain their first shadow quartz, the drop rate is reverted back to 1/200."
+                ]
+              }
+            ],
+            "record_first_received": {
+              "state_key": "first:28272"
+            },
+            "source_scaling": {
+              "status": "unresolved",
+              "execution": "documented_base_only",
+              "before_first_received": true,
+              "known_endpoint": {
+                "kill_count": 300,
+                "weight": 1,
+                "out_of": 50
+              },
+              "after_first_received": {
+                "weight": 1,
+                "out_of": 200
+              }
+            }
+          },
+          {
+            "key": "supplies",
+            "weight": 1,
+            "out_of": 5,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 26344,
+                "name": "Ancient brew(2)",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Supplies",
+                "published_rarity": "1/5.5",
+                "bonus_drops": [
+                  {
+                    "item_id": 139,
+                    "name": "Prayer potion(3)",
+                    "quantity": [
+                      1,
+                      1
+                    ]
+                  },
+                  {
+                    "item_id": 391,
+                    "name": "Manta ray",
+                    "quantity": [
+                      3,
+                      4
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "tertiary_groups": [
         {
-          "item_id": 2677,
-          "name": "Clue scroll (easy)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The easy clue scroll drop rate increases to 1/152 after unlocking the easy Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 2801,
-          "name": "Clue scroll (medium)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The medium clue scroll drop rate increases to 1/152 after unlocking the medium Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 2722,
-          "name": "Clue scroll (hard)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The hard clue scroll drop rate increases to 1/152 after unlocking the hard Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 12113,
-          "name": "Clue scroll (elite)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The elite clue scroll drop rate increases to 1/152 after unlocking the elite Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+          "type": "exclusive",
+          "source_access": {
+            "weight": 1,
+            "out_of": 40
+          },
+          "entries": [
+            {
+              "item_id": 2677,
+              "name": "Clue scroll (easy)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The easy clue scroll drop rate increases to 1/152 after unlocking the easy Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 2801,
+              "name": "Clue scroll (medium)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The medium clue scroll drop rate increases to 1/152 after unlocking the medium Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 2722,
+              "name": "Clue scroll (hard)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The hard clue scroll drop rate increases to 1/152 after unlocking the hard Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 12113,
+              "name": "Clue scroll (elite)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The elite clue scroll drop rate increases to 1/152 after unlocking the elite Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            }
           ]
         }
       ],
@@ -192453,7 +192865,7 @@
       "label": "Drops",
       "table_name": "Vardorvis Drops",
       "wiki_page": "Vardorvis",
-      "main_max_roll": 100,
+      "main_max_roll": 78,
       "entries": [
         {
           "item_id": 7936,
@@ -192482,10 +192894,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 440,
@@ -192514,10 +192928,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 442,
@@ -192546,10 +192962,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 453,
@@ -192578,10 +192996,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
+          "out_of": 78,
+          "rarity": 0.1025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 447,
@@ -192610,10 +193030,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 449,
@@ -192642,10 +193064,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
+          "out_of": 78,
+          "rarity": 0.1025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 451,
@@ -192674,10 +193098,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
+          "out_of": 78,
+          "rarity": 0.025641,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         },
         {
           "item_id": 1607,
@@ -192706,10 +193132,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1605,
@@ -192738,10 +193166,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1603,
@@ -192770,10 +193200,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 1619,
@@ -192802,10 +193234,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 5,
-          "out_of": 100,
-          "rarity": 0.05,
+          "out_of": 78,
+          "rarity": 0.0641026,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "5/100"
         },
         {
           "item_id": 1617,
@@ -192834,10 +193268,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 5,
-          "out_of": 100,
-          "rarity": 0.05,
+          "out_of": 78,
+          "rarity": 0.0641026,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "5/100"
         },
         {
           "item_id": 19580,
@@ -192866,9 +193302,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 19582,
@@ -192897,9 +193335,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 11232,
@@ -192928,9 +193368,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
-          "section": "Resources"
+          "out_of": 78,
+          "rarity": 0.025641,
+          "section": "Resources",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         },
         {
           "item_id": 383,
@@ -192959,10 +193401,12 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
+          "out_of": 78,
+          "rarity": 0.0128205,
           "section": "Resources",
-          "noted": true
+          "noted": true,
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 825,
@@ -192991,9 +193435,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 828,
@@ -193022,9 +193468,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 829,
@@ -193053,9 +193501,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 9245,
@@ -193084,9 +193534,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 558,
@@ -193115,9 +193567,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 554,
@@ -193146,9 +193600,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 1,
-          "out_of": 100,
-          "rarity": 0.01,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.0128205,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "1/100"
         },
         {
           "item_id": 4699,
@@ -193177,9 +193633,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 565,
@@ -193208,9 +193666,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 8,
-          "out_of": 100,
-          "rarity": 0.08,
-          "section": "Runes and ammunition"
+          "out_of": 78,
+          "rarity": 0.1025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "8/100"
         },
         {
           "item_id": 566,
@@ -193239,174 +193699,11 @@
           ],
           "quantity_selection": "conditional",
           "weight": 2,
-          "out_of": 100,
-          "rarity": 0.02,
-          "section": "Runes and ammunition"
-        },
-        {
-          "item_id": 28285,
-          "name": "Ultor vestige",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 1088,
-          "rarity": 0.0009191,
-          "section": "Uniques",
-          "notes": [
-            "To receive the ultor vestige, the player must roll an invisible ~1/362.66 drop on the tradeable unique table. The first roll will cause a gold ring to appear and increment a hidden variable, while the second drops two gold rings; when the third such roll occurs, the vestige is dropped and the variable is reset."
-          ]
-        },
-        {
-          "item_id": 28319,
-          "name": "Executioner's axe head",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 1088,
-          "rarity": 0.0009191,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 28276,
-          "name": "Chromium ingot",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 3,
-          "out_of": 1088,
-          "rarity": 0.0027574,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26241,
-          "name": "Virtus mask",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 3264,
-          "rarity": 0.0003064,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26243,
-          "name": "Virtus robe top",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 3264,
-          "rarity": 0.0003064,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 26245,
-          "name": "Virtus robe bottom",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 3264,
-          "rarity": 0.0003064,
-          "section": "Uniques"
-        },
-        {
-          "item_id": 28330,
-          "name": "Strangled tablet",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 26,
-          "rarity": 0.0384615,
-          "section": "Secondary uniques",
-          "notes": [
-            "The strangled tablet will become more common at an unknown rate as kill count increases until the first drop is received. Afterwards, the item will no longer be dropped."
-          ]
-        },
-        {
-          "item_id": 28334,
-          "name": "Awakener's orb",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 81,
-          "rarity": 0.0123457,
-          "section": "Secondary uniques"
-        },
-        {
-          "item_id": 28268,
-          "name": "Blood quartz",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 204,
-          "rarity": 0.004902,
-          "section": "Secondary uniques",
-          "notes": [
-            "If the player has not yet received their first blood quartz, its drop rate scales from 1/200 to 1/50 as the player's kill count increases, where the best rate is reached at 300 kill count. Once players obtain their first blood quartz, the drop rate is reverted back to 1/200."
-          ]
-        },
-        {
-          "item_id": 7060,
-          "name": "Tuna potato",
-          "quantity": [
-            3,
-            4
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
-        },
-        {
-          "item_id": 139,
-          "name": "Prayer potion(3)",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
-        },
-        {
-          "item_id": 12699,
-          "name": "Super combat potion(2)",
-          "quantity": [
-            1,
-            1
-          ],
-          "separate_roll": true,
-          "weight": 1,
-          "out_of": 5,
-          "rarity": 0.2,
-          "section": "Supplies"
+          "out_of": 78,
+          "rarity": 0.025641,
+          "section": "Runes and ammunition",
+          "weight_basis": "conditional_pool",
+          "published_rarity": "2/100"
         }
       ],
       "tertiary": [
@@ -193451,73 +193748,326 @@
           "out_of": 3000,
           "rarity": 0.0003333,
           "section": "Tertiary"
-        },
+        }
+      ],
+      "reward_chain": {
+        "type": "ordered_exclusive",
+        "state_domain": "forgotten_four",
+        "stages": [
+          {
+            "key": "tradeable_uniques",
+            "weight": 1,
+            "out_of": 136,
+            "main_max_roll": 24,
+            "entries": [
+              {
+                "item_id": 28285,
+                "name": "Ultor vestige",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 9,
+                "out_of": 24,
+                "rarity": 0.375,
+                "section": "Uniques",
+                "published_rarity": "1/1088",
+                "notes": [
+                  "To receive the ultor vestige, the player must roll an invisible ~1/362.66 drop on the tradeable unique table. The first roll will cause a gold ring to appear and increment a hidden variable, while the second drops two gold rings; when the third such roll occurs, the vestige is dropped and the variable is reset."
+                ],
+                "progression": {
+                  "type": "cyclic_hits",
+                  "state_key": "vestige:28285",
+                  "hits": 3,
+                  "intermediate_item_id": 1635,
+                  "intermediate_quantities": [
+                    1,
+                    2
+                  ]
+                }
+              },
+              {
+                "item_id": 28276,
+                "name": "Chromium ingot",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 9,
+                "out_of": 24,
+                "rarity": 0.375,
+                "section": "Uniques",
+                "published_rarity": "3/1088"
+              },
+              {
+                "item_id": 28319,
+                "name": "Executioner's axe head",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 3,
+                "out_of": 24,
+                "rarity": 0.125,
+                "section": "Uniques",
+                "published_rarity": "1/1088"
+              },
+              {
+                "item_id": 26241,
+                "name": "Virtus mask",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/3264"
+              },
+              {
+                "item_id": 26243,
+                "name": "Virtus robe top",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/3264"
+              },
+              {
+                "item_id": 26245,
+                "name": "Virtus robe bottom",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 24,
+                "rarity": 0.0416667,
+                "section": "Uniques",
+                "published_rarity": "1/3264"
+              }
+            ]
+          },
+          {
+            "key": "orb",
+            "weight": 1,
+            "out_of": 80,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28334,
+                "name": "Awakener's orb",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/80.6"
+              }
+            ]
+          },
+          {
+            "key": "tablet",
+            "weight": 1,
+            "out_of": 25,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28330,
+                "name": "Strangled tablet",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/25.5",
+                "notes": [
+                  "The strangled tablet will become more common at an unknown rate as kill count increases until the first drop is received. Afterwards, the item will no longer be dropped."
+                ]
+              }
+            ],
+            "record_first_received": {
+              "state_key": "first:28330"
+            },
+            "source_scaling": {
+              "status": "unresolved",
+              "execution": "documented_base_only",
+              "before_first_received": true
+            },
+            "eligibility": {
+              "type": "until_first_received",
+              "state_key": "first:28330"
+            }
+          },
+          {
+            "key": "quartz",
+            "weight": 1,
+            "out_of": 200,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 28268,
+                "name": "Blood quartz",
+                "quantity": [
+                  1,
+                  1
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Secondary uniques",
+                "published_rarity": "1/204.0",
+                "notes": [
+                  "If the player has not yet received their first blood quartz, its drop rate scales from 1/200 to 1/50 as the player's kill count increases, where the best rate is reached at 300 kill count. Once players obtain their first blood quartz, the drop rate is reverted back to 1/200."
+                ]
+              }
+            ],
+            "record_first_received": {
+              "state_key": "first:28268"
+            },
+            "source_scaling": {
+              "status": "unresolved",
+              "execution": "documented_base_only",
+              "before_first_received": true,
+              "known_endpoint": {
+                "kill_count": 300,
+                "weight": 1,
+                "out_of": 50
+              },
+              "after_first_received": {
+                "weight": 1,
+                "out_of": 200
+              }
+            }
+          },
+          {
+            "key": "supplies",
+            "weight": 1,
+            "out_of": 5,
+            "main_max_roll": 1,
+            "entries": [
+              {
+                "item_id": 7060,
+                "name": "Tuna potato",
+                "quantity": [
+                  3,
+                  4
+                ],
+                "weight": 1,
+                "out_of": 1,
+                "rarity": 1.0,
+                "section": "Supplies",
+                "published_rarity": "1/5.3",
+                "bonus_drops": [
+                  {
+                    "item_id": 139,
+                    "name": "Prayer potion(3)",
+                    "quantity": [
+                      1,
+                      1
+                    ]
+                  },
+                  {
+                    "item_id": 12699,
+                    "name": "Super combat potion(2)",
+                    "quantity": [
+                      1,
+                      1
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "tertiary_groups": [
         {
-          "item_id": 2677,
-          "name": "Clue scroll (easy)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The easy clue scroll drop rate increases to 1/152 after unlocking the easy Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 2801,
-          "name": "Clue scroll (medium)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The medium clue scroll drop rate increases to 1/152 after unlocking the medium Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 2722,
-          "name": "Clue scroll (hard)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The hard clue scroll drop rate increases to 1/152 after unlocking the hard Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
-          ]
-        },
-        {
-          "item_id": 12113,
-          "name": "Clue scroll (elite)",
-          "quantity": [
-            1,
-            1
-          ],
-          "weight": 1,
-          "out_of": 160,
-          "rarity": 0.00625,
-          "section": "Tertiary",
-          "clue_scroll_box": true,
-          "notes": [
-            "The elite clue scroll drop rate increases to 1/152 after unlocking the elite Combat Achievements rewards tier.",
-            "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+          "type": "exclusive",
+          "source_access": {
+            "weight": 1,
+            "out_of": 40
+          },
+          "entries": [
+            {
+              "item_id": 2677,
+              "name": "Clue scroll (easy)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The easy clue scroll drop rate increases to 1/152 after unlocking the easy Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 2801,
+              "name": "Clue scroll (medium)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The medium clue scroll drop rate increases to 1/152 after unlocking the medium Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 2722,
+              "name": "Clue scroll (hard)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The hard clue scroll drop rate increases to 1/152 after unlocking the hard Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            },
+            {
+              "item_id": 12113,
+              "name": "Clue scroll (elite)",
+              "quantity": [
+                1,
+                1
+              ],
+              "weight": 1,
+              "out_of": 160,
+              "rarity": 0.00625,
+              "section": "Tertiary",
+              "clue_scroll_box": true,
+              "notes": [
+                "The elite clue scroll drop rate increases to 1/152 after unlocking the elite Combat Achievements rewards tier.",
+                "Clue scrolls will drop as scroll boxes after the completion of X Marks the Spot."
+              ]
+            }
           ]
         }
       ],

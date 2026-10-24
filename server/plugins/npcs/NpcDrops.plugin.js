@@ -13,6 +13,7 @@
  * (rare drop table, gem, herb, seed) held in the subtables file.
  */
 
+const OrderedRewards = require("./OrderedRewards.NpcDrops");
 const fs = require("fs");
 const path = require("path");
 
@@ -619,6 +620,7 @@ function killContext(player, npc) {
 
 /** One kill: guaranteed loot, exclusive pre-roll/main pools, then separate/tertiary rolls. */
 function rollTable(table, player, npc, context = killContext(player, npc)) {
+  const selected = OrderedRewards.select(table, player, pluginApi);
   const drops = [];
   const entries = Array.isArray(table.entries) ? table.entries : [];
   for (const entry of entries) {
@@ -627,11 +629,17 @@ function rollTable(table, player, npc, context = killContext(player, npc)) {
     }
   }
   const rolls = Number.isInteger(table.rolls) && table.rolls > 1 ? table.rolls : 1;
-  for (let roll = 0; roll < rolls; roll++) {
+  if (selected.entry) drops.push(...resolveEntry(selected.entry, player, npc, context));
+  else for (let roll = 0; roll < rolls; roll++) {
     drops.push(...rollOnce(table, entries, player, roll === 0, npc, context));
   }
 
-  const rules = table.tertiary?.length ? tertiaryRules(player, npc) : [];
+  const rules = table.tertiary?.length || table.tertiary_groups?.length ? tertiaryRules(player, npc) : [];
+  for (const group of table.tertiary_groups || []) {
+    if (group.type !== "exclusive") throw new Error("Unsupported tertiary group");
+    const entry = OrderedRewards.group(group.entries, row => tertiaryMultiplier(row, rules));
+    if (entry) drops.push(...resolveEntry(entry, player, npc, context));
+  }
   for (const entry of table.tertiary || []) {
     // A tertiary at 1/1 is a conditional drop, not a guaranteed one: the wiki writes
     // "Always" for things that always drop *given* a condition (an active clue step, a quest,
@@ -648,9 +656,11 @@ function rollTable(table, player, npc, context = killContext(player, npc)) {
     }
   }
 
-  return context?.handledItemIds?.size
+  const outcome = context?.handledItemIds?.size
     ? drops.filter(drop => !context.handledItemIds.has(drop.itemId))
     : drops;
+  selected.commit?.();
+  return outcome;
 }
 
 /**

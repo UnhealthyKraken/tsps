@@ -16,3 +16,4 @@
 /server/data/definitions/clue-caskets.json text eol=lf
 /server/data/definitions/reward-caskets.json text eol=lf
 /server/plugins/bosses/data/reward-tables.json text eol=lf
+/server/data/definitions/npc-status-immunities.json text eol=lf

@@ -395,20 +395,7 @@ test('the placeholder fragment is not accepted and a real fragment glows only du
     assert.equal(f.player.getInventory().contains(28357), true);
 });
 
-test('postquest Ketla replaces a lost fragment with the cache normal version', () => {
-    const f = fixture();
-    let reclaim;
-    const api = new Proxy({ core,
-        onNpcInteraction(name, actions) { if (name === 'Ketla') reclaim = actions['Talk-to']; },
-        emitCustomEvent(name, event) { if (name === 'quest:is-complete') event.complete = true; },
-    }, { get: (object, name) => object[name] ?? (() => {}) });
-    Common.init(api);
-    Site.attach(api);
-    assert.equal(reclaim({ player: f.player }), true);
-    assert.equal(f.player.getInventory().getAmount(28357), 1);
-    assert.equal(f.player.getInventory().getAmount(28356), 0);
-    assert.equal(reclaim({ player: f.player }), false);
-});
+
 
 test('both melee hits grade the damage-roll prayer snapshot and protected chip remains perfect', t => {
     t.mock.method(Math, 'random', () => 0);
@@ -1315,4 +1302,119 @@ test('melee after low-health pursuit cancellation cannot erase the launched bind
     f.fight.melee();
     while(f.fight.tick<7)f.fight.process();
     assert.equal(f.player.getTimers().has(core.TimerKey.FREEZE),true);
+});
+
+
+// Capture-review regressions retained alongside the later mechanics tests.
+
+
+test('normal recording volleys animate each projectile and use fixed flight cycles', t => {
+    const f = fixture(), animations = [], projectiles = [], impacts = [];
+    t.mock.method(f.boss,'getIndex',()=>5);
+    const {PacketSender}=require('../dist/net/packet/PacketSender');
+    const sender=new PacketSender(f.player);
+    f.player.getSession=()=>({sendClientPacket(packet){projectiles.push(packet);return true;},write(){}});
+    f.player.getPacketSender=()=>sender;
+    t.mock.method(core.World,'forEachNetworkPlayer',visit=>visit(f.player));
+    t.mock.method(f.boss, 'performAnimation', animation => animations.push(animation.getId()));
+    t.mock.method(f.fight, 'impact', style => impacts.push(style));
+    t.mock.method(Math, 'random', () => 0);
+    f.fight.volley();
+    assert.deepEqual(animations, []);
+    f.fight.process(); f.fight.process(); f.fight.process();
+    assert.deepEqual(animations, [10237, 10238, 10237]);
+
+    const packets=projectiles.filter(packet=>packet.length>=31).map(packet=>packet.subarray(packet.length-29));
+    assert.equal(packets.length,3);
+    for (const entry of packets) {
+        assert.deepEqual([entry.readUInt16BE(7),entry.readUInt16BE(14),entry.readUInt16BE(19),entry.readUInt16BE(21)],[350,100,30,90]);
+        assert.equal(entry.readUInt16BE(2),2656,'projectiles originate at the 3x3 boss centre');
+        assert.equal(entry[23],0,'captured tile projectiles have no source actor');
+    }
+    assert.deepEqual(impacts, []);
+    f.fight.process();
+    assert.deepEqual(impacts, ['ranged']);
+});
+
+test('Ketla replacement uses her generated conversation and grants the plain fragment at its handout', () => {
+    const f = fixture(), variants = [], actions = [], npcHooks = [];
+    const api = new Proxy({core,
+        emitCustomEvent(name, event) {if(name==='quest:is-complete') event.complete=true;},
+        onNpcDialogueVariant(handler) {variants.push(handler);},
+        onCustomEvent(name, handler) {if(name==='npc-dialogue:action')actions.push(handler);},
+        onNpcInteraction(name, handlers) {npcHooks.push({name,handlers});},
+    }, {get:(target,name)=>target[name]??(()=>{})});
+    Common.init(api); Site.attach(api);
+    assert.ok(!npcHooks.some(h=>h.name==='Ketla'&&h.handlers['Talk-to']));
+    const variant=variants.map(fn=>fn({player:f.player,npcId:12232})).find(Boolean);
+    assert.equal(variant.variant, 'the-whisperer-talking-to-ketla-with-the-ring-of-visibility-reclaiming-the-blackstone-fragment');
+    assert.equal(f.player.getInventory().getAmount(28357),0,'talking does not grant an item immediately');
+    const event={player:f.player,npcId:12232,stepId:'5mQjA2',kind:'message'};
+    for(const fn of actions)fn(event);
+    assert.equal(f.player.getInventory().getAmount(28357),1);
+    assert.deepEqual(event.box.items,[28357]);
+    for(const fn of actions)fn(event);
+    assert.equal(f.player.getInventory().getAmount(28357),1,'duplicate handout delivery cannot duplicate the fragment');
+});
+
+test('capture messages accompany special activation, depletion and bind impact', t => {
+    const f=fixture(), messages=[],sounds=[],graphics=[];
+    f.player.sendMessage=text=>messages.push(text);
+    const sender=new Proxy({}, {get:(_,name)=>(...args)=>{if(name==='sendSoundEffect')sounds.push(args[0]);return sender;}});
+    f.player.getPacketSender=()=>sender;
+    f.player.performGraphic=graphic=>graphics.push(graphic.getId());
+    startSpecial(f.fight,'seeds');
+    assert.deepEqual(messages,[Common.data.messages.seeds,Common.data.messages.pulse]);
+    assert.deepEqual(sounds,[1664]);
+    f.fight.special.left=1;
+    Specials.process(f.fight);
+    assert.ok(messages.includes(Common.data.messages.deplete));
+    assert.ok(messages.includes(Common.data.messages.seedsFailed));
+    for(let tick=0;tick<7;tick++)f.fight.process();
+    assert.ok(messages.includes(Common.data.messages.bind));
+    assert.deepEqual(graphics,[2466]);
+});
+
+test('named interaction hooks match the cache display forms and leave global hooks unused', () => {
+    const hooks=[],items=[];
+    const api=new Proxy({core,onObjectInteraction(name,actions){hooks.push({name,actions});},onItemAction(name,actions){items.push({name,actions});},
+        onBeforeObjectInteraction(handler){assert.equal(handler.name,'parentRead','only unnamed scoreboard parents need a fallback');}}, {get:(o,key)=>o[key]??(()=>{})});
+    Common.init(api);Site.attach(api);
+    for(const [id,name,action] of [[48197,'Rock','Climb-rope'],[48198,'Rope','Climb-up'],[48201,'Teleporter','Activate'],[48202,'Teleporter','Use']]) {
+        const definition=core.CacheDefinitions.getObject(id);
+        assert.equal(definition.name,name);
+        assert.ok(definition.actions.includes(action));
+        assert.equal(typeof hooks.find(h=>h.name===name).actions[action],'function');
+    }
+    assert.deepEqual(items.map(h=>h.name),['Blackstone fragment']);
+});
+
+test('leaving during the intro cancels flyback and the delayed boss spawn', t => {
+    const f=fixture(),tasks=[];
+    t.mock.method(core.TaskManager,'submit',task=>tasks.push(task));
+    Common.init({core,emitCustomEvent(){},spawnNpc({id,x,y}){return f.session.spawn(id,x,y);},removeNpc(){}});
+    const session=new Site.Session(f.player);
+    session.area.enter(f.player);session.begin();
+    session.end();f.player.moveTo(Common.location(Common.data.site.outside));
+    for(const task of tasks)task.execute();
+    assert.equal(session.fight,null);
+    assert.equal(f.player.getLocation().getY(),6386);
+});
+
+test('melee recovery retains launched volley impacts and removes future shots; exit cancels all', t => {
+    const f=fixture(),impacts=[];
+    t.mock.method(f.fight,'impact',style=>impacts.push([f.fight.tick,style]));
+    t.mock.method(Common,'damage',()=>{});
+    f.fight.volley();
+    f.fight.process();
+    assert.equal(f.fight.events.filter(event=>event.launched).length,1);
+    f.fight.melee();
+    for(let tick=0;tick<3;tick++)f.fight.process();
+    assert.equal(impacts.length,1,'the launched shot lands at its original tick');
+    assert.equal(impacts[0][0],4);
+    const g=fixture();
+    t.mock.method(g.fight,'impact',()=>assert.fail('a stopped encounter cannot deliver its queued shot'));
+    g.fight.volley();g.fight.process();g.fight.stop();
+    for(let tick=0;tick<5;tick++)g.fight.process();
+    assert.equal(g.fight.events.length,0);
 });

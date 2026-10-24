@@ -12,19 +12,19 @@ test('source-cache approach, arrival and front combat tiles are walkable',t=>{
 test('postquest heavy door reaches asylum gates without replaying the quest prison',t=>{
   const h=H.harness(t);const event={player:h.p,objectId:49513,location:{x:2926,y:10354,z:0},handled:false};
   h.p.setLocation(new h.core.Location(2925,10354,0));
-  h.Site.beforeObject(event);assert.equal(event.handled,false);
+  h.interact(event);assert.equal(event.handled,false);
   h.api.onCustomEvent('quest:is-complete',e=>{e.complete=true;});
-  h.Site.beforeObject(event);assert.equal(event.handled,true);
+  h.interact(event);assert.equal(event.handled,true);
   assert.equal(h.p.getLocation().getX(),3039);assert.equal(h.p.getLocation().getY(),6432);
   assert.equal(h.session,null);
 });
 test('actual object-hook coordinate payload opens the gate and dispatches preparation actions',t=>{
   const h=H.harness(t);h.api.onCustomEvent('quest:is-complete',e=>{e.complete=true;});
   const gate={player:h.p,objectId:49138,location:{x:3039,y:6433,z:0},handled:false};
-  h.Site.beforeObject(gate);assert.equal(gate.handled,true);
+  h.interact(gate);assert.equal(gate.handled,true);
   h.move([3031,6453]);const at=h.session.tile([3030,6453]);
   const patch={player:h.p,objectId:47528,location:{x:at.getX(),y:at.getY(),z:0},handled:false};
-  h.Site.beforeObject(patch);assert.equal(patch.handled,true);
+  h.interact(patch);assert.equal(patch.handled,true);
   assert.equal(h.p.getInventory().getAmount(28345),1);
 });
 test('quest gate, real private area, owner-only combat and exit cleanup',t=>{
@@ -90,7 +90,7 @@ test('gaze is avoided behind actual pillars; exposed targets take queued damage'
   const h=H.harness(t);h.enter();h.move([3035,6451]);h.fight.wake();h.fight.nextAttack=Infinity;
   t.mock.method(Math,'random',()=>.5);
   h.fight.gaze();h.step(5);assert.equal(h.p.getHitpoints(),99);assert.equal(h.fight.perfect,true);
-  h.move([3039,6451]);h.fight.gaze();h.step(5);assert.ok(h.p.getHitpoints()<99);
+  h.move([3039,6451]);h.fight.gaze();h.step(6);assert.ok(h.p.getHitpoints()<99);
   assert.equal(h.fight.perfect,false);
 });
 test('positive aimed slam is avoidable by stepping out; queued events cancel on leaving',t=>{

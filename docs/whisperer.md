@@ -225,3 +225,43 @@ The two-tick resumption is labelled altered-world normal-actor timing, not a rec
 New ordinary footage was downloaded with the existing yt-dlp/FFmpeg tools: [Whisperer Guide That Finally Makes Sense](https://www.youtube.com/watch?v=RfZ8Sp28EEA), uploaded2026-07-25, SHA256 `ccb12c27e2dce0c24f2054329888b5be4428dfea6c7cfe3054c567a276e8411d`. Actual107.5–110s frames show a normal direct walk-up melee with mirrored34 hits, corroborating that a walk-up does not require forcing every attack into the post-bind form. Its135.5–139s sequence only drops from126 to107HP before an edit, so it is explicitly excluded as a controlled below100 timing example. Its edited demonstration segments do not recover an optional-bind condition. The2024 guide's675HP omission was re-inspected over303–344s without a visible player ice cast during the seed route; this rejects treating that single case as proof of a freeze-counter rule. No random skip probability is fabricated.
 
 The four new flight/recovery regressions were observed RED before their changes, then GREEN. Fresh TypeScript build and70 Whisperer plus5 HitQueue checks passed (75/75). Independent source/code review cleared the implementation and reran the22-cast geometry/graphic/impact audit successfully. No full-suite, push or local-install claim is made by this branch task.
+
+### Whole-footprint diagonal pursuit regression (24 October 2026)
+
+The local release d583823ab still restricted diagonal movement to size-one actors,
+while upstream065d29b68 already permits all sizes when their entire footprint can
+travel. This is an observable normal Whisperer movement gap, separate from choosing
+an unmeasured binding duration. Two real MovementQueue regressions now cover it.
+
+Original [RSProx recording3285](https://rsprox.net/download/3285) has normal actor12205
+walk from2655,6360 at23066 to2654,6361 at23067 and2653,6362 at23068. The player remains
+at2649,6369. The recording belongs to an altered world; these NPC coordinates establish
+geometry only, not an ordinary freeze timer, damage roll or probability. Capture
+SHA2568cfd915cc9172769c3b871b17640f5b6141468f8e3796abf75d3ff461dace3da;
+filtered derived stream SHA256fb8225e522011e3311443d6a80e86581ea74d81300eaf2343f19549733110864.
+No player names, chat, saves or raw video are included in the regression.
+
+The first test asserts the NPC's size remains3 through transformation and follows
+both recorded steps using actual cache clipping. A second overlays an obstruction
+at2654,6363 in its private area: this blocks the diagonal's outer3x3 corner while
+leaving the cardinal west fallback open. It must square that corner, not pass
+through it. The old size-one guard was temporarily restored and rebuilt: the first
+regression failed at2654,6360 instead of2654,6361; restoring upstream and rebuilding
+passes both. The upstream change is regression-only; the local integration selects
+just the already-merged generic guard correction and excludes unrelated movement,
+raid, client and generated-data changes.
+
+This audit also reacquired two original ordinary videos: ManaCharge's [full kill](https://www.youtube.com/watch?v=gqwJCArI818)
+(uploaded15August2023) explicitly uses freeze counters; ImperatorBTW's [three tips](https://www.youtube.com/watch?v=5_WV8Wbhv4s)
+(uploaded6August2023) is an edited guide. Neither establishes a controlled natural
+expiry. Extile's previously incomplete [guide](https://www.youtube.com/watch?v=KsA9ENMEQII)
+is now recovered completely; its normal wake is consistent with known N/S faces,
+but its countered/edited binding sequence does not resolve8versus9ticks. The earlier
+incomplete-download note is historical, not the current source availability.
+
+A ten-tile centre-distance probe was rejected as an oracle: the Wiki does not define
+that distance convention for every direction and illustrates specific N/S lanes.
+Review also caught stale compiled movement code after switching branches, so all
+subsequent guard comparisons rebuild first. No binding/pursuit constant is changed
+from those exploratory failures. Wake directions, optional-bind selection, natural
+expiry, melee distribution/recovery and other listed numerical gaps remain open.

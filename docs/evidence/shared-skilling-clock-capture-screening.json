@@ -1,0 +1,91 @@
+{
+  "scope": "Screen indexed bark candidates; no timing inference without actual bark initiation/output",
+  "selectedItemIds": [
+    946,
+    1391,
+    22935
+  ],
+  "selectedStatIds": [
+    8,
+    9,
+    14
+  ],
+  "officialDecoderSource": "d997d071bc2783664d1658a80f4d1f881b355119",
+  "adapterSha256": "1aa3f09c510f25e127323674878da35e32db2f54640ae97703c6e97fa9879d88",
+  "captures": [
+    {
+      "captureId": 2276,
+      "url": "https://rsprox.net/download/2276",
+      "revision": 228,
+      "worldFlags": 1,
+      "worldActivity": "-",
+      "captureSha256": "6ffde1126221578f5009d5e2dae97b3cf8f7989df9fa7b316417d4434660e1e6",
+      "gzipTransportSha256": "80c1ea8692927cabad9976543eeea865474b43cd55971aa8cf5dde4c76ccbdb9",
+      "ticks": 153,
+      "inventory93Transmitted": true,
+      "selectedInventory93Transitions": 0,
+      "selectedItemClicks": 0,
+      "selectedItemPairs": 0,
+      "allItemPairPackets": 0,
+      "selectedSkillXpChanges": 0,
+      "barkDisplayEvents": [
+        {
+          "tick": 69,
+          "group": 179,
+          "child": 289,
+          "itemId": 22935
+        }
+      ],
+      "barkBankContainerPresent": false
+    },
+    {
+      "captureId": 1583,
+      "url": "https://rsprox.net/download/1583",
+      "revision": 225,
+      "worldFlags": 1,
+      "worldActivity": "-",
+      "captureSha256": "fa4456a442ea3f4b04784f826e89cf3397c3edeac43d2d63f7eb743e620d7330",
+      "gzipTransportSha256": "56a81e12ce703cc423a69568142e9f1068b263e263878d345bbafa387aa68d44",
+      "ticks": 4956,
+      "inventory93Transmitted": true,
+      "selectedInventory93Transitions": 0,
+      "selectedItemClicks": 0,
+      "selectedItemPairs": 0,
+      "allItemPairPackets": 0,
+      "selectedSkillXpChanges": 0,
+      "barkDisplayEvents": [
+        {
+          "tick": 77,
+          "group": 179,
+          "child": 289,
+          "itemId": 22935
+        },
+        {
+          "tick": 413,
+          "group": 179,
+          "child": 289,
+          "itemId": 22935
+        },
+        {
+          "tick": 510,
+          "group": 179,
+          "child": 289,
+          "itemId": 22935
+        },
+        {
+          "tick": 1011,
+          "group": 179,
+          "child": 289,
+          "itemId": 22935
+        },
+        {
+          "tick": 1514,
+          "group": 179,
+          "child": 289,
+          "itemId": 22935
+        }
+      ],
+      "barkBankContainerPresent": true
+    }
+  ]
+}

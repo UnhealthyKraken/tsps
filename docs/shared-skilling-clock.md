@@ -115,6 +115,39 @@ or live-install claim is made in this research checkpoint.
 
 ## Bounded additional primary-source search
 
+### Decode the two indexed bark candidates, 24 October 2026
+
+Both previously identified public candidates were downloaded and decoded with
+the existing official RSProx runtime, rather than treating archive indexing as
+proof of an item action. The HTTP downloads use gzip transport encoding; the
+transport and decompressed capture hashes are both recorded in
+`docs/evidence/shared-skilling-clock-capture-screening.json`. The initial header
+errors disappeared after honoring that encoding; neither file was a broken
+recording.
+
+- Recording2276: revision228, world flags1, activity `-`,153 tick records.
+  Bark22935 appears only in an `IfSetObject` display at tick69, group179/child289.
+  Selected knife/battlestaff entries occur in bank container95; there is no
+  selected inventory93 transition or selected item click/pair.
+- Recording1583: revision225, world flags1, activity `-`,4,956 tick records.
+  Bark is present in bank container95, then displayed on group179/child289 at
+  ticks77/413/510/1011/1514. No selected inventory93 transition, selected item
+  click/pair or relevant skill-XP change occurs.
+
+Both streams transmit inventory93. Neither contains any `IfButtonT`/`IfButtonD`
+item-pair packet at all, any click on the selected knife/bark/staff IDs, or an
+XP change for Fletching, Mining or Woodcutting. The allowlist retains only those
+three item IDs, selected UI coordinates and numeric skill deltas; the published
+summary omits bank contents, slots, quantities and player identities.
+
+These captures therefore do not show bark cutting or the bark-to-resource
+handoff. They cannot establish timer arming, first output or paired-yield
+ordering. This is a verified rejection of the two indexed candidates, not
+evidence that the manipulation is absent or unsupported in ordinary OSRS.
+No production timing rule, passing implementation-shaped test, boss change or
+local restart is justified by these recordings. A controlled action trace or
+an independently supported engine-order explanation is still required.
+
 The follow-up on 24 October 2026 searched the public RSProx archive through its
 own documented web form's `/api/search` request, using exact `ALL` conditions.
 Awake Duke12191 plus bark22935, asleep Duke12167 plus bark22935, and salt loc47522

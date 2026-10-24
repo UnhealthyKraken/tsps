@@ -4,6 +4,7 @@ const { Server } = require('../dist/Server');
 Server.installProductionPathResolver();
 const plugin = require('../plugins/npcs/NpcDrops.plugin');
 const { __internals } = plugin;
+const { rollTable } = __internals;
 const dump = require('../data/definitions/npc-drops.json');
 
 const player = { getEquipment: () => ({ get: () => null, getItems: () => [] }) };
@@ -100,7 +101,8 @@ test('the kill context is offered to plugins through npc-drops:context', t => {
     assert.equal(seen.length, 1);
     assert.equal(seen[0].npcId, 12223);
     assert.equal(seen[0].npc, npc);
-    assert.deepEqual(Object.keys(seen[0].context).sort(), ['bountyTask', 'perfectKill', 'preferredMethodLocation']);
+    assert.deepEqual(Object.keys(seen[0].context).sort(), ['bountyTask', 'handledItemIds', 'perfectKill', 'preferredMethodLocation']);
+    assert.ok(seen[0].context.handledItemIds instanceof Set);
 });
 
 test('Nex sharks and prayer potions arrive together, as do brews and restores', t => {
@@ -138,6 +140,13 @@ test('items already owned by an encounter reward handler are not rolled a second
     ] };
     assert.deepEqual(rollTable(table, player, null, { handledItemIds: new Set([4600, 1331]) })
         .map(drop => drop.itemId), [526]);
+});
+
+test('a bundled quantity receives the same perfect-kill context as its main reward', t => {
+    const bonus = entryOf('vardorvis', 'Coal');
+    const entry = { item_id: 526, quantity: [1, 1], always: true, bonus_drops: [bonus] };
+    const drops = roll(t, entry, { perfectKill: true });
+    assert.equal(drops.find(drop => drop.itemId === bonus.item_id).amount, 195);
 });
 
 test('the imported occult pre-roll remains executable at its exact 1/350 boundary', t => {

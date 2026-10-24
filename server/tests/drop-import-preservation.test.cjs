@@ -37,12 +37,11 @@ test('Nex keeps her two paired supply slots in a 12-slot pool', () => {
 });
 
 const BUNDLED = [
-    // The God Wars pools hold the 8/127 + 2/127 variant table accesses, with the
-    // main table's coins as the remainder of the 127 slots.
-    ['commander_zilyana', [[163, 3042], [6687, 3024]], 127, 127],
-    ['kril_tsutsaroth', [[145, 157], [3026, 189]], 127, 127],
-    ['kreearra', [[169, 163]], 127, 127],
-    ['general_graardor', [], 127, 127],
+    // LCM(127,381,508,762) includes exact unique fractions in the same exclusive pool.
+    ['commander_zilyana', [[163, 3042], [6687, 3024]], 1524, 1524],
+    ['kril_tsutsaroth', [[145, 157], [3026, 189]], 1524, 1524],
+    ['kreearra', [[169, 163]], 1524, 1524],
+    ['general_graardor', [], 1524, 1524],
     ['ammonite_crab', [[21543, 21545]], 128, 128],
     ['chaos_fanatic', [[1035, 1033]], 133, 133],
     ['ancient_zygomite', [[21545, 21543]], 118, 89],
@@ -68,23 +67,23 @@ test('the God Wars bosses roll their own rare drop and gem tables, not the regul
         const shared = dump.tables[id].entries
             .filter(e => e.shared_table)
             .map(e => [e.shared_table, e.weight, e.out_of]);
-        assert.deepEqual(shared, [['gwdRareDrop', 8, 127], ['gwdGem', 2, 127]], id);
+        assert.deepEqual(shared, [['gwdRareDrop', 96, 1524], ['gwdGem', 24, 1524]], id);
     }
 });
 
-test('the God Wars coin rows are the remainder of the pool, not the published blended rate', () => {
+test('the God Wars exact coin remainders exclude variant-table contributions without rounding uniques', () => {
     // The published coin rate also counts the variant tables' coins, which those tables roll.
     const REMAINDER = {
-        commander_zilyana: [29, '31.2/127'],
-        kril_tsutsaroth: [34, '36.7/127'],
-        kreearra: [42, '43.7/127'],
-        general_graardor: [30, '31.7/127'],
+        commander_zilyana: [330, '31.2/127'],
+        kril_tsutsaroth: [396, '36.7/127'],
+        kreearra: [480, '43.7/127'],
+        general_graardor: [336, '31.7/127'],
     };
     for (const id of GWD_BOSSES) {
         const [weight, published] = REMAINDER[id];
         const filled = dump.tables[id].entries.filter(e => e.weight_basis === 'remainder');
         assert.deepEqual(filled.map(e => [e.item_id, e.weight, e.out_of, e.published_rarity]),
-            [[995, weight, 127, published]], id);
+            [[995, weight, 1524, published]], id);
     }
     const others = Object.entries(dump.tables)
         .filter(([id, table]) => !GWD_BOSSES.includes(id) && table.entries.some(e => e.weight_basis));
@@ -175,5 +174,21 @@ test('every quantity resolves and exactly the known alternative rows carry condi
 
 test('the import keeps its table and mapping counts', () => {
     assert.equal(Object.keys(dump.tables).length, 1112);
-    assert.equal(Object.keys(dump.npcs).length, 3089);
+    assert.equal(Object.keys(dump.npcs).length, 3092);
+    for (const id of [8058, 8060, 13686]) assert.deepEqual(dump.npcs[id].tables, [], `quest-only NPC ${id}`);
+});
+
+test('God Wars uniques share one outcome with main loot rather than rolling independently', t => {
+    const roller = require('../plugins/npcs/NpcDrops.plugin').__internals;
+    roller.loadDrops(); t.mock.method(Math, 'random', () => 0);
+    for (const id of GWD_BOSSES) {
+        const table = dump.tables[id];
+        assert.ok(!table.entries.some(entry => entry.separate_roll || entry.pre_roll), id);
+        const npc = Object.values(dump.npcs).find(npc => npc.tables.includes(id));
+        const loaded = roller.tablesByNpc.get(npc.npc_id).find(table => table.table_id === id);
+        const mainOnly = { ...loaded, entries: loaded.entries.filter(entry => !entry.always), tertiary: [] };
+        const rolled = roller.rollTable(mainOnly, {}, null);
+        assert.equal(rolled.length, 1, `${id}: one unique, no extra main or unique`);
+        assert.equal(rolled[0].itemId, mainOnly.entries[0].item_id);
+    }
 });

@@ -16,3 +16,6 @@
 /server/data/definitions/clue-caskets.json text eol=lf
 /server/data/definitions/reward-caskets.json text eol=lf
 /server/plugins/bosses/data/reward-tables.json text eol=lf
+# Keep complete canonical drop exports byte-identical on Windows checkouts.
+/server/data/definitions/npc-drops.json text eol=lf
+/server/data/definitions/npc-drop-subtables.json text eol=lf

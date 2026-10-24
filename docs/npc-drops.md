@@ -4,7 +4,7 @@
 
 The audit inspected all 1,112 generated tables, 3,092 generated NPC mappings (3,201 after historical overrides), nine generated shared tables and one historical shared override. No NPC referenced an unknown table. Wiki comparisons covered shared seed/herb rules, pinball, representative early-game drops, boss variants and beginner casket rewards. This is structural verification plus targeted Wiki comparison; it does not certify every OSRS drop.
 
-The repaired export contains 3,089 NPC mappings; loading historical overrides yields 3,198 usable mappings. Explicit post-quest Wiki table declarations exclude the quest variants of Amoxliatl and Vorkath from normal boss loot. Regression coverage also preserves regular variants on mixed encounter pages.
+The 23 October repaired export contained 3,089 NPC mappings. The 24 October integration preserves those records exactly and retains the three excluded quest-only IDs (8058, 8060, 13686) explicitly with empty table lists, giving 3,092 generated records. Explicit post-quest Wiki table declarations prevent those variants of Amoxliatl and Vorkath receiving normal boss loot. Regression coverage also preserves regular variants on mixed encounter pages.
 
 Repairs regenerate canonical cached Wiki inputs through `../osrsreboxed-db`; generated tables are imported without output patches. The source caches have no per-page retrieval timestamps, so the generation date does not mean every page was refreshed that day. Two complete generations from the same inputs must match byte-for-byte.
 
@@ -18,7 +18,7 @@ Repairs regenerate canonical cached Wiki inputs through `../osrsreboxed-db`; gen
 
 The regenerated data still contains 165 assumed rarity rows and eight quantity expressions without an executable numeric quantity. Five multi-herb distributions remain unresolved: hydra, colossal hydra, bloodthirsty hydra, butterfly ray and eagle ray. Those unresolved herb accesses do not award guessed replacements.
 
-An additional audit found 110 comma-separated quantity expressions across 11 cached pages that the existing exporter incorrectly concatenates into integers. Most represent conditional quantities (including DT2 perfect kills), not thousands separators or proven uniform ranges. Correct execution of those alternatives remains unfinished; the numeric fields must not be treated as verified OSRS quantities. The ray combat-herb accesses also lose variable-count metadata. Both findings remain outstanding.
+An additional audit found 110 comma-separated quantity expressions across 11 cached pages that the earlier exporter incorrectly concatenated into integers. The local parser and consumer now preserve source-stated alternatives: 99 perfect-kill rows, two bounty-task rows and three preferred-method rows have executable conditions; 12 rows with no published distribution explicitly retain an assumed uniform choice. The four DT2 encounter plugins now supply perfect-kill context from their own damage grades. Bundled drops receive the same context, and quest-owned rewards are filtered to prevent duplicate payments. Existing combat-herb category and variable-roll metadata are retained; unresolved source distributions still fail closed.
 
 ### Quantity comment repair
 
@@ -37,22 +37,22 @@ General Graardor, Commander Zilyana, K'ril Tsutsaroth and Kree'arra now roll 8/1
 - Coins replace the empty rolls.
 - The ring of wealth doesn't affect them, because they are not in `RING_OF_WEALTH_TABLES`.
 
-The pools stay at 127.
+The main pool now uses 1,524 slots, the least common multiple of 127, 381, 508 and 762. This preserves the exact unique fractions in the same exclusive outcome pool as normal loot; the old 127-slot coin remainder model rounded the uniques and let them roll separately.
 
 Each page publishes one coin rate whose footnote says it includes the GDT and RDT coins, and those tables now roll their own coins. So the canonical exporter makes that coin row the remainder of the pool (`weight_basis: "remainder"`, with the page's rate kept in `published_rarity`):
 
 | Boss | Published | Remainder |
 |---|---|---|
-| Zilyana | 31.2/127 | 29/127 |
-| Graardor | 31.7/127 | 30/127 |
-| K'ril | 36.7/127 | 34/127 |
-| Kree'arra | 43.7/127 | 42/127 |
+| Zilyana | 31.2/127 | 330/1524 |
+| Graardor | 31.7/127 | 336/1524 |
+| K'ril | 36.7/127 | 396/1524 |
+| Kree'arra | 43.7/127 | 480/1524 |
 
-Graardor's and Kree'arra's separate unique-table coin rows stay at 1/127. Every other row keeps its published x/127. See `osrsreboxed-db/scripts/drops/QUANTITY_REVIEW.md`.
+Graardor's and Kree'arra's unique-table coin rows are 15/1524 (the exact source fraction 1.25/127), within the same exclusive pool. Variant accesses are 96/1524 and 24/1524, equivalent to 8/127 and 2/127. Other published probabilities remain unchanged. See `osrsreboxed-db/scripts/drops/QUANTITY_REVIEW.md`.
 
-Imported `npc-drops.json` SHA-256: `ce08e84061b293480d33dfb54276cb1a0a74868c9f36414c587e93f976fc05b1`. Imported `npc-drop-subtables.json` SHA-256: `355f429aaa102fc119467c545e1ea492cd6d2b8cc42e58c568e22eafc6f2b47f`.
+Imported `npc-drops.json` SHA-256: `f47f58079fff12b75d082111f6d6096b1abb0e8a4a4c9a05f99f1407502d2c44`. Imported `npc-drop-subtables.json` SHA-256: `355f429aaa102fc119467c545e1ea492cd6d2b8cc42e58c568e22eafc6f2b47f`. Two complete post-review exports are byte-identical. All existing mappings, shared tables, rewards and unresolved outputs are preserved; only four God Wars tables, twelve pre-roll rows across four Hydra tables and the three explicit empty records differ from the previous local export.
 
-`tests/drop-import-preservation.test.cjs` pins the accesses, the 127-slot pools, the remainder coin rows and every slot of the three tables.
+`tests/drop-import-preservation.test.cjs` pins exact accesses, the 1,524-slot pools, single main outcomes, coin remainders, every variant shared-table slot and the explicit empty quest mappings.
 
 Sources: [Drop table](https://oldschool.runescape.wiki/w/Drop_table), [Aberrant spectre](https://oldschool.runescape.wiki/w/Aberrant_spectre), [Chaos druid](https://oldschool.runescape.wiki/w/Chaos_druid), [Skeletal Wyvern](https://oldschool.runescape.wiki/w/Skeletal_wyvern), [Pinball](https://oldschool.runescape.wiki/w/Pinball), [Flippa dialogue](https://oldschool.runescape.wiki/w/Transcript:Flippa), [Goblin](https://oldschool.runescape.wiki/w/Goblin), [Energy potion](https://oldschool.runescape.wiki/w/Energy_potion).
 

@@ -29,6 +29,7 @@ import {
     PoisonTimerPlugin,
 } from "../../../game/plugins/statustimer/StatusTimerPlugin";
 import { TileMarkersConfig } from "../../../game/plugins/tilemarkers/TileMarkersConfig";
+import { GroundMarkerPlugin } from "../../../game/plugins/groundmarkers/GroundMarkerPlugin";
 import { TileMarkersPlugin } from "../../../game/plugins/tilemarkers/TileMarkersPlugin";
 import { TilePacksPlugin } from "../../../game/plugins/tilepacks/TilePacksPlugin";
 import { VengeanceTimerPlugin } from "../../../game/plugins/vengeancetimer/VengeanceTimerPlugin";
@@ -48,6 +49,7 @@ export const CORE_PLUGINS: ReadonlyArray<PluginClass> = [
     GameFrame317Plugin,
     GroundItemsPlugin,
     InteractHighlightPlugin,
+    GroundMarkerPlugin,
     TileMarkersPlugin,
     TilePacksPlugin,
     MenuSwapperPlugin,

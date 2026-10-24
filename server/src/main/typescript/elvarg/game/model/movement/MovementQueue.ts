@@ -618,9 +618,9 @@ export class MovementQueue {
     }
 
     /**
-     * Diagonal first, then east/west, then north/south - except that only 1x1
-     * actors ever take the diagonal. Anything larger squares the corner with a
-     * cardinal step instead.
+     * Diagonal first, then east/west, then north/south, for any actor size.
+     * A larger NPC can step diagonally when its whole footprint is clear;
+     * a blocked corner still requires the cardinal fallback.
      */
     private validatedStep(source: Location, destination: Location): Location | null {
         const signX = Math.sign(destination.getX() - source.getX());
@@ -631,7 +631,7 @@ export class MovementQueue {
             return source.transform(signX, signY);
         }
         const candidates: number[][] = [];
-        if (this.character.getSize() === 1 && signX !== 0 && signY !== 0) {
+        if (signX !== 0 && signY !== 0) {
             candidates.push([signX, signY]);
         }
         if (signX !== 0) candidates.push([signX, 0]);

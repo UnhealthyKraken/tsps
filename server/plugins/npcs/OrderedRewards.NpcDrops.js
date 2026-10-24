@@ -47,7 +47,7 @@ function select(table, player, api, random = Math.random) {
                 throw new Error('Unsupported reward progression');
         }
     }
-    const request = { player, tableId: table.table_id, domain: chain.state_domain, state: null, handled: false };
+    const request = { player, tableId: table.table_id, wikiPage: table.wiki_page, domain: chain.state_domain, state: null, handled: false };
     api?.emitCustomEvent('npc-drops:reward-state', request);
     if (!request.handled)
         throw new Error('Missing ordered reward state provider');
@@ -56,7 +56,19 @@ function select(table, player, api, random = Math.random) {
     for (const stage of chain.stages) {
         if (stage.eligibility && state[stage.eligibility.state_key] === true)
             continue;
-        if (random() * stage.out_of >= stage.weight)
+        let rate = stage;
+        const scaling = stage.source_scaling;
+        if (scaling?.execution === 'documented_base_and_endpoint') {
+            const endpoint = scaling.known_endpoint;
+            if (!validRate(endpoint) || !Number.isSafeInteger(endpoint.kill_count) || endpoint.kill_count < 0 ||
+                !stage.record_first_received || !Number.isSafeInteger(request.killCount) || request.killCount < 0 || !validRate(scaling.after_first_received))
+                throw new Error('Invalid documented reward endpoint');
+            if (state[stage.record_first_received.state_key] === true)
+                rate = scaling.after_first_received;
+            else if (request.killCount >= endpoint.kill_count)
+                rate = endpoint;
+        }
+        if (random() * rate.out_of >= rate.weight)
             continue;
         let slot = Math.floor(random() * stage.main_max_roll);
         const selected = stage.entries.find(row => (slot -= row.weight) < 0);

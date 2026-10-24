@@ -68885,7 +68885,7 @@
             },
             "source_scaling": {
               "status": "unresolved",
-              "execution": "documented_base_only",
+              "execution": "documented_base_and_endpoint",
               "before_first_received": true,
               "known_endpoint": {
                 "kill_count": 300,
@@ -181954,7 +181954,7 @@
             },
             "source_scaling": {
               "status": "unresolved",
-              "execution": "documented_base_only",
+              "execution": "documented_base_and_endpoint",
               "before_first_received": true,
               "known_endpoint": {
                 "kill_count": 300,
@@ -183772,7 +183772,7 @@
             },
             "source_scaling": {
               "status": "unresolved",
-              "execution": "documented_base_only",
+              "execution": "documented_base_and_endpoint",
               "before_first_received": true,
               "known_endpoint": {
                 "kill_count": 300,
@@ -193938,7 +193938,7 @@
             },
             "source_scaling": {
               "status": "unresolved",
-              "execution": "documented_base_only",
+              "execution": "documented_base_and_endpoint",
               "before_first_received": true,
               "known_endpoint": {
                 "kill_count": 300,

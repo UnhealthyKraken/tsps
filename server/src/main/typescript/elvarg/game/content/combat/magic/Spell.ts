@@ -3,6 +3,7 @@ import { Player } from "../../../entity/impl/player/Player";
 import { Item } from "../../../model/Item";
 import { MagicSpellbook } from "../../../model/MagicSpellbook";
 import { Skill } from "../../../model/Skill";
+import { World } from "../../../World";
 import { PluginManager } from "../../../../plugins/PluginManager";
 
 /** Runtime-only, per-paid-cast plugin snapshots; never shared with later casts or saves. */

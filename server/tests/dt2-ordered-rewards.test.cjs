@@ -139,3 +139,42 @@ for (const id of ['duke_sucellus', 'the_leviathan', 'the_whisperer', 'vardorvis'
         }
     });
 }
+for (const id of ['duke_sucellus', 'the_leviathan', 'the_whisperer', 'vardorvis']) {
+    test(`${id} actual tablet receipt persists and quartz remains repeatable at documented base`, t => {
+        const h = H.harness(t);
+        h.api.getItemOnGroundManager = () => ({});
+        P.register(h.api);
+        Drops.register(h.api);
+        const table = dump.tables[id], tablet = table.reward_chain.stages[2], quartz = table.reward_chain.stages[3];
+        let values = [.99, .99, 0, 0];
+        t.mock.method(Math, 'random', () => values.shift() ?? .99);
+        assert.ok(Drops.__internals.rollTable(table, h.p, null).some(row => row.itemId === tablet.entries[0].item_id));
+        assert.equal(h.p.getAttribute(P.STATE_ATTRIBUTE)[id][tablet.record_first_received.state_key], true);
+        for (let kill = 0; kill < 2; kill++) {
+            values = [.99, .99, 0, 0]; // Tablet is skipped; next access is quartz.
+            const rows = Drops.__internals.rollTable(table, h.p, null);
+            assert.ok(!rows.some(row => row.itemId === tablet.entries[0].item_id));
+            assert.ok(rows.some(row => row.itemId === quartz.entries[0].item_id));
+            assert.equal(h.p.getAttribute(P.STATE_ATTRIBUTE)[id][quartz.record_first_received.state_key], true);
+        }
+    });
+}
+for (const id of ['duke_sucellus', 'the_leviathan', 'the_whisperer', 'vardorvis']) {
+    test(`${id} quartz endpoint is active at 300 until first receipt and retained after reload`, t => {
+        const h = H.harness(t);
+        h.api.getItemOnGroundManager = () => ({});
+        let count = 299;
+        h.api.onCustomEvent('combat-achievements:count', event => { assert.equal(event.monster, dump.tables[id].wiki_page); event.total = count; });
+        P.register(h.api);
+        Drops.register(h.api);
+        const table = dump.tables[id], quartz = table.reward_chain.stages[3];
+        let values;
+        t.mock.method(Math, 'random', () => values.shift() ?? .99);
+        const roll = () => { values = [.99, .99, .99, .01, 0]; return Drops.__internals.rollTable(table, h.p, null); };
+        assert.ok(!roll().some(row => row.itemId === quartz.entries[0].item_id));
+        count = 300;
+        assert.ok(roll().some(row => row.itemId === quartz.entries[0].item_id));
+        h.p.setAttribute(P.STATE_ATTRIBUTE, JSON.parse(JSON.stringify(h.p.getAttribute(P.STATE_ATTRIBUTE))));
+        assert.ok(!roll().some(row => row.itemId === quartz.entries[0].item_id));
+    });
+}

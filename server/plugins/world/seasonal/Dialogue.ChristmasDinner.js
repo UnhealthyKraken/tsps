@@ -34,7 +34,8 @@ function start(api,{player,npc,npcId,variant,...options}){
 function substitute(text,state,session){
   const replacements={'[beverage]':state.drink??session.drink,'[main]':state.main??session.main,
     '[side 1]':state.sides[0]??session.sides?.[0],'[side 2]':state.sides[1]??session.sides?.[1],'[side 3]':state.sides[2]??session.sides?.[2],
-    '[item]':state.drink,'[Customer]':CUSTOMERS[session.customer]};
+    '[item]':state.drink,'[Customer]':CUSTOMERS[session.customer],
+    '[main course]':state.main,'[sides]':state.sides.join(', ')};
   const remaining=[state.main,...state.sides].filter(item=>item&&!state.gathered.includes(item));
   text=text.replace('[item 1], [item 2], [item 3], [item 4]',remaining.join(', '));
   for(let index=0;index<4;index++)replacements[`[item ${index+1}]`]=remaining[index]??'';

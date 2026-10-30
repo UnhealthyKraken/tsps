@@ -4,6 +4,7 @@ const Progress=require('./seasonal/Progress.ChristmasDinner');
 const Dialogue=require('./seasonal/Dialogue.ChristmasDinner');
 const Scene=require('./seasonal/Scene.ChristmasDinner');
 const Items=require('./seasonal/Items.ChristmasDinner');
+const Npcs=require('./seasonal/Npcs.ChristmasDinner');
 
 function calendar(api,event){
   if(event.key!=='christmas-2025')return;
@@ -35,6 +36,7 @@ module.exports={
     api.onServerShutdown(shutdown.bind(null,api));
     api.onRegionLoaded(regionLoaded.bind(null,api));
     api.onNpcDialogueCondition(Dialogue.condition.bind(null,api));
+    api.onBeforeNpcInteraction(Npcs.interact.bind(null,api));
     api.onCustomEvent('npc-dialogue:line',Dialogue.line.bind(null,api));
     api.onCustomEvent('npc-dialogue:action',Dialogue.action.bind(null,api));
     api.onCanBankItem(canBank.bind(null,api));

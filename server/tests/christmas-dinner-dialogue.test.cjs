@@ -155,3 +155,39 @@ test('native inventory input rejects a stale slot, a dead player and a busy owne
   f.player.closeInterruptibleInterfaces();await itemOp(f,'Inspect');
   assert.equal(f.player.getDialogueManager().getCurrent()?.text,'The serving platter is empty.');await finish(f);
 });
+function talkToCook(f){
+  return PM.emitNpcInteraction({player:f.player,npc:f.npc,npcId:cook,clickType:1,handled:false});
+}
+test('the actual Cook dispatcher selects the source start, stage reminders and cooking result',async t=>{
+  const f=fixture(t);assert.equal(talkToCook(f),true);
+  assert.equal(MultiChatboxPrompt.getPending(f.player)?.title,'Ask about the Christmas Event?');
+  await resume(f,1);await finish(f);assert.equal(Progress.read(f.player).phase,'queue');
+  talkToCook(f);assert.equal(f.player.getDialogueManager().getCurrent()?.getText().replace(/\s+/g,' '),'Sorry to bother you, but what was I meant to be doing again?');await finish(f);
+  apply(f,'greet',0);apply(f,'seat',0);apply(f,'orderDrink','beer');apply(f,'takeDrink','beer');apply(f,'serveDrink',0);apply(f,'orderFood','trout',['cabbage','parsnips','stuffing']);
+  talkToCook(f);
+  const lines=[];
+  while(f.player.getDialogueManager().getCurrent()){
+    lines.push(f.player.getDialogueManager().getCurrent().getText().replace(/\s+/g,' '));await resume(f);
+  }
+  assert.ok(lines.includes('trout, with cabbage, parsnips, stuffing.'),'actual order reminder resolves the original source placeholders');
+  for(const ingredient of ['trout','cabbage','parsnips','stuffing'])apply(f,'collect',ingredient);
+  talkToCook(f);await finish(f);assert.equal(Progress.read(f.player).phase,'cooked');
+  talkToCook(f);await finish(f);assert.equal(Progress.read(f.player).phase,'cooked','reminder does not serve the meal');
+});
+test('native NPC packet and walk-to reach the Cook activity only while its epoch is active',async t=>{
+  const f=fixture(t),core=api.core;
+  // The Cook's original Wiki location is3230,3400. This registered test actor
+  // is a seeded fixture, not evidence of queue/seat NPC placement or rendering.
+  core.World.getNpcs().add(f.npc);t.after(()=>core.World.getNpcs().remove(f.npc));
+  f.player.setLocation(new core.Location(3230,3399));f.player.setNeedsPlacement(false);
+  async function click(){
+    await f.connection.dispatch([{type:'npc_option',index:f.npc.getIndex(),clickType:1}]);f.connection.processTurnPackets();
+    for(let count=0;count<4;count++){core.TaskManager.processWalkTo(f.player.getIndex());f.player.getMovementQueue().process();core.TaskManager.process();}
+  }
+  await click();assert.equal(MultiChatboxPrompt.getPending(f.player)?.title,'Ask about the Christmas Event?');
+  await resume(f,2);await finish(f);assert.equal(Progress.read(f.player).phase,'new');
+  Dialogue.activate({key:'christmas-2025',active:false});
+  try{
+    await click();assert.notEqual(MultiChatboxPrompt.getPending(f.player)?.title,'Ask about the Christmas Event?');
+  }finally{Dialogue.activate({key:'christmas-2025',active:true});}
+});

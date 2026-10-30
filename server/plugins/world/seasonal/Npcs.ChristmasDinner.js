@@ -24,8 +24,14 @@ function cookVariant(state,hasPlatter){
 function interact(api,event){
   const {player,npc}=event;
   const definition=npc.getCurrentDefinition(player);
-  if(definition?.getId()!==api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef')||definition.getActions()?.[event.clickType-1]?.toLowerCase()!=='talk-to')return;
+  if(definition?.getActions()?.[event.clickType-1]?.toLowerCase()!=='talk-to')return;
   if(!player.isRegistered()||player.getHitpoints()<=0||player.busy())return;
+  if(definition.getId()===api.core.CacheDefinitions.getNpcId('bluemoon_bartender')){
+    if(npc.getPrivateArea?.()||npc.getOwner?.())return;
+    if(Dialogue.startBartender(api,{player,npc}))event.handled=true;
+    return;
+  }
+  if(definition.getId()!==api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef'))return;
   const variant=cookVariant(Progress.read(player),Progress.held(api,player));
   // start refuses inactive epochs; the ordinary Cook transcript then remains
   // available through the existing downstream dialogue dispatcher.

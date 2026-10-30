@@ -3,6 +3,8 @@
 const Progress=require('./Progress.ChristmasDinner');
 const PAGE='2025 Christmas event';
 const SOURCE=require('../../../data/definitions/event-dialogues.json')[PAGE];
+const BARTENDER_PAGE='Bartender (Blue Moon Inn)';
+const BARTENDER_SOURCE=require('../../../data/definitions/npc-dialogues.json')[BARTENDER_PAGE];
 const CUSTOMERS=['Sir Prysin','Aggie','Jobless Jim'];
 const sessions=new WeakMap();
 let enabled=false,epoch=0;
@@ -14,7 +16,7 @@ function cancelAll(api){for(const player of api.core.World.getPlayers())if(playe
 function valid(player,session){return enabled&&session.epoch===epoch&&sessions.get(player)===session&&player.isRegistered()&&Progress.read(player).revision===session.revision;}
 function context(event){
   const session=sessions.get(event.player);
-  if(!session||!event.pages?.some(row=>row.page===PAGE))return null;
+  if(!session||session.page!==PAGE||!event.pages?.some(row=>row.page===PAGE))return null;
   return session;
 }
 function abort(player){player.getDialogueManager().reset();player.getPacketSender().sendInterfaceRemoval();}
@@ -23,16 +25,22 @@ function transition(api,player,session,name,...args){
   session.revision=Progress.read(player).revision;
   return true;
 }
-function start(api,{player,npc,npcId,variant,...options}){
-  if(!enabled||!player.isRegistered()||!Array.isArray(SOURCE.variants[variant]))return false;
+function start(api,{player,npc,npcId,variant,page=PAGE,...options}){
+  const source=page===PAGE?SOURCE:page===BARTENDER_PAGE?BARTENDER_SOURCE:null;
+  if(!enabled||!player.isRegistered()||!Array.isArray(source?.variants[variant]))return false;
   const previous=sessions.get(player),state=Progress.read(player);
-  const session={...options,variant,revision:state.revision,customer:state.customer,epoch};
+  const session={...options,npc,page,variant,revision:state.revision,customer:state.customer,epoch};
   sessions.set(player,session);
-  const request={player,npc,npcId:npc?.getCurrentDefinition(player)?.getId()??npc?.getId()??npcId,variant:{page:PAGE,variant},exact:true};
+  const request={player,npc,npcId:npc?.getCurrentDefinition(player)?.getId()??npc?.getId()??npcId,variant:{page,variant},exact:true};
   api.emitCustomEvent('npc-dialogue:start',request);
   if(!request.handled){if(previous)sessions.set(player,previous);else sessions.delete(player);return false;}
   previous?.cancel?.();session.cancel=request.cancel;
   return true;
+}
+function startBartender(api,event){
+  // Keep the ordinary canonical choices and their shared Bartenders purchase
+  // hooks. Only the greeting changes; the annual window owns this playback.
+  return start(api,{...event,page:BARTENDER_PAGE,variant:BARTENDER_SOURCE.default});
 }
 function substitute(text,state,session){
   const replacements={'[beverage]':state.drink??session.drink,'[main]':state.main??session.main,
@@ -67,6 +75,18 @@ function condition(api,event){
   return false;
 }
 function line(api,event){
+  const bartender=sessions.get(event.player);
+  if(bartender?.page===BARTENDER_PAGE&&event.pages?.some(row=>row.page===BARTENDER_PAGE)&&
+    event.npc===bartender.npc&&!event.npc?.getPrivateArea?.()&&!event.npc?.getOwner?.()&&
+    event.npcId===api.core.CacheDefinitions.getNpcId('bluemoon_bartender')&&
+    event.text===BARTENDER_SOURCE.variants[BARTENDER_SOURCE.default][0].npc){
+    if(!valid(event.player,bartender)){event.before=()=>bartender.cancel?.();return;}
+    const phase=Progress.read(event.player).phase;
+    const variant=phase==='new'?'starting-the-event-talking-to-the-bartender-blue-moon-inn-before-starting-the-event'
+      :phase==='complete'?'completing-the-event-talking-to-the-bartender-after-completing-the-event'
+      :'starting-the-event-talking-to-the-bartender-after-starting-the-event';
+    event.text=SOURCE.variants[variant][0].text;return;
+  }
   const session=context(event);if(!session)return;
   const state=Progress.read(event.player),original=String(event.text);
   event.text=substitute(original,state,session);
@@ -104,4 +124,4 @@ function action(api,event){
   if(result===false){event.handled=true;event.end=true;}
 }
 
-module.exports={start,activate,active,clear,cancelAll,condition,line,action};
+module.exports={start,startBartender,activate,active,clear,cancelAll,condition,line,action};

@@ -11,6 +11,12 @@ const BAR_DRINKS=Object.freeze({
   xmas25_bar_drinks_left:'eggnog',xmas25_bar_drinks_middle:'milk',
   xmas25_bar_drinks_middle2:'chocolate milk',xmas25_bar_drinks_right:'wine',
 });
+// Original footage zMOOL1CZhhk2:28/2:43 shows the vegetable side menu and
+// fish main menu. Other crates still require their own identity/path evidence.
+const CRATE_VARIANTS=Object.freeze({
+  xmas25_crate01_fish01:'serving-the-customers-searching-the-main-course-crate',
+  xmas25_crate01_vegetable01:'serving-the-customers-searching-the-side-dish-crate',
+});
 function drink(api,{player,object}){
   if(!Scene.active()||!Dialogue.active())return false;
   const row=Scene.objects().find(row=>row.object===object),beverage=BAR_DRINKS[row?.symbol];
@@ -21,5 +27,12 @@ function drink(api,{player,object}){
     :'serving-the-customers-searching-the-bar-'+beverage.replaceAll(' ','-');
   return Dialogue.start(api,{player,npcId:api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef'),variant,drink:beverage});
 }
+function search(api,{player,object}){
+  if(!Scene.active()||!Dialogue.active())return false;
+  const row=Scene.objects().find(row=>row.object===object),variant=CRATE_VARIANTS[row?.symbol];
+  if(!variant||!api.core.World.getObjects().includes(object))return false;
+  if(!player.isRegistered()||player.getHitpoints()<=0||player.busy()||Progress.read(player).phase!=='ingredients'||!Progress.held(api,player))return true;
+  return Dialogue.start(api,{player,npcId:api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef'),variant});
+}
 
-module.exports={drink};
+module.exports={drink,search};

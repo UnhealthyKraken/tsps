@@ -43,6 +43,7 @@ module.exports={
     api.onNpcDialogueCondition(Dialogue.condition.bind(null,api));
     api.onBeforeNpcInteraction(Npcs.interact.bind(null,api));
     api.onObjectInteraction('Bar',{'Get Drink From':Objects.drink.bind(null,api)});
+    api.onObjectInteraction('Crate',{Search:Objects.search.bind(null,api)});
     api.onCustomEvent('npc-dialogue:line',Dialogue.line.bind(null,api));
     api.onCustomEvent('npc-dialogue:action',Dialogue.action.bind(null,api));
     api.onCanBankItem(canBank.bind(null,api));

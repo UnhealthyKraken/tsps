@@ -158,6 +158,47 @@ test('native bar object packets refuse a wrong drink and load only the requested
   assert.equal(player.getDialogueManager().getCurrent()?.text,'You already have the correct drink on your serving platter.');
   assert.equal(Progress.read(player).revision,revision,'repeated bar click cannot duplicate contents');
 });
+
+test('original fish and vegetable crate packets open native main/side menus and collect actual orders',async t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const {ClientConnection}=require('../dist/net/NetworkBuilder');
+  const {MultiChatboxPrompt}=require('../dist/game/model/menu/MultiChatboxPrompt');
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
+  assert.equal(c.World.getPlayers().add(player),true);
+  t.after(()=>{player.closeInterruptibleInterfaces();c.TaskManager.cancelTasks(player.getIndex());PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});c.World.getPlayers().remove(player);});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const apply=(name,...args)=>assert.equal(Progress[name](api,player,Progress.read(player).revision,...args),true);
+  apply('begin');apply('greet',0);apply('seat',0);apply('orderDrink','beer');apply('takeDrink','beer');apply('serveDrink',0);apply('orderFood','trout',['cabbage','parsnips','stuffing']);
+  async function click(symbol){
+    const object=Scene.objects().find(row=>row.symbol===symbol).object,p=object.getLocation();
+    player.setLocation(p.clone().add(-1,0));player.setNeedsPlacement(false);
+    await connection.dispatch([{type:'object_option',id:object.getId(),x:p.getX(),y:p.getY(),clickType:1,action:'Search'}]);connection.processTurnPackets();
+    for(let count=0;count<4;count++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  }
+  async function choose(text){
+    const pending=MultiChatboxPrompt.getPending(player);assert.ok(pending,'native crate menu exists');
+    const choice=pending.options.indexOf(text);assert.ok(choice>=0,JSON.stringify(pending.options));
+    await connection.dispatch([{type:'dialogue_continue',widgetId:MultiChatboxPrompt.OPTIONS_WIDGET_ID,childIndex:choice+1}]);connection.processTurnPackets();
+  }
+  await click('xmas25_crate01_fish01');assert.deepEqual(MultiChatboxPrompt.getPending(player)?.options,['Beef','Jubbly','Chicken','Next']);
+  await choose('Beef');assert.deepEqual(Progress.read(player).gathered,[],'wrong menu choice cannot add food');
+  assert.match(player.getDialogueManager().getCurrent().getText(),/I'm after trout\./);player.closeInterruptibleInterfaces();
+  await click('xmas25_crate01_fish01');
+  await choose('Next');await choose('Trout');assert.deepEqual(Progress.read(player).gathered,['trout']);player.closeInterruptibleInterfaces();
+  await click('xmas25_crate01_vegetable01');assert.deepEqual(MultiChatboxPrompt.getPending(player)?.options,['Sprouts','Potatoes','Cauliflower','Next']);
+  await choose('Next');await choose('Cabbage');assert.deepEqual(Progress.read(player).gathered,['trout','cabbage']);
+  assert.equal(player.getInventory().getAmount(Progress.platterId(api)),1,'ingredients live on the one platter, not as free inventory food');
+  player.closeInterruptibleInterfaces();await click('xmas25_crate01_vegetable01');await choose('Next');await choose('Cabbage');
+  assert.deepEqual(Progress.read(player).gathered,['trout','cabbage'],'already-carried side cannot be collected twice');
+  player.closeInterruptibleInterfaces();await click('xmas25_crate01_vegetable01');
+  const revision=Progress.read(player).revision;
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});await choose('Potatoes');
+  assert.equal(Progress.read(player).revision,revision,'window closure invalidates the pending native crate choice');
+  assert.deepEqual(Progress.read(player).gathered,['trout','cabbage']);
+});
 test('exhausted native wire allocation refuses before any scenery is removed',()=>{
   const original=data.bundle.definitions.find(r=>r.kind==='npc'&&r.symbol==='xmas25_sir_prysin');
   const other={...data.bundle,id:'last-wire-id',definitions:[{...original,id:65534}]};

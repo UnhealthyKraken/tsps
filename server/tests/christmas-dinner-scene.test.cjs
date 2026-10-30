@@ -9,6 +9,7 @@ let api,c;
 before(async()=>{
   await CachePipeline.initialize(path.resolve(__dirname,'..'));api=PM.createApi('ChristmasDinner');c=api.core;c.RegionManager.init();
   require('../plugins/world/DefinitionArchives.plugin').register(PM.createApi('DefinitionArchives'));
+  require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
   require('../plugins/world/ChristmasDinner.plugin').register(api);
   for(const row of data.placements)c.RegionManager.loadMapFiles(row.x,row.y,false);
 });
@@ -26,7 +27,6 @@ test('native Table Serve routes saved ingredients and cooked meals to their own 
   const {Player}=require('../dist/game/entity/impl/player/Player');
   const {PlayerSession}=require('../dist/net/PlayerSession');
   const {ClientConnection}=require('../dist/net/NetworkBuilder');
-  require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
   const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
   const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
   assert.equal(c.World.getPlayers().add(player),true);
@@ -238,7 +238,6 @@ test('native bar object packets refuse a wrong drink and load only the requested
   const {Player}=require('../dist/game/entity/impl/player/Player');
   const {PlayerSession}=require('../dist/net/PlayerSession');
   const {ClientConnection}=require('../dist/net/NetworkBuilder');
-  require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
   const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
   const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
   assert.equal(c.World.getPlayers().add(player),true);
@@ -319,7 +318,6 @@ test('native cellar crate searches refuse taking food before starting and in a s
   const {Player}=require('../dist/game/entity/impl/player/Player');
   const {PlayerSession}=require('../dist/net/PlayerSession');
   const {ClientConnection}=require('../dist/net/NetworkBuilder');
-  require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
   const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
   const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
   assert.equal(c.World.getPlayers().add(player),true);

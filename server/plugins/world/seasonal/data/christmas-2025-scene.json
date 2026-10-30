@@ -1,12 +1,20 @@
 {
   "source": "Jagex cache2392 revision235 l50_53 has no floor decorations on this row; the active revision241 blue pub rug extends one tile farther north upstairs.",
-  "actorSource": "Seat positions are inferred from the original table anchors and vacated native chair slots, consistent with Wiki Stool (2025 Christmas event). Queue front is inferred west of the original door from LYhx7ksRL5E at 0:31; further queue positions and exact facing still need calibration.",
+  "actorSource": "Seat positions are inferred from the original table anchors and vacated native chair slots, consistent with Wiki Stool (2025 Christmas event). Wiki 2025 Christmas event lists nine queued guests and the original cache has nine successive morph parents. Original zMOOL1CZhhk16.4s shows the front inside the pub with the line extending through its west doorway then turning north outside. Provisional queue tiles/facing follow that layout; exact server spawn coordinates still need calibration and are not from RSProx.",
   "actors": [
     { "symbol": "xmas25_table_npc_1", "role": "seat", "table": 0, "x": 3220, "y": 3402, "z": 0, "face": "SOUTH" },
     { "symbol": "xmas25_table_npc_2", "role": "seat", "table": 1, "x": 3221, "y": 3402, "z": 0, "face": "SOUTH" },
     { "symbol": "xmas25_table_npc_3", "role": "seat", "table": 2, "x": 3221, "y": 3397, "z": 0, "face": "NORTH" },
     { "symbol": "xmas25_table_npc_4", "role": "seat", "table": 3, "x": 3220, "y": 3397, "z": 0, "face": "NORTH" },
-    { "symbol": "xmas25_queue_npc_1", "role": "queue", "x": 3215, "y": 3395, "z": 0, "face": "EAST" },
+    { "symbol": "xmas25_queue_npc_1", "role": "queue", "x": 3219, "y": 3395, "z": 0, "face": "EAST" },
+    { "symbol": "xmas25_queue_npc_2", "role": "queue", "x": 3218, "y": 3395, "z": 0, "face": "EAST" },
+    { "symbol": "xmas25_queue_npc_3", "role": "queue", "x": 3217, "y": 3395, "z": 0, "face": "EAST" },
+    { "symbol": "xmas25_queue_npc_4", "role": "queue", "x": 3216, "y": 3395, "z": 0, "face": "EAST" },
+    { "symbol": "xmas25_queue_npc_5", "role": "queue", "x": 3215, "y": 3395, "z": 0, "face": "EAST" },
+    { "symbol": "xmas25_queue_npc_6", "role": "queue", "x": 3215, "y": 3396, "z": 0, "face": "SOUTH" },
+    { "symbol": "xmas25_queue_npc_7", "role": "queue", "x": 3215, "y": 3397, "z": 0, "face": "SOUTH" },
+    { "symbol": "xmas25_queue_npc_8", "role": "queue", "x": 3215, "y": 3398, "z": 0, "face": "SOUTH" },
+    { "symbol": "xmas25_queue_npc_9", "role": "queue", "x": 3215, "y": 3399, "z": 0, "face": "SOUTH" },
     { "symbol": "xmas25_puffin", "role": "decoration", "x": 3230, "y": 3407, "z": 0, "face": "SOUTH" }
   ],
   "puffinSource": "Wiki Puffin (2025 Christmas event), revision15208003, original map pin3230,3407. Facing is inferred; no interaction option is added.",

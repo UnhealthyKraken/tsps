@@ -172,7 +172,23 @@ test('actual Christmas front guest greets, follows its owner and seats through n
   const id=symbol=>c.CacheDefinitions.getArchivedId('christmas-2025','npc',symbol);
   const front=[...c.World.getNpcs()].find(npc=>npc?.getId()===id('xmas25_queue_npc_1'));
   assert.ok(front?.isRegistered(),'annual scene must create its actual native queue parent');
+  const queue=Array.from({length:9},(_,i)=>[...c.World.getNpcs()].find(npc=>npc?.getId()===id('xmas25_queue_npc_'+(i+1))));
+  assert.equal(queue.filter(npc=>npc?.isRegistered()).length,9,'all nine original queue parents must be present, not only its front');
+  const queueNames=owner=>queue.map(npc=>npc.getCurrentDefinition(owner)?.getName()).filter(Boolean);
+  const names=['Sir Prysin','Aggie','Jobless Jim','Hans','Karim','Oziach','Rommik','Doris','Herquin'];
   assert.equal(Progress.begin(api,player,0),true);assert.equal(Progress.begin(api,other,0),true);
+  assert.deepEqual(queueNames(player),names,'real archived morphs initially show the complete sourced queue');
+  assert.deepEqual(queueNames(other),names);
+  for(const index of [3,8]){
+    const actor=queue[index],p=actor.getLocation(),revision=Progress.read(player).revision;
+    player.getMovementQueue().reset();player.setLocation(new c.Location(p.getX()+1,p.getY(),p.getZ()));player.setNeedsPlacement(false);
+    await connection.dispatch([{type:'npc_option',index:actor.getIndex(),clickType:1}]);connection.processTurnPackets();
+    for(let tick=0;tick<8;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+    assert.equal(player.getDialogueManager().getCurrent()?.getText(),'Hello, '+names[index]+'. Merry Christmas!','new queue positions reach their canonical seasonal dialogue through native NPC packets');
+    await resume();assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/^Merry Christmas,/);
+    player.closeInterruptibleInterfaces();
+    assert.equal(Progress.read(player).revision,revision,'talking to an unserved background guest cannot advance the activity');
+  }
   player.setLocation(new c.Location(3217,3395));player.setNeedsPlacement(false);
   await connection.dispatch([{type:'npc_option',index:front.getIndex(),clickType:1}]);connection.processTurnPackets();
   for(let tick=0;tick<12;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
@@ -192,6 +208,8 @@ test('actual Christmas front guest greets, follows its owner and seats through n
   assert.equal(Progress.read(player).phase,'table');assert.equal(Progress.read(other).phase,'queue');
   assert.equal(front.getCurrentDefinition(player).getId(),id('xmas25_aggie'),'queue advances for this player only');
   assert.equal(front.getCurrentDefinition(other).getId(),id('xmas25_sir_prysin'));
+  assert.deepEqual(queueNames(player),names.slice(1),'greeting shifts every queue position and hides the final parent for this player');
+  assert.deepEqual(queueNames(other),names,'another player retains their unadvanced queue');
   let follower=[...c.World.getNpcs()].find(npc=>npc?.getOwner()===player&&npc.getId()===id('xmas25_sir_prysin'));
   assert.ok(follower?.isRegistered());assert.equal(follower.isOwnerOnly(),true);assert.equal(follower.getFollowing(),player);
   const start=follower.getLocation().clone();follower.setNeedsPlacement(false);
@@ -251,7 +269,9 @@ test('actual Christmas front guest greets, follows its owner and seats through n
   const servedRevision=Progress.read(player).revision;await talkToSeat();
   assert.equal(Progress.read(player).revision,servedRevision,'repeat Talk-to cannot deliver the meal twice');
   assert.equal(Progress.read(other).phase,'queue','another player does not inherit the serving result');
+  assert.deepEqual(queueNames(player),names.slice(1),'serving the escorted guest must not shift the queue a second time');
   PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  assert.ok(queue.every(npc=>!npc.isRegistered()),'closing the window deregisters all nine actual queue parents');
   assert.equal(front.isRegistered(),false);assert.equal(seat.isRegistered(),false);
 });
 

@@ -45,6 +45,7 @@ module.exports={
     api.onObjectInteraction('Bar',{'Get Drink From':Objects.drink.bind(null,api)});
     api.onObjectInteraction('Crate',{Search:Objects.search.bind(null,api)});
     api.onCustomEvent('npc-dialogue:line',Dialogue.line.bind(null,api));
+    api.onCustomEvent('npc-dialogue:choice',Dialogue.choice.bind(null,api));
     api.onCustomEvent('npc-dialogue:action',Dialogue.action.bind(null,api));
     api.onCanBankItem(canBank.bind(null,api));
     api.onItemAction('Serving platter',{Inspect:Items.inspect.bind(null,api)});

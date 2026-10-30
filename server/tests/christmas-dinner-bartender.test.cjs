@@ -50,7 +50,19 @@ test('native bartender conversation uses annual greetings and retains the ordina
     f.player.setAttribute(Progress.PROGRESS_ATTRIBUTE,{...Progress.initial(),phase,...(phase==='complete'?{customer:3,seats:[0,1,2]}:{})});
     await talk(f);assert.equal(text(f),expected);
     await resume(f);assert.equal(MultiChatboxPrompt.getPending(f.player)?.options[0],'A glass of your finest ale please.');
-    assert.equal(MultiChatboxPrompt.getPending(f.player)?.options.length,3);await close(f);
+    assert.deepEqual(MultiChatboxPrompt.getPending(f.player)?.options,[
+      'A glass of your finest ale please.','Can you recommend where an adventurer might make his fortune?',
+      'Do you know where I can get some good equipment?',
+    ]);
+    if(phase==='queue'){
+      await resume(f,2);assert.equal(text(f),'Can you recommend where an adventurer might make his fortune?');
+      await resume(f);assert.match(text(f),/makes the game too easy/);
+      await resume(f);assert.ok(MultiChatboxPrompt.getPending(f.player)?.options.includes('Game? What are you talking about?'));
+    }else if(phase==='complete'){
+      await resume(f,3);assert.equal(text(f),'Do you know where I can get some good equipment?');
+      await resume(f);assert.match(text(f),/sword shop across the road/);
+    }
+    await close(f);
   }
   await talk(f);PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
   assert.equal(f.player.getDialogueManager().getCurrent(),undefined,'closing the annual window cancels its owned greeting');

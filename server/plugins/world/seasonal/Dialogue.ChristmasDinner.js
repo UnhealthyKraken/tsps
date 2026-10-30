@@ -5,6 +5,11 @@ const PAGE='2025 Christmas event';
 const SOURCE=require('../../../data/definitions/event-dialogues.json')[PAGE];
 const BARTENDER_PAGE='Bartender (Blue Moon Inn)';
 const BARTENDER_SOURCE=require('../../../data/definitions/npc-dialogues.json')[BARTENDER_PAGE];
+const BARTENDER_VARIANTS=Object.freeze({
+  new:'starting-the-event-talking-to-the-bartender-blue-moon-inn-before-starting-the-event',
+  active:'starting-the-event-talking-to-the-bartender-after-starting-the-event',
+  complete:'completing-the-event-talking-to-the-bartender-after-completing-the-event',
+});
 const CUSTOMERS=['Sir Prysin','Aggie','Jobless Jim'];
 const sessions=new WeakMap();
 let enabled=false,epoch=0;
@@ -25,22 +30,38 @@ function transition(api,player,session,name,...args){
   session.revision=Progress.read(player).revision;
   return true;
 }
-function start(api,{player,npc,npcId,variant,page=PAGE,...options}){
+function start(api,{player,npc,npcId,variant,page=PAGE,select,...options}){
   const source=page===PAGE?SOURCE:page===BARTENDER_PAGE?BARTENDER_SOURCE:null;
   if(!enabled||!player.isRegistered()||!Array.isArray(source?.variants[variant]))return false;
   const previous=sessions.get(player),state=Progress.read(player);
   const session={...options,npc,page,variant,revision:state.revision,customer:state.customer,epoch};
   sessions.set(player,session);
   const request={player,npc,npcId:npc?.getCurrentDefinition(player)?.getId()??npc?.getId()??npcId,variant:{page,variant},exact:true};
+  if(typeof select==='function')request.select=select;
   api.emitCustomEvent('npc-dialogue:start',request);
   if(!request.handled){if(previous)sessions.set(player,previous);else sessions.delete(player);return false;}
   previous?.cancel?.();session.cancel=request.cancel;
   return true;
 }
 function startBartender(api,event){
-  // Keep the ordinary canonical choices and their shared Bartenders purchase
-  // hooks. Only the greeting changes; the annual window owns this playback.
-  return start(api,{...event,page:BARTENDER_PAGE,variant:BARTENDER_SOURCE.default});
+  const phase=Progress.read(event.player).phase;
+  return start(api,{...event,variant:BARTENDER_VARIANTS[phase]??BARTENDER_VARIANTS.active});
+}
+function choice(api,event){
+  const session=sessions.get(event.player);
+  if(session?.page!==PAGE||!Object.values(BARTENDER_VARIANTS).includes(session.variant)||
+    event.npc!==session.npc||event.npcId!==api.core.CacheDefinitions.getNpcId('bluemoon_bartender')||
+    event.npc?.getPrivateArea?.()||event.npc?.getOwner?.())return;
+  if(!valid(event.player,session)){session.cancel?.();return;}
+  const menu=BARTENDER_SOURCE.variants[BARTENDER_SOURCE.default].find(step=>step.type==='choice');
+  // Annual wording includes '?' on the equipment option; the ordinary source
+  // omits it on its label. Play its original branch without changing either dump.
+  const selected=menu.options.find(option=>option.text===event.option||option.text+'?'===event.option);
+  if(!selected?.steps?.length){session.cancel?.();return;}
+  // Handoff keeps the ordinary source page/step ids so its existing pub policy
+  // owns payment and rewards. Cancelling the old playback stops its empty tail.
+  if(!start(api,{player:event.player,npc:event.npc,page:BARTENDER_PAGE,variant:BARTENDER_SOURCE.default,
+    select:()=>selected.steps}))session.cancel?.();
 }
 function substitute(text,state,session){
   const replacements={'[beverage]':state.drink??session.drink,'[main]':state.main??session.main,
@@ -75,18 +96,6 @@ function condition(api,event){
   return false;
 }
 function line(api,event){
-  const bartender=sessions.get(event.player);
-  if(bartender?.page===BARTENDER_PAGE&&event.pages?.some(row=>row.page===BARTENDER_PAGE)&&
-    event.npc===bartender.npc&&!event.npc?.getPrivateArea?.()&&!event.npc?.getOwner?.()&&
-    event.npcId===api.core.CacheDefinitions.getNpcId('bluemoon_bartender')&&
-    event.text===BARTENDER_SOURCE.variants[BARTENDER_SOURCE.default][0].npc){
-    if(!valid(event.player,bartender)){event.before=()=>bartender.cancel?.();return;}
-    const phase=Progress.read(event.player).phase;
-    const variant=phase==='new'?'starting-the-event-talking-to-the-bartender-blue-moon-inn-before-starting-the-event'
-      :phase==='complete'?'completing-the-event-talking-to-the-bartender-after-completing-the-event'
-      :'starting-the-event-talking-to-the-bartender-after-starting-the-event';
-    event.text=SOURCE.variants[variant][0].text;return;
-  }
   const session=context(event);if(!session)return;
   const state=Progress.read(event.player),original=String(event.text);
   event.text=substitute(original,state,session);
@@ -124,4 +133,4 @@ function action(api,event){
   if(result===false){event.handled=true;event.end=true;}
 }
 
-module.exports={start,startBartender,activate,active,clear,cancelAll,condition,line,action};
+module.exports={start,startBartender,choice,activate,active,clear,cancelAll,condition,line,action};

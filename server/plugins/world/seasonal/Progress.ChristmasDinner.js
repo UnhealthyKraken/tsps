@@ -104,4 +104,11 @@ function serveMeal(api,player,revision,table){
   return save(api,player,state);
 }
 
-module.exports={PROGRESS_ATTRIBUTE,DRINKS,MAINS,SIDES,initial,read,held,platterId,begin,reclaim,discard,greet,seat,orderDrink,takeDrink,serveDrink,orderFood,collect,cook,serveMeal};
+// The reward owner has already exchanged the physical platter when this runs.
+function complete(api,player,revision){
+  const state=read(player);
+  if(state.revision!==revision||state.phase!=='ready'||state.customer!==3)return false;
+  state.phase='complete';return save(api,player,state);
+}
+
+module.exports={PROGRESS_ATTRIBUTE,DRINKS,MAINS,SIDES,initial,read,held,platterId,begin,reclaim,discard,greet,seat,orderDrink,takeDrink,serveDrink,orderFood,collect,cook,serveMeal,complete};

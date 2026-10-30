@@ -70,3 +70,17 @@ test('Christmas unlock names are accepted by the real Diango service and exclude
   for(const symbol of Rewards.RARES)assert.ok(!unlocked.includes(symbol),'tradeable rare awards are not reclaim unlocks');
   assert.deepEqual(snapshot(p),before,'entitlement owner grants no physical items');
 });
+
+test('reward commit exchanges the platter once and preserves unrelated inventory and entitlements',()=>{
+  const p=fixture(),revision=Progress.read(p).revision;
+  p.setAttribute('holiday-rewards:unlocked',['rubber_chicken']);
+  assert.equal(Rewards.claim(api,p,revision),true);
+  assert.equal(Progress.read(p).phase,'complete');
+  assert.equal(p.getInventory().getAmount(platter),0);
+  assert.equal(p.getInventory().getAmount(api.core.ItemIdentifiers.LOGS),15);
+  assert.equal(p.getInventory().getAmount(1039),2);
+  assert.ok(p.getAttribute('holiday-rewards:unlocked').includes('rubber_chicken'));
+  assert.ok(p.getAttribute('holiday-rewards:unlocked').includes('xm21_present_1'));
+  const before=snapshot(p);assert.equal(Rewards.claim(api,p,revision),false);
+  assert.deepEqual(snapshot(p),before,'repeated completion cannot mint more rares');
+});

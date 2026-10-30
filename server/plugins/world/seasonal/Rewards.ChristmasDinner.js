@@ -52,4 +52,20 @@ function plan(api,player,revision){
   return {items:copy.getItems(),rewards};
 }
 
-module.exports={COSMETICS,RARES,UNLOCKS,REQUIRED_FREE_SLOTS,RARE_PLAY_SECONDS,eligibleForRares,plan};
+function claim(api,player,revision){
+  const next=plan(api,player,revision);if(!next)return false;
+  // HolidayRewards is the synchronous entitlement owner: it validates the entire
+  // catalogue request before changing attributes and never mutates inventory.
+  const unlock={player,items:[...UNLOCKS]};api.emitCustomEvent('holiday-rewards:unlock',unlock);
+  if(unlock.accepted!==true)return false;
+  player.getInventory().setItems(next.items);
+  if(!Progress.complete(api,player,revision))throw new Error('Christmas completion changed during synchronous reward commit');
+  player.getInventory().refreshItems();
+  for(const row of next.rewards.slice(0,COSMETICS.length))
+    player.sendMessage("You've received a holiday item: <col=e00a19>"+api.core.CacheDefinitions.getItem(row.id).name);
+  player.sendMessage("You've completed the Christmas event: Christmas Din-Dins at the Blue Moon Inn");
+  player.sendMessage('Current and previous Christmas rewards have been unlocked at Diango in Draynor Village.');
+  return true;
+}
+
+module.exports={COSMETICS,RARES,UNLOCKS,REQUIRED_FREE_SLOTS,RARE_PLAY_SECONDS,eligibleForRares,plan,claim};

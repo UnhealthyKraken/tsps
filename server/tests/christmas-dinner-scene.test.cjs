@@ -15,12 +15,37 @@ before(async()=>{
 });
 function at(row){return new c.Location(row.x,row.y,row.z);}
 function originals(){return data.placements.map(row=>({row,objects:[...(c.MapObjects.mapObjects.get(c.MapObjects.getHash(row.x,row.y,row.z))??[])].filter(o=>o.getLocation().equals(at(row))&&o.getType()===row.shape)}));}
-function clipping(){
+function clipping(area=null){
   const flags=[];
-  for(const [minX,maxX,minY,maxY]of [[3214,3245,3393,3417],[3230,3244,9795,9809]])for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++)flags.push(c.RegionManager.getClipping(x,y,0));
+  for(const [minX,maxX,minY,maxY]of [[3214,3245,3393,3417],[3230,3244,9795,9809]])for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++)flags.push(c.RegionManager.getClipping(x,y,0,area));
   return flags;
 }
 function install(bundles){const request={bundles};PM.emitCustomEvent('definition-archives:install',request);assert.equal(request.handled,true,request.error);}
+
+test('private dinner scenery copies and destroys through real object owners without touching the public scene',()=>{
+  assert.equal(Scene.open(api).handled,true);
+  class DinnerArea extends c.PrivateArea{}
+  const area=new DinnerArea([new c.Boundary(3210,3230,3388,3415,0)]);
+  const publicObjects=[...c.World.getObjects()],publicRemoved=[...c.World.getRemovedObjects()],flags=clipping();
+  try{
+    const result=Scene.copyToPrivateArea(api,area);assert.equal(result.handled,true,result.error);
+    const copies=area.getObjects();assert.equal(copies.length,Scene.objects().length);
+    for(const row of Scene.objects()){
+      const copy=copies.find(o=>o.getId()===row.object.getId()&&o.getType()===row.object.getType()&&o.getLocation().equals(row.object.getLocation()));
+      assert.ok(copy,'private copy for '+row.symbol);assert.notEqual(copy,row.object);
+      assert.equal(c.MapObjects.get(copy.getId(),copy.getLocation(),area),copy);
+      assert.equal(c.MapObjects.get(row.object.getId(),row.object.getLocation(),null),row.object);
+    }
+    assert.ok(c.World.getRemovedObjects().some(o=>o.getPrivateArea()===area),'private scene keeps its own original-map removals for rebuild');
+    assert.equal(Scene.copyToPrivateArea(api,area).handled,false,'cannot replace scenery already owned by this area');
+    assert.deepEqual(c.World.getObjects().filter(o=>!o.getPrivateArea()),publicObjects);
+    assert.deepEqual(clipping(),flags,'private footprints cannot change public clipping');
+    assert.deepEqual(clipping(area),flags,'private actor pathing retains the same scene collision');
+    area.destroy();
+    assert.deepEqual(c.World.getObjects(),publicObjects);assert.deepEqual(c.World.getRemovedObjects(),publicRemoved);
+    assert.equal(Scene.active(),true);
+  }finally{area.destroy();assert.equal(Scene.close(api).handled,true);}
+});
 
 test('actual Christmas front guest greets, follows its owner and seats through native Table Serve',async t=>{
   const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');

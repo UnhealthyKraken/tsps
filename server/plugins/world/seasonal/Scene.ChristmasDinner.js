@@ -133,4 +133,25 @@ function replay(api,{regionId}){
 function objects(){return scene?scene.rows.filter(row=>row.object).map(row=>({symbol:row.symbol,object:row.object})):[];}
 function active(){return scene?.ready===true;}
 
-module.exports={open,close,objects,active,replay};
+function copyToPrivateArea(api,area){
+  const c=api.core;
+  if(!active()||!(area instanceof c.PrivateArea)||area.isDestroyed()||
+    area.getPlayers().length||area.getNpcs().length||area.getObjects().length)
+    return {handled:false,error:'Christmas cutscene requires a new empty private area'};
+  try{
+    // Keep the original-map removals instance-owned too: a private scene rebuild
+    // must not reveal the native rug/chairs underneath these replacements.
+    for(const row of scene.rows)for(const original of row.normal){
+      const hidden=new c.GameObject(original.getId(),original.getLocation().clone(),original.getType(),original.getFace(),area);
+      c.ObjectManager.deregister(hidden,true);
+    }
+    for(const row of scene.rows)if(row.object){
+      const original=row.object;
+      const copy=new c.GameObject(original.getId(),original.getLocation().clone(),original.getType(),original.getFace(),area);
+      c.ObjectManager.register(copy,true);
+    }
+    return {handled:true};
+  }catch(error){area.destroy();return {handled:false,error:error.message};}
+}
+
+module.exports={open,close,objects,active,replay,copyToPrivateArea};

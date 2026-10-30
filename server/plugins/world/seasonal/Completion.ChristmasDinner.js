@@ -19,9 +19,11 @@ function live(api,record){
     state.phase==='ready'&&state.revision===revision&&Progress.held(api,player)&&
     record.npcs.every(npc=>npc.isRegistered()&&api.core.World.getNpcs().get(npc.getIndex())===npc&&npc.getOwner()===player&&npc.getPrivateArea()===area);
 }
-function clear(api,{player},leaving=false){
+function clear(api,{player,keepFade=false},leaving=false){
+  if(!keepFade)Presentation.cancel(api,{player});
   const record=sessions.get(player);if(!record)return;
   sessions.delete(player);api.core.TaskManager.cancelTasks(record);
+  if(!keepFade)Presentation.closeFade(record);
   Dialogue.clear({player,completion:record});
   const owned=player.getPrivateArea()===record.area;
   // Detach actors before the last player leaves: PrivateArea.postLeave destroys
@@ -40,7 +42,7 @@ function clear(api,{player},leaving=false){
   }
   if(!record.area.isDestroyed())record.area.destroy();
 }
-function cancelAll(api){for(const player of [...sessions.keys()])clear(api,{player});}
+function cancelAll(api){for(const player of [...sessions.keys()])clear(api,{player});Presentation.cancelAll(api);}
 function spawn(api,record,row){
   const c=api.core,id=c.CacheDefinitions.getArchivedId('christmas-2025','npc',row.symbol);
   if(id===null)throw new Error('Missing Christmas cutscene actor '+row.symbol);
@@ -72,10 +74,16 @@ function tick(api,record){
       variant:'completing-the-event-sitting-at-the-table',completion:record,
       guard:()=>live(api,record),select:steps=>steps.find(step=>step.id==='uSR1LP').steps.slice(1)}))clear(api,record);
   }else if(record.phase==='emote'&&--record.wait<=0){
+    if(!Presentation.fadeOut(api,record)){clear(api,record);return;}
+    record.phase='fade-out';record.wait=Presentation.FADE_TICKS;
+  }else if(record.phase==='fade-out'){
+    if(!Presentation.ownsFade(record)){clear(api,record);return;}
+    if(--record.wait>0)return;
     // Re-plan on the live inventory at the commit point: neither sitting nor
     // earlier capacity checks authorize a later grant on changed state.
     if(!Rewards.claim(api,record.player,record.revision)){clear(api,record);return;}
-    clear(api,record);
+    clear(api,{player:record.player,keepFade:true});
+    Presentation.reveal(api,record);
     Rewards.show(api,record.player);
   }
 }

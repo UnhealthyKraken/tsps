@@ -117,6 +117,32 @@ test('native final Table Serve enforces source capacity and calendar closure can
   assert.ok(!c.World.getRemovedObjects().some(o=>o.getPrivateArea()===area));
   assert.equal(Scene.active(),false);
 
+  // Reach the fade through native Serve and the actual actor/dialogue tasks,
+  // then replace it with another owner's same-ID mount before cancellation.
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const cancelledTable=Scene.objects().find(row=>row.symbol==='xmas25_table_4').object,cp=cancelledTable.getLocation();
+  await connection.dispatch([{type:'object_option',id:cancelledTable.getId(),x:cp.getX(),y:cp.getY(),clickType:1,action:'Serve'}]);connection.processTurnPackets();
+  for(let tick=0;tick<4;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  const cancelledArea=player.getPrivateArea();assert.ok(cancelledArea);
+  const sender=player.getPacketSender(),atmosphere=c.CacheDefinitions.getComponentId('toplevel_osrs_stretch:overlay_atmosphere');
+  for(let tick=0;tick<100&&!sender.getSubInterfaceAt(atmosphere);tick++){
+    for(const npc of cancelledArea.getNpcs())npc.process();
+    c.World.updateLocalNpcs(player,[...c.World.getNpcs()].filter(Boolean));
+    AreaManager.process(player);c.TaskManager.process();
+    for(const npc of cancelledArea.getNpcs()){npc.resetUpdating();npc.setNeedsPlacement(false);}
+  }
+  const fade=sender.getSubInterfaceAt(atmosphere);assert.ok(fade,'the live scene reaches its native fade-out');
+  assert.equal(Progress.read(player).phase,'ready','fade-out must finish before the reward commit');
+  assert.equal(player.getInventory().getAmount(32928),0);
+  sender.sendSubInterface(atmosphere,fade.groupId,1);
+  const foreign=sender.getSubInterfaceAt(atmosphere);assert.notEqual(foreign,fade);
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  assert.equal(sender.getSubInterfaceAt(atmosphere),foreign,'calendar cleanup cannot close a replacement from another owner');
+  assert.equal(player.getPrivateArea(),null);assert.equal(cancelledArea.isDestroyed(),true);
+  for(let tick=0;tick<10;tick++)c.TaskManager.process();
+  assert.equal(Progress.read(player).phase,'ready');assert.equal(player.getInventory().getAmount(32928),0);
+  assert.equal(sender.closeSubInterfaceMount(foreign),true,'the replacement owner can still close normally');
+
   // Retry the exact native route, now letting the real chef movement queue and
   // source overhead dialogue complete. Only the three prior meals are fixtures.
   PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
@@ -150,12 +176,19 @@ test('native final Table Serve enforces source capacity and calendar closure can
   player.getSession().flushPackets();
   const jingle=require('../dist/net/protocol/ClientProtocol').encodePlayJingle(297,0);
   assert.ok(packets.some(packet=>Buffer.from(packet).includes(jingle)),'the real completion path sends the sourced Christmas jingle');
+  const {encodeWidgetOpenSub,encodeWidgetRunScript}=require('../dist/net/protocol/ClientProtocol');
+  const fadeTarget=c.CacheDefinitions.getComponentId('toplevel_osrs_stretch:overlay_atmosphere');
+  const fadeGroup=c.CacheDefinitions.getInterfaceId('fade_overlay');
+  const fadeOut=encodeWidgetOpenSub(fadeTarget,fadeGroup,1,{postScripts:[{scriptId:948,args:[0,255,0,0,50]}]});
+  assert.ok(packets.some(packet=>Buffer.from(packet).includes(fadeOut)),'normal completion sends native fade-out before returning to the pub');
+  assert.ok(packets.some(packet=>Buffer.from(packet).includes(encodeWidgetRunScript(948,[0,0,0,255,50]))),'the same owned overlay fades back into the public world');
   assert.ok(packets.some(packet=>Buffer.from(packet).includes(Buffer.from('Christmas Din-Dins at the Blue Moon Inn'))));
   const close=c.CacheDefinitions.getComponentId('eventscroll:close_button');
   await connection.dispatch([{type:'widget_action',widgetId:close,groupId:close>>>16,childId:close&65535,buttonNum:1,slot:-1}]);connection.processTurnPackets();
   assert.equal(player.getInterfaceId(),-1,'native reward-scroll Close dismisses its own modal');
   const items=player.getInventory().getItems().map(item=>[item.getId(),item.getAmount()]);
   for(let tick=0;tick<100;tick++)c.TaskManager.process();
+  assert.equal(sender.getSubInterfaceAt(atmosphere),undefined,'completed fade-in releases its native overlay and task');
   assert.deepEqual(player.getInventory().getItems().map(item=>[item.getId(),item.getAmount()]),items,'completed callbacks cannot award twice');
 });
 

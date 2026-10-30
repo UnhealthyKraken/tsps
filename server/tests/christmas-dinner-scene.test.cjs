@@ -75,6 +75,26 @@ test('actual Christmas front guest greets, follows its owner and seats through n
   const seat=[...c.World.getNpcs()].find(npc=>npc?.getId()===id('xmas25_table_npc_1'));
   assert.ok(seat?.isRegistered());assert.equal(seat.getCurrentDefinition(player).getId(),id('xmas25_sir_prysin'));
   assert.equal(seat.getCurrentDefinition(other).getId(),id('xmas25_stool_empty'));
+  // Order selection is controlled setup here; the real NPC packet below must
+  // still reach meal delivery, as the original videos' Talk-to action does.
+  const apply=(name,...args)=>assert.equal(Progress[name](api,player,Progress.read(player).revision,...args),true);
+  apply('orderDrink','chocolate milk');apply('takeDrink','chocolate milk');apply('serveDrink',0);
+  apply('orderFood','trout',['cabbage','parsnips','stuffing']);
+  for(const ingredient of ['trout','cabbage','parsnips','stuffing'])apply('collect',ingredient);
+  apply('cook');
+  async function talkToSeat(){
+    await connection.dispatch([{type:'npc_option',index:seat.getIndex(),clickType:1}]);connection.processTurnPackets();
+    for(let tick=0;tick<16;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  }
+  await talkToSeat();assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Here is your meal/);
+  assert.equal(Progress.read(player).phase,'cooked');await resume();
+  assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Thank you/);
+  assert.equal(Progress.read(player).phase,'cooked','unacknowledged delivery cannot advance the queue');
+  await resume();assert.equal(Progress.read(player).customer,1);assert.equal(Progress.read(player).phase,'queue');
+  for(let n=0;n<8&&player.getDialogueManager().getCurrent();n++)await resume();
+  const servedRevision=Progress.read(player).revision;await talkToSeat();
+  assert.equal(Progress.read(player).revision,servedRevision,'repeat Talk-to cannot deliver the meal twice');
+  assert.equal(Progress.read(other).phase,'queue','another player does not inherit the serving result');
   PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
   assert.equal(front.isRegistered(),false);assert.equal(seat.isRegistered(),false);
 });

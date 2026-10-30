@@ -15,13 +15,17 @@ function customer(api,event,role){
     npc.getCurrentDefinition(player)?.getId()===api.core.CacheDefinitions.getArchivedId('christmas-2025','npc',GUESTS[state.customer])){
     variant='serving-the-customers-talking-to-the-customer';escort=true;
   }else if(role.kind==='escort'&&state.phase==='table')variant='serving-the-customers-talking-to-the-customer-before-picking-a-table';
+  // Wiki serving flow and original LYhx7ksRL5E1:14: Talk-to delivers the
+  // cooked meal too; the Table Serve route is not the only native entrypoint.
+  else if(role.kind==='seat'&&state.phase==='cooked'&&state.seats[state.customer]===role.table)
+    variant='serving-the-customers-serving-the-table-with-cooked-food';
   else{
     const name=npc.getCurrentDefinition(player)?.getName();
     const served=role.kind==='seat'&&state.seats.indexOf(role.table)<state.customer;
     const suffix=name==='Jobless Jim'?'jobless-jim-'+(served?'after-he-had-his-dinner':'before-he-had-his-dinner'):MISC[name];
     if(suffix)variant='misc-npc-dialogue-talking-to-'+suffix;
   }
-  if(variant)Dialogue.start(api,{player,npc,variant,escort,guard:()=>Actors.role(api,npc,player)===role});
+  if(variant)Dialogue.start(api,{player,npc,variant,escort,table:role.table,guard:()=>Actors.role(api,npc,player)===role});
   // Never route our holiday variants into ordinary Prysin/Aggie quest dialogue.
   event.handled=true;
 }

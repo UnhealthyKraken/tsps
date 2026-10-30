@@ -159,7 +159,7 @@ test('native bar object packets refuse a wrong drink and load only the requested
   assert.equal(Progress.read(player).revision,revision,'repeated bar click cannot duplicate contents');
 });
 
-test('original fish and vegetable crate packets open native main/side menus and collect actual orders',async t=>{
+test('four original crate packet paths open native main/side menus and collect actual orders',async t=>{
   const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
   const {Player}=require('../dist/game/entity/impl/player/Player');
   const {PlayerSession}=require('../dist/net/PlayerSession');
@@ -174,7 +174,11 @@ test('original fish and vegetable crate packets open native main/side menus and 
   apply('begin');apply('greet',0);apply('seat',0);apply('orderDrink','beer');apply('takeDrink','beer');apply('serveDrink',0);apply('orderFood','trout',['cabbage','parsnips','stuffing']);
   async function click(symbol){
     const object=Scene.objects().find(row=>row.symbol===symbol).object,p=object.getLocation();
-    player.setLocation(p.clone().add(-1,0));player.setNeedsPlacement(false);
+    // Use the broccoli approach shown in the original footage rather than
+    // assuming every crate is operated from the same western approach.
+    const approach=p.clone().add(symbol==='xmas25_crate01_broccoli01'?1:-1,0);
+    assert.equal(c.RegionManager.getClipping(approach.getX(),approach.getY(),approach.getZ())&0x100,0,'fixture must stand outside solid scenery');
+    player.setLocation(approach);player.setNeedsPlacement(false);
     await connection.dispatch([{type:'object_option',id:object.getId(),x:p.getX(),y:p.getY(),clickType:1,action:'Search'}]);connection.processTurnPackets();
     for(let count=0;count<4;count++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
   }
@@ -188,9 +192,13 @@ test('original fish and vegetable crate packets open native main/side menus and 
   assert.match(player.getDialogueManager().getCurrent().getText(),/I'm after trout\./);player.closeInterruptibleInterfaces();
   await click('xmas25_crate01_fish01');
   await choose('Next');await choose('Trout');assert.deepEqual(Progress.read(player).gathered,['trout']);player.closeInterruptibleInterfaces();
+  await click('xmas25_crate01_meat01');assert.deepEqual(MultiChatboxPrompt.getPending(player)?.options,['Beef','Jubbly','Chicken','Next']);
+  await choose('Next');await choose('Trout');assert.deepEqual(Progress.read(player).gathered,['trout'],'the meat main-menu also rejects an already-held main');player.closeInterruptibleInterfaces();
   await click('xmas25_crate01_vegetable01');assert.deepEqual(MultiChatboxPrompt.getPending(player)?.options,['Sprouts','Potatoes','Cauliflower','Next']);
   await choose('Next');await choose('Cabbage');assert.deepEqual(Progress.read(player).gathered,['trout','cabbage']);
   assert.equal(player.getInventory().getAmount(Progress.platterId(api)),1,'ingredients live on the one platter, not as free inventory food');
+  player.closeInterruptibleInterfaces();await click('xmas25_crate01_broccoli01');assert.deepEqual(MultiChatboxPrompt.getPending(player)?.options,['Sprouts','Potatoes','Cauliflower','Next']);
+  await choose('Next');await choose('Cabbage');assert.deepEqual(Progress.read(player).gathered,['trout','cabbage'],'broccoli side-menu also rejects a duplicate');
   player.closeInterruptibleInterfaces();await click('xmas25_crate01_vegetable01');await choose('Next');await choose('Cabbage');
   assert.deepEqual(Progress.read(player).gathered,['trout','cabbage'],'already-carried side cannot be collected twice');
   player.closeInterruptibleInterfaces();await click('xmas25_crate01_vegetable01');

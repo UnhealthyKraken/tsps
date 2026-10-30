@@ -11,11 +11,14 @@ const BAR_DRINKS=Object.freeze({
   xmas25_bar_drinks_left:'eggnog',xmas25_bar_drinks_middle:'milk',
   xmas25_bar_drinks_middle2:'chocolate milk',xmas25_bar_drinks_right:'wine',
 });
-// Original footage zMOOL1CZhhk2:28/2:43 shows the vegetable side menu and
-// fish main menu. Other crates still require their own identity/path evidence.
+// Original footage zMOOL1CZhhk2:28/2:43 shows vegetable sides and fish mains;
+// LYhx7ksRL5E0:56/1:08 independently shows broccoli sides and meat mains.
+// Other crates still require their own identity/path evidence.
 const CRATE_VARIANTS=Object.freeze({
   xmas25_crate01_fish01:'serving-the-customers-searching-the-main-course-crate',
+  xmas25_crate01_meat01:'serving-the-customers-searching-the-main-course-crate',
   xmas25_crate01_vegetable01:'serving-the-customers-searching-the-side-dish-crate',
+  xmas25_crate01_broccoli01:'serving-the-customers-searching-the-side-dish-crate',
 });
 function drink(api,{player,object}){
   if(!Scene.active()||!Dialogue.active())return false;

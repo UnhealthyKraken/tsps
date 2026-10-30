@@ -345,6 +345,7 @@ export class PlayerSession {
     }
 
     let playerSync: Buffer;
+    let observerViews: PlayerView[] | undefined;
     if (initialSync) {
       playerSync = ServerPerf.measurePhase(
         "network.flush.encode_player_sync",
@@ -358,6 +359,7 @@ export class PlayerSession {
           this.createPlayerView(target, target === player && this.pendingInitialLocalAppearance)
         )
       );
+      observerViews = views;
       this.pendingInitialLocalAppearance = false;
       playerSync = ServerPerf.measurePhase(
         "network.flush.encode_player_sync",
@@ -405,6 +407,14 @@ export class PlayerSession {
         };
       })
     );
+    // Observers consume exactly the views prepared for this session, before update flags
+    // reset. The initial login frame has no actor views; observers start next cycle.
+    if (observerViews) {
+      PluginManager.emitCustomEvent("network:sync-views", {
+        player, tick, baseX: this.sceneBaseX, baseY: this.sceneBaseY,
+        players: observerViews, npcs: npcViews,
+      });
+    }
     const localForceMovement = player.getForceMovement();
     const boatAboard = BoatManager.getBoatAboard(player);
     const rootTile = boatAboard ? BoatManager.rootLocation(player) : undefined;

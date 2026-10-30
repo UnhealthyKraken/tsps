@@ -76,7 +76,9 @@ function line(api,event){
   if(session.variant==='serving-the-customers-talking-to-the-customer'&&original.startsWith('Let me show'))after=()=>transition(api,event.player,session,'greet',session.customer);
   if(session.variant==='serving-the-customers-talking-to-the-customer-after-picking-a-table'&&original.includes('[beverage]'))before=()=>transition(api,event.player,session,'orderDrink',session.drink);
   if(session.variant==='serving-the-customers-serving-the-table-after-getting-the-drink'&&original.startsWith('Here is your drink'))before=()=>transition(api,event.player,session,'serveDrink',session.table);
-  if(['serving-the-customers-serving-the-table-after-getting-the-drink','serving-the-customers-talking-to-the-customer-again-before-getting-the-order'].includes(session.variant)&&original.includes('[main]'))after=()=>transition(api,event.player,session,'orderFood',session.main,session.sides);
+  // Once the guest has shown the order, Inspect and a resumed session must
+  // retain it even when the player closes instead of pressing Continue.
+  if(['serving-the-customers-serving-the-table-after-getting-the-drink','serving-the-customers-talking-to-the-customer-again-before-getting-the-order'].includes(session.variant)&&original.includes('[main]'))before=()=>transition(api,event.player,session,'orderFood',session.main,session.sides);
   if(session.variant==='serving-the-customers-serving-the-table-with-cooked-food'&&event.step.speaker==='[Customer]')after=()=>transition(api,event.player,session,'serveMeal',session.table);
   if(session.variant==='starting-the-event-talking-to-the-cook-after-losing-the-serving-tray'&&original.startsWith("Not a problem, here's"))before=()=>transition(api,event.player,session,'reclaim');
   event.before=()=>{if(!valid(event.player,session)||(before&&before()!==true))abort(event.player);};

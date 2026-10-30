@@ -80,6 +80,24 @@ test('scheduler closure invalidates pending native continuation before it can mu
   Dialogue.activate({key:'christmas-2025',active:false});await finish(f);assert.equal(Progress.read(f.player).phase,'queue');
   Dialogue.activate({key:'christmas-2025',active:true});
 });
+
+test('a displayed food order survives closing before Continue and can be inspected immediately',async t=>{
+  for(const variant of ['serving-the-customers-serving-the-table-after-getting-the-drink','serving-the-customers-talking-to-the-customer-again-before-getting-the-order']){
+    const f=fixture(t);apply(f,'begin');apply(f,'greet',0);apply(f,'seat',0);apply(f,'orderDrink','beer');apply(f,'takeDrink','beer');
+    if(variant.includes('again-before'))apply(f,'serveDrink',0);
+    // Fixed order input isolates persistence; this does not establish live RNG.
+    play(f,variant,{table:0,main:'trout',sides:['cabbage','parsnips','stuffing']});
+    for(let count=0;count<12&&!f.player.getDialogueManager().getCurrent()?.getText().includes('For my main');count++)await resume(f);
+    assert.match(f.player.getDialogueManager().getCurrent()?.getText()??'',/For my main, I would like trout/);
+    assert.equal(Progress.read(f.player).phase,'ingredients','the visible order must already belong to saved progression');
+    await f.connection.dispatch([{type:'interface_close'}]);f.connection.processTurnPackets();
+    await itemOp(f,'Inspect');
+    assert.equal(f.player.getDialogueManager().getCurrent()?.text,'I still need to get some trout, cabbage, parsnips, stuffing.');
+    await finish(f);
+    assert.equal(Progress.read(f.player).main,'trout');
+    assert.deepEqual(Progress.read(f.player).sides,['cabbage','parsnips','stuffing']);
+  }
+});
 test('a retained platter can begin a new saved activity without a duplicate handout',async t=>{
   const f=fixture(t);f.player.getInventory().addItem(new api.core.Item(platter,1));
   await start(f);assert.equal(Progress.read(f.player).phase,'queue');assert.equal(f.player.getInventory().getAmount(platter),1);

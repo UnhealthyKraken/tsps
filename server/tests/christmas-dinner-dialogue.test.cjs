@@ -16,9 +16,8 @@ before(async()=>{
   require('../plugins/world/DefinitionArchives.plugin').register(PM.createApi('DefinitionArchives'));
   require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
   const request={bundles:[source.bundle]};PM.emitCustomEvent('definition-archives:install',request);assert.equal(request.handled,true);
-  api.onNpcDialogueCondition(Dialogue.condition.bind(null,api));
-  api.onCustomEvent('npc-dialogue:line',Dialogue.line.bind(null,api));
-  api.onCustomEvent('npc-dialogue:action',Dialogue.action.bind(null,api));
+  require('../plugins/world/ChristmasDinner.plugin').register(api);
+  require('../plugins/interface/DestroyItem.plugin').register(PM.createApi('DestroyItem'));
   Dialogue.activate({key:'christmas-2025',active:true});
   cook=api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef');platter=Progress.platterId(api);
 });
@@ -92,4 +91,67 @@ test('native platter inspection lists only missing ingredients without blank pla
   assert.equal(current.constructor.name,'ItemStatementDialogue');
   assert.equal(current.text,'I still need to get some cabbage, parsnips, stuffing.');
   await finish(f);
+});
+
+async function widget(f,uid,buttonNum,extra={}){
+  await f.connection.dispatch([{type:'widget_action',widgetId:uid,groupId:uid>>>16,childId:uid&65535,buttonNum,...extra}]);
+  f.connection.processTurnPackets();
+}
+async function itemOp(f,option){
+  const {MAIN_INVENTORY_WIDGET_UID}=require('../dist/net/protocol/ClientProtocol');
+  const actions=api.core.CacheDefinitions.getItem(platter).inventoryActions;
+  const index=actions.findIndex(action=>action?.toLowerCase()===option.toLowerCase());assert.ok(index>=0);
+  await widget(f,MAIN_INVENTORY_WIDGET_UID,[2,3,4,6,7][index],{slot:f.player.getInventory().getSlotForItemId(platter),itemId:platter});
+}
+test('actual inventory widget Inspect opens the canonical platter message without a fabricated NPC',async t=>{
+  const f=fixture(t);apply(f,'begin');await itemOp(f,'Inspect');
+  assert.equal(f.player.getDialogueManager().getCurrent()?.text,'The serving platter is empty.');await finish(f);
+  apply(f,'greet',0);apply(f,'seat',0);apply(f,'orderDrink','beer');await itemOp(f,'Inspect');
+  assert.equal(f.player.getDialogueManager().getCurrent()?.text,'I need to get some beer from the bar.');await finish(f);
+  apply(f,'takeDrink','beer');await itemOp(f,'Inspect');
+  assert.equal(f.player.getDialogueManager().getCurrent()?.text,'Currently carrying beer.');await finish(f);
+  Dialogue.activate({key:'christmas-2025',active:false});
+  try{
+    await itemOp(f,'Inspect');
+    assert.ok(!f.player.getDialogueManager().getCurrent(),'inactive activity cannot start a transcript');
+  }finally{Dialogue.activate({key:'christmas-2025',active:true});}
+});
+test('real shared Destroy cancel preserves contents; confirmation empties progress and a reclaimed platter',async t=>{
+  const f=fixture(t);apply(f,'begin');apply(f,'greet',0);apply(f,'seat',0);apply(f,'orderDrink','beer');apply(f,'takeDrink','beer');
+  const state=Progress.read(f.player);
+  await itemOp(f,'Destroy');assert.equal(f.player.getPacketSender().isChatboxInterface(30005),true);
+  assert.equal(f.player.getInventory().getAmount(platter),1);
+  await widget(f,(30005<<16)|12,1);assert.deepEqual(Progress.read(f.player),state);
+  await itemOp(f,'Destroy');await widget(f,(30005<<16)|11,1);
+  assert.equal(f.player.getInventory().getAmount(platter),0);
+  assert.equal(Progress.read(f.player).drinkHeld,false,'confirmed loss discards carried drink immediately');
+  assert.ok(Progress.read(f.player).revision>state.revision,'loss invalidates existing continuations');
+  play(f,'starting-the-event-talking-to-the-cook-after-losing-the-serving-tray');await finish(f);
+  assert.equal(f.player.getInventory().getAmount(platter),1);assert.equal(Progress.read(f.player).drinkHeld,false);
+  await widget(f,(30005<<16)|11,1);assert.equal(f.player.getInventory().getAmount(platter),1,'old confirmation cannot destroy the replacement');
+});
+test('native Inspect follows ingredient/cooked states and confirmed destruction removes the cooked meal',async t=>{
+  const f=fixture(t);apply(f,'begin');apply(f,'greet',0);apply(f,'seat',0);apply(f,'orderDrink','beer');apply(f,'takeDrink','beer');apply(f,'serveDrink',0);
+  apply(f,'orderFood','trout',['cabbage','parsnips','stuffing']);apply(f,'collect','trout');
+  await itemOp(f,'Inspect');assert.equal(f.player.getDialogueManager().getCurrent()?.text,'I still need to get some cabbage, parsnips, stuffing.');await finish(f);
+  for(const ingredient of ['cabbage','parsnips','stuffing'])apply(f,'collect',ingredient);
+  await itemOp(f,'Inspect');assert.equal(f.player.getDialogueManager().getCurrent()?.text,'The serving platter is full of uncooked ingredients. Take them to the Cook!');await finish(f);
+  apply(f,'cook');await itemOp(f,'Inspect');assert.equal(f.player.getDialogueManager().getCurrent()?.text,'The serving platter has a fresh, hot, Christmas dinner on it.');await finish(f);
+  await itemOp(f,'Destroy');await widget(f,(30005<<16)|11,1);
+  assert.equal(Progress.read(f.player).phase,'ingredients');assert.deepEqual(Progress.read(f.player).gathered,[]);
+  assert.equal(apply(f,'serveMeal',0),false);
+  play(f,'starting-the-event-talking-to-the-cook-after-losing-the-serving-tray');await finish(f);
+  assert.equal(f.player.getInventory().getAmount(platter),1);assert.equal(apply(f,'serveMeal',0),false);
+});
+test('native inventory input rejects a stale slot, a dead player and a busy owner before Inspect',async t=>{
+  const f=fixture(t);apply(f,'begin');
+  const {MAIN_INVENTORY_WIDGET_UID}=require('../dist/net/protocol/ClientProtocol');
+  await widget(f,MAIN_INVENTORY_WIDGET_UID,2,{slot:27,itemId:platter});
+  assert.ok(!f.player.getDialogueManager().getCurrent());
+  const dead=fixture(t);apply(dead,'begin');dead.player.setHitpoints(0);
+  await itemOp(dead,'Inspect');assert.ok(!dead.player.getDialogueManager().getCurrent());
+  f.player.getPacketSender().sendInterface(12);assert.equal(f.player.busy(),true);
+  await itemOp(f,'Inspect');assert.ok(!f.player.getDialogueManager().getCurrent());
+  f.player.closeInterruptibleInterfaces();await itemOp(f,'Inspect');
+  assert.equal(f.player.getDialogueManager().getCurrent()?.text,'The serving platter is empty.');await finish(f);
 });

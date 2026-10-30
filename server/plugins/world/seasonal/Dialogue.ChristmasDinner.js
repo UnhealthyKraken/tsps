@@ -21,12 +21,12 @@ function transition(api,player,session,name,...args){
   session.revision=Progress.read(player).revision;
   api.emitCustomEvent('christmas-dinner:changed',{player});return true;
 }
-function start(api,{player,npc,variant,...options}){
+function start(api,{player,npc,npcId,variant,...options}){
   if(!enabled||!player.isRegistered()||!Array.isArray(SOURCE.variants[variant]))return false;
   const previous=sessions.get(player),state=Progress.read(player);
   const session={...options,variant,revision:state.revision,customer:state.customer,epoch};
   sessions.set(player,session);
-  const request={player,npc,npcId:npc.getCurrentDefinition(player)?.getId()??npc.getId(),variant:{page:PAGE,variant},exact:true};
+  const request={player,npc,npcId:npc?.getCurrentDefinition(player)?.getId()??npc?.getId()??npcId,variant:{page:PAGE,variant},exact:true};
   api.emitCustomEvent('npc-dialogue:start',request);
   if(!request.handled){if(previous)sessions.set(player,previous);else sessions.delete(player);return false;}
   return true;

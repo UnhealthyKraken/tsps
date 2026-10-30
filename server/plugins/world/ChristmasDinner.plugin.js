@@ -3,6 +3,7 @@
 const Progress=require('./seasonal/Progress.ChristmasDinner');
 const Dialogue=require('./seasonal/Dialogue.ChristmasDinner');
 const Scene=require('./seasonal/Scene.ChristmasDinner');
+const Items=require('./seasonal/Items.ChristmasDinner');
 
 function calendar(api,event){
   if(event.key!=='christmas-2025')return;
@@ -37,6 +38,9 @@ module.exports={
     api.onCustomEvent('npc-dialogue:line',Dialogue.line.bind(null,api));
     api.onCustomEvent('npc-dialogue:action',Dialogue.action.bind(null,api));
     api.onCanBankItem(canBank.bind(null,api));
+    api.onItemAction('Serving platter',{Inspect:Items.inspect.bind(null,api)});
+    api.onCustomEvent('destroy-item:prompt',Items.destroyPrompt.bind(null,api));
+    api.onCustomEvent('item:discarded',Progress.discard.bind(null,api));
     api.onPlayerLogout(Dialogue.clear);
     api.onPlayerDisconnect(Dialogue.clear);
   },

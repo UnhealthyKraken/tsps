@@ -46,6 +46,13 @@ function reclaim(api,player,revision){
   if(state.phase==='cooked')state.phase='ingredients';
   return save(player,state);
 }
+function discard(api,{player,item}){
+  if(item?.getId()!==platterId(api)||held(api,player))return;
+  const state=read(player);
+  state.drinkHeld=false;state.gathered=[];
+  if(state.phase==='cooked')state.phase='ingredients';
+  save(player,state);
+}
 function greet(api,player,revision,customer){
   const state=current(api,player,revision,'queue');
   if(!state||customer!==state.customer||customer>=3)return false;
@@ -94,4 +101,4 @@ function serveMeal(api,player,revision,table){
   return save(player,state);
 }
 
-module.exports={PROGRESS_ATTRIBUTE,DRINKS,MAINS,SIDES,initial,read,held,platterId,begin,reclaim,greet,seat,orderDrink,takeDrink,serveDrink,orderFood,collect,cook,serveMeal};
+module.exports={PROGRESS_ATTRIBUTE,DRINKS,MAINS,SIDES,initial,read,held,platterId,begin,reclaim,discard,greet,seat,orderDrink,takeDrink,serveDrink,orderFood,collect,cook,serveMeal};

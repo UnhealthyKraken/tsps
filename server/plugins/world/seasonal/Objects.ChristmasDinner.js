@@ -32,6 +32,7 @@ function serve(api,{player,object}){
     return Progress.seat(api,player,state.revision,table);
   let variant;
   if(!Progress.held(api,player))variant='serving-the-customers-attempting-to-serve-a-table-without-a-serving-platter-in-the-inventory';
+  else if(state.phase==='ready'&&!state.seats.includes(table)&&!player.getPrivateArea())variant='completing-the-event-sitting-at-the-table';
   else if(state.seats[state.customer]!==table)variant='serving-the-customers-serving-a-table-when-no-customer-is-waiting';
   else if(state.phase==='ingredients')variant=state.gathered.length===4
     ?'serving-the-customers-attempting-to-serve-a-customer-before-the-ingredients-have-been-cooked'
@@ -42,7 +43,8 @@ function serve(api,{player,object}){
   if(!variant)return true;
   const npcId=api.core.CacheDefinitions.getArchivedId('christmas-2025','npc',GUESTS[state.customer])
     ??api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef');
-  return Dialogue.start(api,{player,npcId,variant,table});
+  return Dialogue.start(api,{player,npcId,variant,table,object,
+    guard:()=>Scene.active()&&Scene.objects().some(row=>row.object===object)&&api.core.World.getObjects().includes(object)});
 }
 function drink(api,{player,object}){
   if(!Scene.active()||!Dialogue.active())return false;

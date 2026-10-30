@@ -16,7 +16,7 @@ let enabled=false,epoch=0;
 
 function activate(event){if(event.key!=='christmas-2025')return;enabled=event.active===true;epoch++;}
 function active(){return enabled;}
-function clear({player}){sessions.get(player)?.cancel?.();sessions.delete(player);}
+function clear({player,completion}){const session=sessions.get(player);if(completion&&session?.completion!==completion)return;session?.cancel?.();sessions.delete(player);}
 function cancelAll(api){for(const player of api.core.World.getPlayers())if(player&&sessions.has(player))clear({player});}
 function valid(player,session){return enabled&&session.epoch===epoch&&sessions.get(player)===session&&player.isRegistered()&&Progress.read(player).revision===session.revision&&(!session.guard||session.guard());}
 function context(event){
@@ -84,7 +84,8 @@ function condition(api,event){
   const known={a4Cd_9:!held&&free===0,tDOH9m:!held&&free>=1,UBCMDT:free===0,
     jSVtqj:!['ingredients','cooked','ready'].includes(state.phase),QLFnhF:['ingredients','cooked'].includes(state.phase),PKCyjm:state.customer===3,
     Utvt5v:state.customer<3,Ev729v:state.customer===3,hHfv3V:state.phase==='drink'&&!state.drinkHeld,z1J2ZK:state.drinkHeld,
-    a6ElNN:state.phase==='ingredients'&&state.gathered.length<4,JpGMyh:state.phase==='ingredients'&&state.gathered.length===4,'1xU3U5':state.phase==='cooked'};
+    a6ElNN:state.phase==='ingredients'&&state.gathered.length<4,JpGMyh:state.phase==='ingredients'&&state.gathered.length===4,'1xU3U5':state.phase==='cooked',
+    Nt1rHh:free<=10,LVNkCf:free===11,uSR1LP:free>=12};
   if(Object.hasOwn(known,event.stepId))return known[event.stepId];
   if(text==='if the player needs to find another beverage:')return state.phase==='drink'&&state.drink!==session.drink;
   if(text.startsWith('if the player needs to find '))return state.phase==='drink'&&state.drink===session.drink&&!state.drinkHeld;
@@ -101,9 +102,13 @@ function condition(api,event){
 function line(api,event){
   const session=context(event);if(!session)return;
   const state=Progress.read(event.player),original=String(event.text);
+  if(session.completion&&typeof event.step.player!=='string')event.actors=[session.completion.cook];
   event.text=substitute(original,state,session);
   if(event.step.speaker==='[Customer]')event.speakerName=CUSTOMERS[session.customer];
   let before,after;
+  if(session.completion&&original==="Here's your very own Christmas dinner!")after=()=>{
+    api.emitCustomEvent('christmas-dinner:completion-delivered',{player:event.player});return true;
+  };
   if(session.variant==='starting-the-event-talking-to-the-cook'&&state.phase==='new'&&Progress.held(api,event.player)&&original==='Fantastic! Now go deal with that queue!')after=()=>transition(api,event.player,session,'begin');
   if(session.variant==='serving-the-customers-talking-to-the-customer'&&original.startsWith('Let me show'))after=()=>{
     if(!session.escort)return transition(api,event.player,session,'greet',session.customer);
@@ -128,10 +133,24 @@ function action(api,event){
   const session=context(event);if(!session)return;
   if(!valid(event.player,session)){event.handled=true;event.end=true;return;}
   let result;
+  if(event.stepId==='u4QvJB'){
+    const request={player:event.player,table:session.table,object:session.object,revision:session.revision};
+    api.emitCustomEvent('christmas-dinner:completion',request);
+    event.handled=true;event.end=true;return;
+  }
+  if(event.stepId==='CiFo2c'){
+    api.emitCustomEvent('christmas-dinner:completion-emote',{player:event.player});
+    event.handled=true;event.end=true;return;
+  }
   if(event.stepId==='HH56XK')result=transition(api,event.player,session,'begin');
   if(event.stepId==='dymMku'){event.handled=true;return;}
   if(event.kind==='message'){
     const text=String(event.text??'');
+    if(['V0Ww8s','fiWwXq'].includes(event.stepId)){
+      const missing=12-event.player.getInventory().getFreeSlots();
+      event.player.sendMessage(`You need ${missing} more free inventory slot${missing===1?'':'s'} to receive your Christmas event rewards.`);
+      event.handled=true;return;
+    }
     if(text.startsWith('You grab ')&&session.variant.startsWith('serving-the-customers-searching-the-bar-'))result=transition(api,event.player,session,'takeDrink',session.drink);
     if(text.startsWith('You place ')){
       const ingredient=[...Progress.MAINS,...Progress.SIDES].find(name=>new RegExp('\\b'+name+'\\b','i').test(text));

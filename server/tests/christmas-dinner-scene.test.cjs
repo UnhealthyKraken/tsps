@@ -10,6 +10,9 @@ before(async()=>{
   await CachePipeline.initialize(path.resolve(__dirname,'..'));api=PM.createApi('ChristmasDinner');c=api.core;c.RegionManager.init();
   require('../plugins/world/DefinitionArchives.plugin').register(PM.createApi('DefinitionArchives'));
   require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
+  require('../plugins/world/HolidayRewards.plugin').register(PM.createApi('HolidayRewards'));
+  require('../plugins/world/PlayerOnlineTimer.plugin').register(PM.createApi('PlayerOnlineTimer'));
+  require('../plugins/world/Music.plugin').register(PM.createApi('Music'));
   require('../plugins/world/ChristmasDinner.plugin').register(api);
   for(const row of data.placements)c.RegionManager.loadMapFiles(row.x,row.y,false);
 });
@@ -45,6 +48,89 @@ test('private dinner scenery copies and destroys through real object owners with
     assert.deepEqual(c.World.getObjects(),publicObjects);assert.deepEqual(c.World.getRemovedObjects(),publicRemoved);
     assert.equal(Scene.active(),true);
   }finally{area.destroy();assert.equal(Scene.close(api).handled,true);}
+});
+
+test('native final Table Serve enforces source capacity and calendar closure cancels its private scene before rewards',async t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const {ClientConnection}=require('../dist/net/NetworkBuilder');
+  const {AreaManager}=require('../dist/game/model/areas/AreaManager');
+  const packets=[],channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:packet=>{packets.push(packet);return true;},close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
+  assert.equal(c.World.getPlayers().add(player),true);
+  t.after(()=>{PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});player.closeInterruptibleInterfaces();c.TaskManager.cancelTasks(player.getIndex());c.World.getPlayers().remove(player);});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const apply=(name,...args)=>assert.equal(Progress[name](api,player,Progress.read(player).revision,...args),true);
+  apply('begin');
+  for(let guest=0;guest<3;guest++){
+    apply('greet',guest);apply('seat',guest);apply('orderDrink','beer');apply('takeDrink','beer');apply('serveDrink',guest);
+    apply('orderFood','trout',['cabbage','parsnips','stuffing']);
+    for(const ingredient of ['trout','cabbage','parsnips','stuffing'])apply('collect',ingredient);
+    apply('cook');apply('serveMeal',guest);
+  }
+  for(let slot=1;slot<17;slot++)player.getInventory().setItem(slot,new c.Item(c.ItemIdentifiers.LOGS,1));
+  player.setLocation(new c.Location(3220,3399));player.setNeedsPlacement(false);
+  const table=Scene.objects().find(row=>row.symbol==='xmas25_table_4').object;
+  async function click(){
+    const p=table.getLocation();await connection.dispatch([{type:'object_option',id:table.getId(),x:p.getX(),y:p.getY(),clickType:1,action:'Serve'}]);connection.processTurnPackets();
+    for(let tick=0;tick<4;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  }
+  await click();
+  assert.equal(player.getPrivateArea(),null);assert.equal(Progress.read(player).phase,'ready');
+  assert.ok(packets.some(packet=>Buffer.from(packet).includes(Buffer.from('You need 1 more free inventory slot'))),'source one-slot refusal reaches the actual player packet');
+  player.getInventory().deleteAtSlot(16,1);
+  await click();const area=player.getPrivateArea();assert.ok(area,'the remaining table starts its isolated cutscene');
+  assert.equal(player.getMovementQueue().isMovementBlocked(),true);assert.equal(player.isUntargetable(),true);
+  assert.equal(Progress.read(player).phase,'ready');
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  assert.equal(player.getPrivateArea(),null);assert.equal(area.isDestroyed(),true);
+  assert.equal(player.getMovementQueue().isMovementBlocked(),false);assert.equal(player.isUntargetable(),false);
+  assert.equal(Progress.read(player).phase,'ready');assert.equal(player.getAttribute('holiday-rewards:unlocked'),undefined);
+  assert.equal(player.getInventory().getAmount(32928),0);
+  for(let tick=0;tick<60;tick++)c.TaskManager.process();
+  assert.equal(player.getInventory().getAmount(32928),0,'cancelled callbacks cannot mint rewards later');
+  assert.ok(!c.World.getObjects().some(o=>o.getPrivateArea()===area));
+  assert.ok(!c.World.getRemovedObjects().some(o=>o.getPrivateArea()===area));
+  assert.equal(Scene.active(),false);
+
+  // Retry the exact native route, now letting the real chef movement queue and
+  // source overhead dialogue complete. Only the three prior meals are fixtures.
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  player.setAttribute('player-online:lifetime-seconds',90000);
+  const retryTable=Scene.objects().find(row=>row.symbol==='xmas25_table_4').object,p=retryTable.getLocation();
+  await connection.dispatch([{type:'object_option',id:retryTable.getId(),x:p.getX(),y:p.getY(),clickType:1,action:'Serve'}]);connection.processTurnPackets();
+  for(let tick=0;tick<4;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  const completedArea=player.getPrivateArea();assert.ok(completedArea);
+  const cook=completedArea.getNpcs()[0];assert.ok(cook?.isRegistered());const start=cook.getLocation().clone();
+  const trace=[];
+  for(let tick=0;tick<100&&player.getPrivateArea();tick++){
+    for(const npc of completedArea.getNpcs())npc.process();
+    c.World.updateLocalNpcs(player,[...c.World.getNpcs()].filter(Boolean));
+    AreaManager.process(player);c.TaskManager.process();
+    trace.push({tick,cook:cook.getLocation().toString(),chat:cook.getForcedChat(),playerChat:player.getForcedChat(),dialogue:player.getDialogueManager().getCurrent()?.constructor.name,phase:Progress.read(player).phase,private:!!player.getPrivateArea()});
+    for(const npc of completedArea.getNpcs()){npc.resetUpdating();npc.setNeedsPlacement(false);}
+  }
+  assert.equal(Progress.read(player).phase,'complete','normal source playback must reach the single reward commit: '+JSON.stringify(trace));
+  assert.ok(trace.some(row=>row.chat==='And for all your hard work...'));
+  assert.ok(trace.some(row=>row.chat==="Here's your very own Christmas dinner!"));
+  assert.ok(trace.some(row=>row.playerChat==='Yippee!'));
+  assert.equal(cook.getLocation().equals(start),false,'the real chef walks rather than teleporting to the table');
+  assert.equal(player.getPrivateArea(),null);assert.equal(completedArea.isDestroyed(),true);assert.equal(cook.isRegistered(),false);
+  assert.equal(player.getMovementQueue().isMovementBlocked(),false);assert.equal(player.isUntargetable(),false);
+  assert.equal(player.getInventory().getAmount(32928),1);assert.equal(player.getInventory().getAmount(1039),2);
+  assert.equal(player.getInventory().getAmount(Progress.platterId(api)),0);
+  assert.equal(player.getAttribute('holiday-rewards:unlocked').length,69);
+  assert.equal(cook.getId(),c.CacheDefinitions.getArchivedId('christmas-2025','npc','xmas25_cutscene_chef_no_plate'));
+  assert.equal(player.getInterfaceId(),c.CacheDefinitions.getInterfaceId('eventscroll'));
+  player.getSession().flushPackets();
+  assert.ok(packets.some(packet=>Buffer.from(packet).includes(Buffer.from('Christmas Din-Dins at the Blue Moon Inn'))));
+  const close=c.CacheDefinitions.getComponentId('eventscroll:close_button');
+  await connection.dispatch([{type:'widget_action',widgetId:close,groupId:close>>>16,childId:close&65535,buttonNum:1,slot:-1}]);connection.processTurnPackets();
+  assert.equal(player.getInterfaceId(),-1,'native reward-scroll Close dismisses its own modal');
+  const items=player.getInventory().getItems().map(item=>[item.getId(),item.getAmount()]);
+  for(let tick=0;tick<100;tick++)c.TaskManager.process();
+  assert.deepEqual(player.getInventory().getItems().map(item=>[item.getId(),item.getAmount()]),items,'completed callbacks cannot award twice');
 });
 
 test('actual Christmas front guest greets, follows its owner and seats through native Table Serve',async t=>{

@@ -8,10 +8,12 @@ const Npcs=require('./seasonal/Npcs.ChristmasDinner');
 const Sync=require('./seasonal/Sync.ChristmasDinner');
 const Objects=require('./seasonal/Objects.ChristmasDinner');
 const Actors=require('./seasonal/Actors.ChristmasDinner');
+const Completion=require('./seasonal/Completion.ChristmasDinner');
+const Rewards=require('./seasonal/Rewards.ChristmasDinner');
 
 function calendar(api,event){
   if(event.key!=='christmas-2025')return;
-  if(!event.active){Dialogue.activate(event);Dialogue.cancelAll(api);}
+  if(!event.active){Completion.cancelAll(api);Dialogue.activate(event);Dialogue.cancelAll(api);}
   const result=event.active?Scene.open(api):Scene.close(api);
   if(result.handled){if(event.active)Dialogue.activate(event);}
   else {Dialogue.activate({key:event.key,active:false});Dialogue.cancelAll(api);api.log('Christmas scene: '+result.error);}
@@ -41,6 +43,10 @@ module.exports={
     api.onCustomEvent('christmas-dinner:changed',Sync.refresh.bind(null,api));
     api.onCustomEvent('christmas-dinner:changed',Actors.changed.bind(null,api));
     api.onCustomEvent('christmas-dinner:escort',Actors.escort.bind(null,api));
+    api.onCustomEvent('christmas-dinner:completion',Completion.start.bind(null,api));
+    api.onCustomEvent('christmas-dinner:completion-emote',Completion.emote.bind(null,api));
+    api.onCustomEvent('christmas-dinner:completion-delivered',Completion.delivered.bind(null,api));
+    api.onInterfaceActionClick(Rewards.close.bind(null,api));
     api.onCustomEvent('events:active',calendar.bind(null,api));
     api.onServerShutdown(shutdown.bind(null,api));
     api.onRegionLoaded(regionLoaded.bind(null,api));
@@ -60,5 +66,7 @@ module.exports={
     api.onPlayerDisconnect(Dialogue.clear);
     api.onPlayerLogout(Actors.clear.bind(null,api));
     api.onPlayerDisconnect(Actors.clear.bind(null,api));
+    api.onPlayerLogout(Completion.clear.bind(null,api));
+    api.onPlayerDisconnect(Completion.clear.bind(null,api));
   },
 };

@@ -25,6 +25,28 @@ const UNLOCKS=Object.freeze([
 ]);
 const REQUIRED_FREE_SLOTS=12;
 const RARE_PLAY_SECONDS=25*60*60;
+const scrolls=new WeakSet();
+// IF_SETCOLOUR takes packed RGB555: red128 (the source scroll title), not RGB24.
+const SCROLL_TITLE_COLOUR=16<<10;
+
+function show(api,player){
+  const cache=api.core.CacheDefinitions,sender=player.getPacketSender();
+  sender.sendInterface(cache.getInterfaceId('eventscroll'));
+  sender.sendString('Christmas Din-Dins at the Blue Moon Inn',cache.getComponentId('eventscroll:event_title'));
+  sender.sendInterfaceColour(cache.getComponentId('eventscroll:event_title'),SCROLL_TITLE_COLOUR);
+  sender.sendString('- Lovley Jubbly Bib<br>- Christmas Dinner<br>- Beer Belly Sweater<br>- Jad Jumper',cache.getComponentId('eventscroll:event_rewards'));
+  sender.sendString('The Old School team wishes you Happy Holidays!',cache.getComponentId('eventscroll:event_farewell_text'));
+  sender.sendInterfaceModel(cache.getComponentId('eventscroll:event_model'),Progress.platterId(api),10);
+  sender.sendInterfaceModel(cache.getComponentId('eventscroll:event_type_model'),itemId(api,'santa_hat'),10);
+  scrolls.add(player);
+}
+function close(api,event){
+  const {player}=event,cache=api.core.CacheDefinitions;
+  if(!scrolls.has(player)||player.getInterfaceId()!==cache.getInterfaceId('eventscroll')||event.buttonId!==cache.getComponentId('eventscroll:close_button'))return;
+  event.handled=true;
+  if((event.opId??event.action)!==1)return;
+  scrolls.delete(player);player.getPacketSender().sendInterfaceRemoval();
+}
 
 function itemId(api,symbol){
   const id=api.core.CacheDefinitions.getObjId(symbol);
@@ -68,4 +90,4 @@ function claim(api,player,revision){
   return true;
 }
 
-module.exports={COSMETICS,RARES,UNLOCKS,REQUIRED_FREE_SLOTS,RARE_PLAY_SECONDS,eligibleForRares,plan,claim};
+module.exports={COSMETICS,RARES,UNLOCKS,REQUIRED_FREE_SLOTS,RARE_PLAY_SECONDS,eligibleForRares,plan,claim,show,close};

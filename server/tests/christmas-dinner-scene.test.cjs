@@ -129,6 +129,47 @@ test('real per-player morph owners expose only the appropriate table and bar ope
   assert.equal(definition(reopened,first),c.ObjectDefinition.forId(c.CacheDefinitions.getArchivedId('christmas-2025','loc','xmas25_table01_food01')),'reopening derives the original saved meal without resetting progress');
 });
 
+test('original seat NPC morphs follow each player and restore through login and window changes',t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel)),other=new Player(new PlayerSession(channel)),actors=[];
+  assert.equal(c.World.getPlayers().add(player),true);assert.equal(c.World.getPlayers().add(other),true);
+  t.after(()=>{for(const actor of actors)c.World.getNpcs().remove(actor);PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});c.World.getPlayers().remove(player);c.World.getPlayers().remove(other);});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  // Seeded parent actors check the actual cache/varbit owner, not NPC placement.
+  for(let table=0;table<4;table++){
+    const actor=c.NPC.create(c.CacheDefinitions.getArchivedId('christmas-2025','npc','xmas25_table_npc_'+(table+1)),new c.Location(3220+table,3400));
+    assert.equal(c.World.getNpcs().add(actor),true);actors.push(actor);
+  }
+  const id=symbol=>c.CacheDefinitions.getArchivedId('christmas-2025','npc',symbol);
+  const selected=(actor,owner)=>actor.getCurrentDefinition(owner)?.getId();
+  const apply=(name,...args)=>assert.equal(Progress[name](api,player,Progress.read(player).revision,...args),true);
+  for(const actor of actors)assert.equal(selected(actor,player),id('xmas25_stool_empty'));
+  apply('begin');
+  const tables=[3,0,2],guests=['xmas25_sir_prysin','xmas25_aggie','xmas25_jobless_jim'];
+  for(let guest=0;guest<3;guest++){
+    const table=tables[guest];apply('greet',guest);apply('seat',table);
+    assert.equal(selected(actors[table],player),id(guests[guest]),'native parent must become the seated guest');
+    assert.equal(selected(actors[table],other),id('xmas25_stool_empty'),'other player retains their own empty seat');
+    apply('orderDrink','beer');apply('takeDrink','beer');apply('serveDrink',table);apply('orderFood','trout',['cabbage','parsnips','stuffing']);
+    for(const ingredient of ['trout','cabbage','parsnips','stuffing'])apply('collect',ingredient);
+    apply('cook');apply('serveMeal',table);
+    assert.equal(selected(actors[table],player),id(guests[guest]),'the served guest remains at their table');
+  }
+  assert.equal(selected(actors[1],player),id('xmas25_stool_empty'),'fourth table remains for the player');
+  const reloaded=new Player(new PlayerSession(channel));reloaded.setAttribute(Progress.PROGRESS_ATTRIBUTE,JSON.parse(JSON.stringify(Progress.read(player))));reloaded.setUsername('christmasseatlogin');
+  PM.emitPlayerLogin({player:reloaded,username:reloaded.getUsername()});
+  for(let table=0;table<4;table++)assert.equal(selected(actors[table],reloaded),selected(actors[table],player));
+  // Remove fixture actors before archive teardown; do not bypass its borrower guard.
+  for(const actor of actors)c.World.getNpcs().remove(actor);
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  for(let table=1;table<=4;table++)assert.equal(player.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('xmas_25_seat_id_'+table)),0);
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  for(let guest=0;guest<3;guest++)assert.equal(player.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('xmas_25_seat_id_'+(tables[guest]+1))),guest+1);
+});
+
 test('native bar object packets refuse a wrong drink and load only the requested beverage',async t=>{
   const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
   const {Player}=require('../dist/game/entity/impl/player/Player');

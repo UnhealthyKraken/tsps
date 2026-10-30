@@ -8,6 +8,7 @@ const sessions=new WeakMap();
 let enabled=false,epoch=0;
 
 function activate(event){if(event.key!=='christmas-2025')return;enabled=event.active===true;epoch++;}
+function active(){return enabled;}
 function clear({player}){sessions.delete(player);}
 function valid(player,session){return enabled&&session.epoch===epoch&&sessions.get(player)===session&&player.isRegistered()&&Progress.read(player).revision===session.revision;}
 function context(event){
@@ -19,7 +20,7 @@ function abort(player){player.getDialogueManager().reset();player.getPacketSende
 function transition(api,player,session,name,...args){
   if(!valid(player,session)||!Progress[name](api,player,session.revision,...args))return false;
   session.revision=Progress.read(player).revision;
-  api.emitCustomEvent('christmas-dinner:changed',{player});return true;
+  return true;
 }
 function start(api,{player,npc,npcId,variant,...options}){
   if(!enabled||!player.isRegistered()||!Array.isArray(SOURCE.variants[variant]))return false;
@@ -99,4 +100,4 @@ function action(api,event){
   if(result===false){event.handled=true;event.end=true;}
 }
 
-module.exports={start,activate,clear,condition,line,action};
+module.exports={start,activate,active,clear,condition,line,action};

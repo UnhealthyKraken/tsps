@@ -89,6 +89,75 @@ test('calendar transitions route through the real plugin and preserve archives i
   PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
   assert.equal(Scene.active(),false);assert.deepEqual(c.CacheDefinitions.getDefinitionArchiveBundles(),[other]);install([]);
 });
+
+test('real per-player morph owners expose only the appropriate table and bar operations',t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const first=new Player(new PlayerSession(channel)),other=new Player(new PlayerSession(channel));
+  assert.equal(c.World.getPlayers().add(first),true);assert.equal(c.World.getPlayers().add(other),true);
+  t.after(()=>{PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});c.World.getPlayers().remove(first);c.World.getPlayers().remove(other);});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const table=Scene.objects().find(row=>row.symbol==='xmas25_table_1').object;
+  const bar=Scene.objects().find(row=>row.symbol==='xmas25_bar_middle').object;
+  const definition=(object,player)=>c.ObjectDefinition.forPlayer(object.getId(),player);
+  const apply=(name,...args)=>{assert.equal(Progress[name](api,first,Progress.read(first).revision,...args),true);};
+  assert.ok(!definition(table,first).getActions()?.includes('Serve'));
+  apply('begin');apply('greet',0);
+  assert.ok(definition(table,first).getActions()?.includes('Serve'),'greeted customer can be shown to an unused table');
+  assert.ok(!definition(table,other).getActions()?.includes('Serve'),'another player retains their own empty tables');
+  apply('seat',0);apply('orderDrink','beer');
+  assert.ok(definition(bar,first).getActions()?.includes('Get Drink From'));
+  assert.ok(!definition(bar,other).getActions()?.includes('Get Drink From'));
+  apply('takeDrink','beer');apply('serveDrink',0);
+  assert.equal(definition(table,first),c.ObjectDefinition.forId(c.CacheDefinitions.getArchivedId('christmas-2025','loc','xmas25_table01_drink01')));
+  assert.ok(!definition(bar,first).getActions()?.includes('Get Drink From'));
+  apply('orderFood','trout',['cabbage','parsnips','stuffing']);
+  for(const ingredient of ['trout','cabbage','parsnips','stuffing'])apply('collect',ingredient);
+  apply('cook');apply('serveMeal',0);
+  assert.equal(definition(table,first),c.ObjectDefinition.forId(c.CacheDefinitions.getArchivedId('christmas-2025','loc','xmas25_table01_food01')));
+  assert.ok(!definition(table,first).getActions()?.includes('Serve'));
+  const reloaded=new Player(new PlayerSession(channel));reloaded.setAttribute(Progress.PROGRESS_ATTRIBUTE,JSON.parse(JSON.stringify(Progress.read(first))));
+  reloaded.setUsername('christmasmorphrelog');PM.emitPlayerLogin({player:reloaded,username:reloaded.getUsername()});
+  assert.equal(definition(table,reloaded),definition(table,first),'saved progression restores actual native morph selection');
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  assert.equal(first.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('xmas_25_table_id_1')),0);
+  assert.equal(first.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('xmas_25_bar_interactable')),0);
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const reopened=Scene.objects().find(row=>row.symbol==='xmas25_table_1').object;
+  assert.equal(definition(reopened,first),c.ObjectDefinition.forId(c.CacheDefinitions.getArchivedId('christmas-2025','loc','xmas25_table01_food01')),'reopening derives the original saved meal without resetting progress');
+});
+
+test('native bar object packets refuse a wrong drink and load only the requested beverage',async t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const {ClientConnection}=require('../dist/net/NetworkBuilder');
+  require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
+  assert.equal(c.World.getPlayers().add(player),true);
+  t.after(()=>{player.closeInterruptibleInterfaces();c.TaskManager.cancelTasks(player.getIndex());PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});c.World.getPlayers().remove(player);});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const apply=(name,...args)=>assert.equal(Progress[name](api,player,Progress.read(player).revision,...args),true);
+  apply('begin');apply('greet',0);apply('seat',0);apply('orderDrink','chocolate milk');
+  async function click(symbol){
+    const object=Scene.objects().find(row=>row.symbol===symbol).object,p=object.getLocation();
+    player.setLocation(new c.Location(3226,p.getY()));player.setNeedsPlacement(false);
+    await connection.dispatch([{type:'object_option',id:object.getId(),x:p.getX(),y:p.getY(),clickType:1,action:'Get Drink From'}]);connection.processTurnPackets();
+    for(let count=0;count<4;count++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  }
+  await click('xmas25_bar_middle2');
+  assert.equal(player.getDialogueManager().getCurrent()?.text,"This part of the bar only has beer. You're trying to find chocolate milk.");
+  assert.equal(Progress.read(player).drinkHeld,false);player.closeInterruptibleInterfaces();
+  await click('xmas25_bar_drinks_middle2');
+  assert.equal(player.getDialogueManager().getCurrent()?.text,'You grab some chocolate milk from the bar and put it on your serving platter.');
+  assert.equal(Progress.read(player).drinkHeld,true);player.closeInterruptibleInterfaces();
+  const revision=Progress.read(player).revision;await click('xmas25_bar_drinks_middle2');
+  assert.equal(player.getDialogueManager().getCurrent()?.text,'You already have the correct drink on your serving platter.');
+  assert.equal(Progress.read(player).revision,revision,'repeated bar click cannot duplicate contents');
+});
 test('exhausted native wire allocation refuses before any scenery is removed',()=>{
   const original=data.bundle.definitions.find(r=>r.kind==='npc'&&r.symbol==='xmas25_sir_prysin');
   const other={...data.bundle,id:'last-wire-id',definitions:[{...original,id:65534}]};

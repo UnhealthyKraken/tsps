@@ -27,7 +27,10 @@ function givePlatter(api,player){
   inventory.addItem(item);
   return inventory.getAmount(id)===1;
 }
-function save(player,state){state.revision++;player.setAttribute(PROGRESS_ATTRIBUTE,state);return true;}
+function save(api,player,state){
+  state.revision++;player.setAttribute(PROGRESS_ATTRIBUTE,state);
+  api.emitCustomEvent('christmas-dinner:changed',{player});return true;
+}
 function current(api,player,revision,phase){
   const state=read(player);
   return state.revision===revision&&state.phase===phase&&held(api,player)?state:null;
@@ -35,7 +38,7 @@ function current(api,player,revision,phase){
 function begin(api,player,revision){
   const state=read(player);
   if(state.revision!==revision||state.phase!=='new'||!givePlatter(api,player))return false;
-  state.phase='queue';return save(player,state);
+  state.phase='queue';return save(api,player,state);
 }
 function reclaim(api,player,revision){
   const state=read(player);
@@ -44,61 +47,61 @@ function reclaim(api,player,revision){
   // and drinks cannot survive destruction/death as an invisible free meal.
   state.drinkHeld=false;state.gathered=[];
   if(state.phase==='cooked')state.phase='ingredients';
-  return save(player,state);
+  return save(api,player,state);
 }
 function discard(api,{player,item}){
   if(item?.getId()!==platterId(api)||held(api,player))return;
   const state=read(player);
   state.drinkHeld=false;state.gathered=[];
   if(state.phase==='cooked')state.phase='ingredients';
-  save(player,state);
+  save(api,player,state);
 }
 function greet(api,player,revision,customer){
   const state=current(api,player,revision,'queue');
   if(!state||customer!==state.customer||customer>=3)return false;
-  state.phase='table';return save(player,state);
+  state.phase='table';return save(api,player,state);
 }
 function seat(api,player,revision,table){
   const state=current(api,player,revision,'table');
   if(!state||!Number.isInteger(table)||table<0||table>=4||state.seats.includes(table))return false;
-  state.seats.push(table);state.phase='drink-order';return save(player,state);
+  state.seats.push(table);state.phase='drink-order';return save(api,player,state);
 }
 function orderDrink(api,player,revision,drink){
   const state=current(api,player,revision,'drink-order');
   if(!state||!DRINKS.includes(drink))return false;
-  state.drink=drink;state.phase='drink';return save(player,state);
+  state.drink=drink;state.phase='drink';return save(api,player,state);
 }
 function takeDrink(api,player,revision,drink){
   const state=current(api,player,revision,'drink');
   if(!state||state.drink!==drink||state.drinkHeld)return false;
-  state.drinkHeld=true;return save(player,state);
+  state.drinkHeld=true;return save(api,player,state);
 }
 function serveDrink(api,player,revision,table){
   const state=current(api,player,revision,'drink');
   if(!state||!state.drinkHeld||state.seats[state.customer]!==table)return false;
-  state.drinkHeld=false;state.phase='food-order';return save(player,state);
+  state.drinkHeld=false;state.phase='food-order';return save(api,player,state);
 }
 function orderFood(api,player,revision,main,sides){
   const state=current(api,player,revision,'food-order');
   if(!state||!MAINS.includes(main)||!Array.isArray(sides)||sides.length!==3||new Set(sides).size!==3||!sides.every(side=>SIDES.includes(side)))return false;
-  state.main=main;state.sides=[...sides];state.gathered=[];state.phase='ingredients';return save(player,state);
+  state.main=main;state.sides=[...sides];state.gathered=[];state.phase='ingredients';return save(api,player,state);
 }
 function collect(api,player,revision,ingredient){
   const state=current(api,player,revision,'ingredients');
   if(!state||![state.main,...state.sides].includes(ingredient)||state.gathered.includes(ingredient))return false;
-  state.gathered.push(ingredient);return save(player,state);
+  state.gathered.push(ingredient);return save(api,player,state);
 }
 function cook(api,player,revision){
   const state=current(api,player,revision,'ingredients');
   if(!state||state.gathered.length!==4||![state.main,...state.sides].every(item=>state.gathered.includes(item)))return false;
-  state.phase='cooked';return save(player,state);
+  state.phase='cooked';return save(api,player,state);
 }
 function serveMeal(api,player,revision,table){
   const state=current(api,player,revision,'cooked');
   if(!state||state.seats[state.customer]!==table)return false;
   state.customer++;state.phase=state.customer===3?'ready':'queue';
   state.drink=null;state.drinkHeld=false;state.main=null;state.sides=[];state.gathered=[];
-  return save(player,state);
+  return save(api,player,state);
 }
 
 module.exports={PROGRESS_ATTRIBUTE,DRINKS,MAINS,SIDES,initial,read,held,platterId,begin,reclaim,discard,greet,seat,orderDrink,takeDrink,serveDrink,orderFood,collect,cook,serveMeal};

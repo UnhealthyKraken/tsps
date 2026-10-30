@@ -85,16 +85,20 @@ test('native Table Serve routes saved ingredients and cooked meals to their own 
 });
 test('original surface/cellar objects and real collision restore after two native scene lifecycles',()=>{
   const before=originals(),flags=clipping(),removed=[...c.World.getRemovedObjects()];
-  assert.equal(before.filter(r=>r.objects.length).length,21,'actual current-cache map objects were loaded');
+  assert.equal(before.filter(r=>r.row.symbol.startsWith('xmas25_')&&r.objects.length).length,21,'actual current-cache map objects were loaded');
+  const rugs=before.filter(r=>r.row.symbol.startsWith('xmas22_pub01_rug'));
+  assert.equal(rugs.filter(r=>r.row.z===0).length,54,'original dining-room rug footprint');
+  assert.equal(rugs.filter(r=>r.row.z===1).length,47,'original upstairs rug footprint');
+  assert.equal(rugs.filter(r=>r.row.z===0&&r.objects.length).length,42,'actual blue rug tiles replaced downstairs');
   for(let cycle=0;cycle<2;cycle++){
-    assert.equal(Scene.open(api).handled,true);assert.equal(Scene.objects().length,24);
+    assert.equal(Scene.open(api).handled,true);assert.equal(Scene.objects().length,125);
     for(const entry of Scene.objects()){
       const row=data.placements.find(row=>row.symbol===entry.symbol&&at(row).equals(entry.object.getLocation()));assert.ok(row);
       assert.equal(entry.object.getType(),row.shape);assert.equal(entry.object.getFace(),row.rotation);
       assert.equal(c.MapObjects.get(entry.object.getId(),at(row),null),entry.object);
       assert.ok(c.World.getObjects().includes(entry.object),'registered real world owner');
     }
-    assert.equal(Scene.open(api).handled,true,'duplicate activation is idempotent');assert.equal(Scene.objects().length,24);
+    assert.equal(Scene.open(api).handled,true,'duplicate activation is idempotent');assert.equal(Scene.objects().length,125);
     assert.equal(Scene.close(api).handled,true);assert.equal(Scene.objects().length,0);
     for(const entry of before)for(const object of entry.objects)assert.equal(c.MapObjects.get(object.getId(),object.getLocation(),null),object);
     assert.deepEqual(clipping(),flags,'no invisible clipping remains around either original scene');

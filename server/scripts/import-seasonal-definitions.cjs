@@ -45,7 +45,7 @@ function christmasRoots(symbols) {
   // retired; replacing still-live reward/template definitions would be wrong.
   return kinds.flatMap(kind=>[...symbols[kind]].filter(([,name])=>kind==='obj'
     ? name==='xmas25_serving_platter'||name==='placeholder_xmas25_serving_platter'
-    : name.startsWith('xmas25_')).map(([id])=>({kind,id})));
+    : name.startsWith('xmas25_')||(kind==='loc'&&/^xmas22_pub01_rug(?:middle|corner|side)01$/.test(name))).map(([id])=>({kind,id})));
 }
 function createBundle({id,sourceCache,context,roots,readDefinition,symbolFor,restoreItems=[]}) {
   const restore = new Set(restoreItems);
@@ -186,7 +186,13 @@ async function extractChristmas(reference) {
     }
     assert.equal(buffer.remaining,0,'Trailing original map bytes');
   }
-  assert.equal(placements.length,24,'Original event scene placement count');
+  // The 2025 map reuses the 2022 pub rug; an xmas25-only name filter misses
+  // its red floor decorations and leaves the ordinary blue carpet visible.
+  assert.equal(placements.filter(row=>row.symbol.startsWith('xmas25_')).length,24,'Original event scene placement count');
+  const rugs=placements.filter(row=>row.symbol.startsWith('xmas22_pub01_rug'));
+  assert.equal(rugs.filter(row=>row.z===0).length,54,'Original ground-floor pub rug placement count');
+  assert.equal(rugs.filter(row=>row.z===1).length,47,'Original upstairs pub rug placement count');
+  assert.equal(rugs.length,101,'Original reused pub rug placement count');
   return {source:{url:source.openrs2,revision:235,symbolCommit:source.commit,symbolFiles:source.files,files:[...verified].map(([file,bytes])=>({file,bytes:bytes.length,sha256:digest(bytes)}))},bundle,placements,varbits,sequences:sequenceChecks,models:modelChecks};
 }
 async function main(args) {

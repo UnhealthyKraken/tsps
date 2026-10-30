@@ -69,7 +69,10 @@ test('source provenance verifies actual bytes before decoding',()=>{
   } finally {fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('Christmas extraction archives retired gameplay items and retains live reward definitions',()=>{
-  const symbols={npc:new Map([[14814,'xmas25_queue_npc_1']]),loc:new Map([[60608,'xmas25_crate01_carrot01']]),
+  const symbols={npc:new Map([[14814,'xmas25_queue_npc_1']]),loc:new Map([[60608,'xmas25_crate01_carrot01'],
+    [46501,'xmas22_pub01_rugmiddle01'],[46502,'xmas22_pub01_rugcorner01'],[46503,'xmas22_pub01_rugside01'],[46504,'xmas22_canopy01_small01']]),
     obj:new Map([[32926,'xmas25_serving_platter'],[32927,'placeholder_xmas25_serving_platter'],[32928,'xmas25_bib'],[32930,'xmas25_beer_belly_sweater'],[32932,'xmas25_contest_jumper'],[32934,'xmas25_christmas_dinner']])};
   assert.deepEqual(christmasRoots(symbols).filter(r=>r.kind==='obj').map(r=>r.id),[32926,32927]);
+  assert.deepEqual(christmasRoots(symbols).filter(r=>r.kind==='loc').map(r=>r.id),[60608,46501,46502,46503],
+    'the original 2025 pub map reuses these 2022 rug types; unrelated older Christmas scenery is not implied');
 });

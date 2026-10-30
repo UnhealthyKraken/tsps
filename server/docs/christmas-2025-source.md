@@ -31,8 +31,8 @@ Required reference layout:
   verified when listed in that manifest;
 - `archives/SOURCE.sequences.json`:2/12.
 
-The exporter follows native morph/item references to a closed75-definition
-bundle:32 NPCs,40 scenery types and3 item definitions. Current live cosmetic
+The exporter follows native morph/item references to a closed78-definition
+bundle:32 NPCs,43 scenery types and3 item definitions. Current live cosmetic
 rewards are excluded. The retired platter/placeholder retain guarded original
 item IDs; all actors/scenery and the historical placeholder template receive
 private appended identities. The actual production registry validates the full
@@ -40,10 +40,16 @@ candidate before output; it cannot substitute a modern unrelated type for a
 missing historical dependency. All output validation finishes before replacement
 of the destination file.
 
-The source maps provide24 original scenery placements, including7 cellar crates.
+The source maps provide125 original scenery placements:24 event-specific objects,
+including7 cellar crates, and101 rug decorations reused from Christmas2022.
+The original red pub carpet uses54 tiles downstairs and47 upstairs. These are
+the exact original placements/rotations, rather than a rectangular replacement
+of the ordinary blue carpet. All three `xmas22_pub01_rug*` source definitions
+are included explicitly; an `xmas25_`-only filter would omit them. Other reused
+seasonal decorations have not yet been included.
 They do not provide NPC spawn positions. All26 gameplay-varbit layouts and12
-directly referenced sequence definitions match the target cache. All155 referenced
-model identities exist;151 model CRCs match. The four changed shared actor model
+directly referenced sequence definitions match the target cache. All156 referenced
+model identities exist;152 model CRCs match. The four changed shared actor model
 payloads are recorded and retained as current assets, not globally rolled back.
 Definition equality does not prove frame-resource equality, scripted timings,
 pathing, rewards or cutscene behaviour. Those still need activity source and native

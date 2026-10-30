@@ -75,17 +75,36 @@ test('actual Christmas front guest greets, follows its owner and seats through n
   const seat=[...c.World.getNpcs()].find(npc=>npc?.getId()===id('xmas25_table_npc_1'));
   assert.ok(seat?.isRegistered());assert.equal(seat.getCurrentDefinition(player).getId(),id('xmas25_sir_prysin'));
   assert.equal(seat.getCurrentDefinition(other).getId(),id('xmas25_stool_empty'));
-  // Order selection is controlled setup here; the real NPC packet below must
-  // still reach meal delivery, as the original videos' Talk-to action does.
+  // Control only selection RNG; orders must now be reached through actual
+  // guest packets/Continue, not supplied directly to Progress.order*.
   const apply=(name,...args)=>assert.equal(Progress[name](api,player,Progress.read(player).revision,...args),true);
-  apply('orderDrink','chocolate milk');apply('takeDrink','chocolate milk');apply('serveDrink',0);
-  apply('orderFood','trout',['cabbage','parsnips','stuffing']);
-  for(const ingredient of ['trout','cabbage','parsnips','stuffing'])apply('collect',ingredient);
-  apply('cook');
   async function talkToSeat(){
     await connection.dispatch([{type:'npc_option',index:seat.getIndex(),clickType:1}]);connection.processTurnPackets();
     for(let tick=0;tick<16;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
   }
+  let draws=0;t.mock.method(c.Misc,'randomInclusive',(_min,max)=>{draws++;return max;});
+  await talkToSeat();assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Can I get\s+you something to drink/);
+  await resume();assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Can I have some eggnog/);
+  assert.equal(Progress.read(player).phase,'drink');assert.equal(Progress.read(player).drink,'eggnog');
+  player.closeInterruptibleInterfaces();const drinkRevision=Progress.read(player).revision,drinkDraws=draws;
+  await talkToSeat();await resume();
+  assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Can I have some eggnog/);
+  assert.equal(Progress.read(player).revision,drinkRevision);assert.equal(draws,drinkDraws,'a displayed drink cannot reroll');
+  player.closeInterruptibleInterfaces();apply('takeDrink','eggnog');
+  await talkToSeat();assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Here is your drink/);
+  assert.equal(Progress.read(player).phase,'food-order');assert.equal(Progress.read(player).drinkHeld,false);
+  player.closeInterruptibleInterfaces();await talkToSeat();
+  assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Are you ready to order/);
+  for(let n=0;n<12&&Progress.read(player).phase!=='ingredients';n++)await resume();
+  assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/For my main, I would like trout/);
+  const ordered=Progress.read(player),foodDraws=draws;
+  assert.equal(ordered.phase,'ingredients');assert.deepEqual(ordered.sides,['stuffing','carrots','parsnips']);
+  player.closeInterruptibleInterfaces();await talkToSeat();player.closeInterruptibleInterfaces();
+  assert.deepEqual(Progress.read(player),ordered);assert.equal(draws,foodDraws,'a displayed meal cannot reroll');
+  // Bar gathering/crate selection and Cook are covered by their focused native
+  // path tests; supply their existing real Progress APIs for this entrypoint.
+  for(const ingredient of [ordered.main,...ordered.sides])apply('collect',ingredient);
+  apply('cook');
   await talkToSeat();assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Here is your meal/);
   assert.equal(Progress.read(player).phase,'cooked');await resume();
   assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Thank you/);

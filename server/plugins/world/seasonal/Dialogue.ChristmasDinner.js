@@ -113,7 +113,8 @@ function line(api,event){
     if(!request.handled)return false;
     session.revision=Progress.read(event.player).revision;return true;
   };
-  if(session.variant==='serving-the-customers-talking-to-the-customer-after-picking-a-table'&&original.includes('[beverage]'))before=()=>transition(api,event.player,session,'orderDrink',session.drink);
+  if(session.variant==='serving-the-customers-talking-to-the-customer-after-picking-a-table'&&original.includes('[beverage]'))before=()=>
+    state.phase==='drink'&&state.drink===session.drink?true:transition(api,event.player,session,'orderDrink',session.drink);
   if(session.variant==='serving-the-customers-serving-the-table-after-getting-the-drink'&&original.startsWith('Here is your drink'))before=()=>transition(api,event.player,session,'serveDrink',session.table);
   // Once the guest has shown the order, Inspect and a resumed session must
   // retain it even when the player closes instead of pressing Continue.

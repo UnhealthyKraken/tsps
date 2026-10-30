@@ -3,6 +3,7 @@
 const Progress=require('./Progress.ChristmasDinner');
 const Dialogue=require('./Dialogue.ChristmasDinner');
 const Actors=require('./Actors.ChristmasDinner');
+const Orders=require('./Orders.ChristmasDinner');
 
 const GUESTS=['xmas25_sir_prysin','xmas25_aggie','xmas25_jobless_jim'];
 const MISC={
@@ -10,22 +11,31 @@ const MISC={
 };
 function customer(api,event,role){
   const {player,npc}=event,state=Progress.read(player);
-  let variant,escort=false;
+  let variant,escort=false,order={};
   if(role.kind==='queue'&&state.phase==='queue'&&Progress.held(api,player)&&
     npc.getCurrentDefinition(player)?.getId()===api.core.CacheDefinitions.getArchivedId('christmas-2025','npc',GUESTS[state.customer])){
     variant='serving-the-customers-talking-to-the-customer';escort=true;
   }else if(role.kind==='escort'&&state.phase==='table')variant='serving-the-customers-talking-to-the-customer-before-picking-a-table';
-  // Wiki serving flow and original LYhx7ksRL5E1:14: Talk-to delivers the
-  // cooked meal too; the Table Serve route is not the only native entrypoint.
-  else if(role.kind==='seat'&&state.phase==='cooked'&&state.seats[state.customer]===role.table)
-    variant='serving-the-customers-serving-the-table-with-cooked-food';
-  else{
+  else if(role.kind==='seat'&&state.seats[state.customer]===role.table){
+    if(!Progress.held(api,player))variant='serving-the-customers-attempting-to-serve-a-table-without-a-serving-platter-in-the-inventory';
+    else if(state.phase==='drink-order'||(state.phase==='drink'&&!state.drinkHeld)){
+      variant='serving-the-customers-talking-to-the-customer-after-picking-a-table';
+      order.drink=state.drink??Orders.drink(api);
+    }else if((state.phase==='drink'&&state.drinkHeld)||state.phase==='food-order'){
+      variant=state.phase==='drink'?'serving-the-customers-serving-the-table-after-getting-the-drink'
+        :'serving-the-customers-talking-to-the-customer-again-before-getting-the-order';
+      order=Orders.food(api);
+    // Wiki serving flow and original LYhx7ksRL5E1:14: Talk-to delivers
+    // the cooked meal too; Table Serve is not the only native entrypoint.
+    }else if(state.phase==='cooked')variant='serving-the-customers-serving-the-table-with-cooked-food';
+  }
+  if(!variant){
     const name=npc.getCurrentDefinition(player)?.getName();
     const served=role.kind==='seat'&&state.seats.indexOf(role.table)<state.customer;
     const suffix=name==='Jobless Jim'?'jobless-jim-'+(served?'after-he-had-his-dinner':'before-he-had-his-dinner'):MISC[name];
     if(suffix)variant='misc-npc-dialogue-talking-to-'+suffix;
   }
-  if(variant)Dialogue.start(api,{player,npc,variant,escort,table:role.table,guard:()=>Actors.role(api,npc,player)===role});
+  if(variant)Dialogue.start(api,{player,npc,variant,escort,table:role.table,...order,guard:()=>Actors.role(api,npc,player)===role});
   // Never route our holiday variants into ordinary Prysin/Aggie quest dialogue.
   event.handled=true;
 }

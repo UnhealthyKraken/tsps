@@ -9,7 +9,8 @@ let enabled=false,epoch=0;
 
 function activate(event){if(event.key!=='christmas-2025')return;enabled=event.active===true;epoch++;}
 function active(){return enabled;}
-function clear({player}){sessions.delete(player);}
+function clear({player}){sessions.get(player)?.cancel?.();sessions.delete(player);}
+function cancelAll(api){for(const player of api.core.World.getPlayers())if(player&&sessions.has(player))clear({player});}
 function valid(player,session){return enabled&&session.epoch===epoch&&sessions.get(player)===session&&player.isRegistered()&&Progress.read(player).revision===session.revision;}
 function context(event){
   const session=sessions.get(event.player);
@@ -30,6 +31,7 @@ function start(api,{player,npc,npcId,variant,...options}){
   const request={player,npc,npcId:npc?.getCurrentDefinition(player)?.getId()??npc?.getId()??npcId,variant:{page:PAGE,variant},exact:true};
   api.emitCustomEvent('npc-dialogue:start',request);
   if(!request.handled){if(previous)sessions.set(player,previous);else sessions.delete(player);return false;}
+  previous?.cancel?.();session.cancel=request.cancel;
   return true;
 }
 function substitute(text,state,session){
@@ -100,4 +102,4 @@ function action(api,event){
   if(result===false){event.handled=true;event.end=true;}
 }
 
-module.exports={start,activate,active,clear,condition,line,action};
+module.exports={start,activate,active,clear,cancelAll,condition,line,action};

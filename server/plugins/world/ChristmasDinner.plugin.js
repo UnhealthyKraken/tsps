@@ -10,16 +10,16 @@ const Objects=require('./seasonal/Objects.ChristmasDinner');
 
 function calendar(api,event){
   if(event.key!=='christmas-2025')return;
-  if(!event.active)Dialogue.activate(event);
+  if(!event.active){Dialogue.activate(event);Dialogue.cancelAll(api);}
   const result=event.active?Scene.open(api):Scene.close(api);
   if(result.handled){if(event.active)Dialogue.activate(event);}
-  else {Dialogue.activate({key:event.key,active:false});api.log('Christmas scene: '+result.error);}
+  else {Dialogue.activate({key:event.key,active:false});Dialogue.cancelAll(api);api.log('Christmas scene: '+result.error);}
   Sync.all(api);
 }
 function shutdown(api){calendar(api,{key:'christmas-2025',active:false});}
 function regionLoaded(api,event){
   const result=Scene.replay(api,event);
-  if(!result.handled){Dialogue.activate({key:'christmas-2025',active:false});Sync.all(api);api.log('Christmas scene: '+result.error);}
+  if(!result.handled){Dialogue.activate({key:'christmas-2025',active:false});Dialogue.cancelAll(api);Sync.all(api);api.log('Christmas scene: '+result.error);}
 }
 
 function canBank(api,event){

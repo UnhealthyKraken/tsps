@@ -195,9 +195,35 @@ test('original fish and vegetable crate packets open native main/side menus and 
   assert.deepEqual(Progress.read(player).gathered,['trout','cabbage'],'already-carried side cannot be collected twice');
   player.closeInterruptibleInterfaces();await click('xmas25_crate01_vegetable01');
   const revision=Progress.read(player).revision;
-  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});await choose('Potatoes');
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  assert.equal(MultiChatboxPrompt.getPending(player),null,'window closure immediately dismisses its owned crate menu');
+  await connection.dispatch([{type:'dialogue_continue',widgetId:MultiChatboxPrompt.OPTIONS_WIDGET_ID,childIndex:2}]);connection.processTurnPackets();
   assert.equal(Progress.read(player).revision,revision,'window closure invalidates the pending native crate choice');
   assert.deepEqual(Progress.read(player).gathered,['trout','cabbage']);
+});
+
+test('annual window closure cancels its prior platter view while preserving a later real bank',async t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const {ClientConnection}=require('../dist/net/NetworkBuilder');
+  const {MAIN_INVENTORY_WIDGET_UID:uid}=require('../dist/net/protocol/ClientProtocol');
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
+  assert.equal(c.World.getPlayers().add(player),true);
+  t.after(()=>{player.closeInterruptibleInterfaces();c.TaskManager.cancelTasks(player.getIndex());PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});c.World.getPlayers().remove(player);});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  assert.equal(Progress.begin(api,player,Progress.read(player).revision),true);
+  const platter=Progress.platterId(api);
+  player.setNeedsPlacement(false);
+  await connection.dispatch([{type:'widget_action',widgetId:uid,groupId:uid>>>16,childId:uid&65535,buttonNum:2,itemId:platter,slot:player.getInventory().getSlotForItemId(platter)}]);connection.processTurnPackets();
+  assert.equal(player.getDialogueManager().getCurrent()?.getText(),'The serving platter is empty.');
+  const bank=player.getBank(0);bank.addItem(new c.Item(c.ItemIdentifiers.COINS,77));bank.open();
+  const modal=player.getInterfaceId();assert.ok(modal>=0,'real Bank.open mounts its interface');
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  assert.equal(player.getInterfaceId(),modal,'window cleanup preserves the later bank');
+  assert.equal(bank.getAmount(c.ItemIdentifiers.COINS),77,'bank contents remain unchanged');
+  assert.equal(player.getDialogueManager().getCurrent(),undefined);
 });
 test('exhausted native wire allocation refuses before any scenery is removed',()=>{
   const original=data.bundle.definitions.find(r=>r.kind==='npc'&&r.symbol==='xmas25_sir_prysin');

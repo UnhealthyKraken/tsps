@@ -2,6 +2,29 @@
 
 const Progress=require('./Progress.ChristmasDinner');
 const Dialogue=require('./Dialogue.ChristmasDinner');
+const Actors=require('./Actors.ChristmasDinner');
+
+const GUESTS=['xmas25_sir_prysin','xmas25_aggie','xmas25_jobless_jim'];
+const MISC={
+  'Sir Prysin':'sir-prysin',Aggie:'aggie',Hans:'hans',Karim:'karim',Oziach:'oziach',Rommik:'rommik',Doris:'doris',Herquin:'herquin',
+};
+function customer(api,event,role){
+  const {player,npc}=event,state=Progress.read(player);
+  let variant,escort=false;
+  if(role.kind==='queue'&&state.phase==='queue'&&Progress.held(api,player)&&
+    npc.getCurrentDefinition(player)?.getId()===api.core.CacheDefinitions.getArchivedId('christmas-2025','npc',GUESTS[state.customer])){
+    variant='serving-the-customers-talking-to-the-customer';escort=true;
+  }else if(role.kind==='escort'&&state.phase==='table')variant='serving-the-customers-talking-to-the-customer-before-picking-a-table';
+  else{
+    const name=npc.getCurrentDefinition(player)?.getName();
+    const served=role.kind==='seat'&&state.seats.indexOf(role.table)<state.customer;
+    const suffix=name==='Jobless Jim'?'jobless-jim-'+(served?'after-he-had-his-dinner':'before-he-had-his-dinner'):MISC[name];
+    if(suffix)variant='misc-npc-dialogue-talking-to-'+suffix;
+  }
+  if(variant)Dialogue.start(api,{player,npc,variant,escort,guard:()=>Actors.role(api,npc,player)===role});
+  // Never route our holiday variants into ordinary Prysin/Aggie quest dialogue.
+  event.handled=true;
+}
 
 function cookVariant(state,hasPlatter){
   if(state.phase==='new')return 'starting-the-event-talking-to-the-cook';
@@ -26,6 +49,8 @@ function interact(api,event){
   const definition=npc.getCurrentDefinition(player);
   if(definition?.getActions()?.[event.clickType-1]?.toLowerCase()!=='talk-to')return;
   if(!player.isRegistered()||player.getHitpoints()<=0||player.busy())return;
+  const role=Actors.role(api,npc,player);
+  if(role){customer(api,event,role);return;}
   if(definition.getId()===api.core.CacheDefinitions.getNpcId('bluemoon_bartender')){
     if(npc.getPrivateArea?.()||npc.getOwner?.())return;
     if(Dialogue.startBartender(api,{player,npc}))event.handled=true;

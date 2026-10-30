@@ -22,6 +22,63 @@ function clipping(){
 }
 function install(bundles){const request={bundles};PM.emitCustomEvent('definition-archives:install',request);assert.equal(request.handled,true,request.error);}
 
+test('actual Christmas front guest greets, follows its owner and seats through native Table Serve',async t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const {ClientConnection}=require('../dist/net/NetworkBuilder');
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel)),other=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
+  assert.equal(c.World.getPlayers().add(player),true);assert.equal(c.World.getPlayers().add(other),true);
+  t.after(()=>{player.closeInterruptibleInterfaces();c.TaskManager.cancelTasks(player.getIndex());PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});c.World.getPlayers().remove(player);c.World.getPlayers().remove(other);});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const id=symbol=>c.CacheDefinitions.getArchivedId('christmas-2025','npc',symbol);
+  const front=[...c.World.getNpcs()].find(npc=>npc?.getId()===id('xmas25_queue_npc_1'));
+  assert.ok(front?.isRegistered(),'annual scene must create its actual native queue parent');
+  assert.equal(Progress.begin(api,player,0),true);assert.equal(Progress.begin(api,other,0),true);
+  player.setLocation(new c.Location(3217,3395));player.setNeedsPlacement(false);
+  await connection.dispatch([{type:'npc_option',index:front.getIndex(),clickType:1}]);connection.processTurnPackets();
+  for(let tick=0;tick<12;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Hello and welcome to the Blue Moon Inn/);
+  async function resume(){
+    const group=[231,217,193,229].find(group=>player.getPacketSender().isChatboxInterface(group));assert.ok(group);
+    await connection.dispatch([{type:'dialogue_continue',widgetId:(group<<16)|5,childIndex:-1}]);connection.processTurnPackets();
+  }
+  await resume();await resume();assert.match(player.getDialogueManager().getCurrent()?.getText()??'',/Let me show/);
+  front.setOwner(other);await resume();
+  assert.equal(Progress.read(player).phase,'queue','pending greeting cannot steal a transferred actor');
+  assert.equal(Scene.close(api).handled,false);assert.equal(front.getOwner(),other);assert.equal(front.isRegistered(),true);
+  front.setOwner(null);PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  await connection.dispatch([{type:'npc_option',index:front.getIndex(),clickType:1}]);connection.processTurnPackets();
+  for(let tick=0;tick<8;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  for(let n=0;n<8&&player.getDialogueManager().getCurrent();n++)await resume();
+  assert.equal(Progress.read(player).phase,'table');assert.equal(Progress.read(other).phase,'queue');
+  assert.equal(front.getCurrentDefinition(player).getId(),id('xmas25_aggie'),'queue advances for this player only');
+  assert.equal(front.getCurrentDefinition(other).getId(),id('xmas25_sir_prysin'));
+  let follower=[...c.World.getNpcs()].find(npc=>npc?.getOwner()===player&&npc.getId()===id('xmas25_sir_prysin'));
+  assert.ok(follower?.isRegistered());assert.equal(follower.isOwnerOnly(),true);assert.equal(follower.getFollowing(),player);
+  const start=follower.getLocation().clone();follower.setNeedsPlacement(false);
+  player.getMovementQueue().addSteps(new c.Location(3220,3400));
+  for(let tick=0;tick<16;tick++){player.getMovementQueue().process();follower.process();c.TaskManager.process();}
+  assert.equal(follower.getLocation().equals(start),false,'real NPC movement must follow beyond its spawn tile');
+  const oldFollower=follower;
+  PM.emitPlayerLogout({player,username:'christmasescort'});assert.equal(oldFollower.isRegistered(),false);
+  PM.emitPlayerLogin({player,username:'christmasescort'});PM.emitPlayerLogin({player,username:'christmasescort'});
+  const recovered=[...c.World.getNpcs()].filter(npc=>npc?.getOwner()===player&&npc.getId()===id('xmas25_sir_prysin'));
+  assert.equal(recovered.length,1,'login lifecycle recovers one escort without duplicating it');follower=recovered[0];
+  assert.notEqual(follower,oldFollower);assert.equal(follower.getFollowing(),player);
+  const table=Scene.objects().find(row=>row.symbol==='xmas25_table_1').object,p=table.getLocation();
+  await connection.dispatch([{type:'object_option',id:table.getId(),x:p.getX(),y:p.getY(),clickType:1,action:'Serve'}]);connection.processTurnPackets();
+  for(let tick=0;tick<16;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();follower.process();c.TaskManager.process();}
+  assert.equal(Progress.read(player).phase,'drink-order');assert.deepEqual(Progress.read(player).seats,[0]);
+  assert.equal(follower.isRegistered(),false,'a seated guest cannot leave a duplicate following actor');
+  const seat=[...c.World.getNpcs()].find(npc=>npc?.getId()===id('xmas25_table_npc_1'));
+  assert.ok(seat?.isRegistered());assert.equal(seat.getCurrentDefinition(player).getId(),id('xmas25_sir_prysin'));
+  assert.equal(seat.getCurrentDefinition(other).getId(),id('xmas25_stool_empty'));
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  assert.equal(front.isRegistered(),false);assert.equal(seat.isRegistered(),false);
+});
+
 test('original upstairs carpet boundary clears four modern blue tiles and restores them without stealing foreign floors',t=>{
   // Original l50_53 has no floor decoration in this northmost modern rug row.
   const rows=[['fai_varrock_rugcorner',3219,0],['fai_varrock_rugside',3220,0],['fai_varrock_rugside',3221,0],['fai_varrock_rugcorner',3222,1]];

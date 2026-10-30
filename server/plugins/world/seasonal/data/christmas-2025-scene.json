@@ -1,9 +1,22 @@
 {
   "source": "Jagex cache2392 revision235 l50_53 has no floor decorations on this row; the active revision241 blue pub rug extends one tile farther north upstairs.",
-  "vacantFloorTiles": [
+  "actorSource": "Seat positions are inferred from the original table anchors and vacated native chair slots, consistent with Wiki Stool (2025 Christmas event). Queue front is inferred west of the original door from LYhx7ksRL5E at 0:31; further queue positions and exact facing still need calibration.",
+  "actors": [
+    { "symbol": "xmas25_table_npc_1", "role": "seat", "table": 0, "x": 3220, "y": 3402, "z": 0, "face": "SOUTH" },
+    { "symbol": "xmas25_table_npc_2", "role": "seat", "table": 1, "x": 3221, "y": 3402, "z": 0, "face": "SOUTH" },
+    { "symbol": "xmas25_table_npc_3", "role": "seat", "table": 2, "x": 3221, "y": 3397, "z": 0, "face": "NORTH" },
+    { "symbol": "xmas25_table_npc_4", "role": "seat", "table": 3, "x": 3220, "y": 3397, "z": 0, "face": "NORTH" },
+    { "symbol": "xmas25_queue_npc_1", "role": "queue", "x": 3215, "y": 3395, "z": 0, "face": "EAST" }
+  ],
+  "vacantSceneryTiles": [
     { "symbol": "fai_varrock_rugcorner", "x": 3219, "y": 3401, "z": 1, "shape": 22, "rotation": 0 },
     { "symbol": "fai_varrock_rugside", "x": 3220, "y": 3401, "z": 1, "shape": 22, "rotation": 0 },
     { "symbol": "fai_varrock_rugside", "x": 3221, "y": 3401, "z": 1, "shape": 22, "rotation": 0 },
-    { "symbol": "fai_varrock_rugcorner", "x": 3222, "y": 3401, "z": 1, "shape": 22, "rotation": 1 }
+    { "symbol": "fai_varrock_rugcorner", "x": 3222, "y": 3401, "z": 1, "shape": 22, "rotation": 1 },
+    { "symbol": "fai_varrock_blue_inn_barstool_tall", "x": 3220, "y": 3402, "z": 0, "shape": 10, "rotation": 3 },
+    { "symbol": "fai_varrock_blue_inn_barstool_tall", "x": 3221, "y": 3402, "z": 0, "shape": 10, "rotation": 2 },
+    { "symbol": "fai_varrock_blue_inn_barstool", "x": 3221, "y": 3397, "z": 0, "shape": 10, "rotation": 0 },
+    { "symbol": "fai_varrock_blue_inn_barstool", "x": 3220, "y": 3397, "z": 0, "shape": 10, "rotation": 0 },
+    { "symbol": "fai_varrock_blue_inn_barstool", "x": 3221, "y": 3399, "z": 0, "shape": 10, "rotation": 0 }
   ]
 }

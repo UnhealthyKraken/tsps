@@ -7,6 +7,7 @@ const Items=require('./seasonal/Items.ChristmasDinner');
 const Npcs=require('./seasonal/Npcs.ChristmasDinner');
 const Sync=require('./seasonal/Sync.ChristmasDinner');
 const Objects=require('./seasonal/Objects.ChristmasDinner');
+const Actors=require('./seasonal/Actors.ChristmasDinner');
 
 function calendar(api,event){
   if(event.key!=='christmas-2025')return;
@@ -36,7 +37,10 @@ module.exports={
   register(api){
     api.persistAttribute(Progress.PROGRESS_ATTRIBUTE,Progress.initial());
     api.onPlayerLogin(Sync.refresh.bind(null,api));
+    api.onPlayerLogin(Actors.login.bind(null,api));
     api.onCustomEvent('christmas-dinner:changed',Sync.refresh.bind(null,api));
+    api.onCustomEvent('christmas-dinner:changed',Actors.changed.bind(null,api));
+    api.onCustomEvent('christmas-dinner:escort',Actors.escort.bind(null,api));
     api.onCustomEvent('events:active',calendar.bind(null,api));
     api.onServerShutdown(shutdown.bind(null,api));
     api.onRegionLoaded(regionLoaded.bind(null,api));
@@ -54,5 +58,7 @@ module.exports={
     api.onCustomEvent('item:discarded',Progress.discard.bind(null,api));
     api.onPlayerLogout(Dialogue.clear);
     api.onPlayerDisconnect(Dialogue.clear);
+    api.onPlayerLogout(Actors.clear.bind(null,api));
+    api.onPlayerDisconnect(Actors.clear.bind(null,api));
   },
 };

@@ -3,6 +3,7 @@
 const Progress=require('./Progress.ChristmasDinner');
 const Dialogue=require('./Dialogue.ChristmasDinner');
 const Scene=require('./Scene.ChristmasDinner');
+const Actors=require('./Actors.ChristmasDinner');
 
 // Original map placements + Wiki15375309: west half south→north is
 // beer/stout/cider; east half south→north eggnog/milk/chocolate milk/wine.
@@ -27,6 +28,8 @@ function serve(api,{player,object}){
   if(!match||!api.core.World.getObjects().includes(object))return false;
   if(!player.isRegistered()||player.getHitpoints()<=0||player.busy())return true;
   const state=Progress.read(player),table=Number(match[1])-1;
+  if(state.phase==='table'&&Progress.held(api,player)&&!state.seats.includes(table)&&Actors.hasEscort(api,player))
+    return Progress.seat(api,player,state.revision,table);
   let variant;
   if(!Progress.held(api,player))variant='serving-the-customers-attempting-to-serve-a-table-without-a-serving-platter-in-the-inventory';
   else if(state.seats[state.customer]!==table)variant='serving-the-customers-serving-a-table-when-no-customer-is-waiting';

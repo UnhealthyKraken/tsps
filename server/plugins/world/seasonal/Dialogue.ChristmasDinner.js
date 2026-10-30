@@ -18,13 +18,16 @@ function activate(event){if(event.key!=='christmas-2025')return;enabled=event.ac
 function active(){return enabled;}
 function clear({player}){sessions.get(player)?.cancel?.();sessions.delete(player);}
 function cancelAll(api){for(const player of api.core.World.getPlayers())if(player&&sessions.has(player))clear({player});}
-function valid(player,session){return enabled&&session.epoch===epoch&&sessions.get(player)===session&&player.isRegistered()&&Progress.read(player).revision===session.revision;}
+function valid(player,session){return enabled&&session.epoch===epoch&&sessions.get(player)===session&&player.isRegistered()&&Progress.read(player).revision===session.revision&&(!session.guard||session.guard());}
 function context(event){
   const session=sessions.get(event.player);
   if(!session||session.page!==PAGE||!event.pages?.some(row=>row.page===PAGE))return null;
   return session;
 }
-function abort(player){player.getDialogueManager().reset();player.getPacketSender().sendInterfaceRemoval();}
+function abort(player,session){
+  if(session.cancel){session.cancel();return;}
+  player.getDialogueManager().reset();player.getPacketSender().sendInterfaceRemoval();
+}
 function transition(api,player,session,name,...args){
   if(!valid(player,session)||!Progress[name](api,player,session.revision,...args))return false;
   session.revision=Progress.read(player).revision;
@@ -102,7 +105,14 @@ function line(api,event){
   if(event.step.speaker==='[Customer]')event.speakerName=CUSTOMERS[session.customer];
   let before,after;
   if(session.variant==='starting-the-event-talking-to-the-cook'&&state.phase==='new'&&Progress.held(api,event.player)&&original==='Fantastic! Now go deal with that queue!')after=()=>transition(api,event.player,session,'begin');
-  if(session.variant==='serving-the-customers-talking-to-the-customer'&&original.startsWith('Let me show'))after=()=>transition(api,event.player,session,'greet',session.customer);
+  if(session.variant==='serving-the-customers-talking-to-the-customer'&&original.startsWith('Let me show'))after=()=>{
+    if(!session.escort)return transition(api,event.player,session,'greet',session.customer);
+    if(!valid(event.player,session))return false;
+    const request={player:event.player,npc:session.npc,customer:session.customer,revision:session.revision};
+    api.emitCustomEvent('christmas-dinner:escort',request);
+    if(!request.handled)return false;
+    session.revision=Progress.read(event.player).revision;return true;
+  };
   if(session.variant==='serving-the-customers-talking-to-the-customer-after-picking-a-table'&&original.includes('[beverage]'))before=()=>transition(api,event.player,session,'orderDrink',session.drink);
   if(session.variant==='serving-the-customers-serving-the-table-after-getting-the-drink'&&original.startsWith('Here is your drink'))before=()=>transition(api,event.player,session,'serveDrink',session.table);
   // Once the guest has shown the order, Inspect and a resumed session must
@@ -110,8 +120,8 @@ function line(api,event){
   if(['serving-the-customers-serving-the-table-after-getting-the-drink','serving-the-customers-talking-to-the-customer-again-before-getting-the-order'].includes(session.variant)&&original.includes('[main]'))before=()=>transition(api,event.player,session,'orderFood',session.main,session.sides);
   if(session.variant==='serving-the-customers-serving-the-table-with-cooked-food'&&event.step.speaker==='[Customer]')after=()=>transition(api,event.player,session,'serveMeal',session.table);
   if(session.variant==='starting-the-event-talking-to-the-cook-after-losing-the-serving-tray'&&original.startsWith("Not a problem, here's"))before=()=>transition(api,event.player,session,'reclaim');
-  event.before=()=>{if(!valid(event.player,session)||(before&&before()!==true))abort(event.player);};
-  if(after)event.after=()=>{if(!valid(event.player,session)||after()!==true)abort(event.player);};
+  event.before=()=>{if(!valid(event.player,session)||(before&&before()!==true))abort(event.player,session);};
+  if(after)event.after=()=>{if(!valid(event.player,session)||after()!==true)abort(event.player,session);};
 }
 function action(api,event){
   const session=context(event);if(!session)return;

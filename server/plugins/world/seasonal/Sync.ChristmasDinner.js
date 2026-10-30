@@ -7,6 +7,8 @@ const Dialogue=require('./Dialogue.ChristmasDinner');
 function refresh(api,{player}){
   const active=Scene.active()&&Dialogue.active();
   const state=Progress.read(player),sender=player.getPacketSender();
+  const escorting=state.phase!=='new'&&state.phase!=='queue'&&state.customer<3;
+  sender.sendVarbit(api.core.CacheDefinitions.getVarbitId('xmas_25_npc_queue'),active?state.customer+(escorting?1:0):0);
   for(let table=0;table<4;table++){
     let value=0;
     const guest=state.seats.indexOf(table);

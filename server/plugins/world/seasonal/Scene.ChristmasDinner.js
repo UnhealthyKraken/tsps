@@ -1,7 +1,8 @@
 "use strict";
 
 const source=require('./data/christmas-2025-archive.json');
-const {vacantFloorTiles}=require('./data/christmas-2025-scene.json');
+const {vacantSceneryTiles}=require('./data/christmas-2025-scene.json');
+const Actors=require('./Actors.ChristmasDinner');
 const BUNDLE='christmas-2025';
 let scene=null;
 
@@ -44,13 +45,13 @@ function open(api){
   const c=api.core;
   if(scene){
     const owned=new Set(scene.rows.map(row=>row.object));
-    return scene.ready&&scene.rows.length===source.placements.length+vacantFloorTiles.length&&scene.rows.every(row=>(!row.object||c.World.getObjects().includes(row.object))&&!foreignOnTile(c,row,owned))
+    return scene.ready&&scene.rows.length===source.placements.length+vacantSceneryTiles.length&&scene.rows.every(row=>(!row.object||c.World.getObjects().includes(row.object))&&!foreignOnTile(c,row,owned))&&Actors.open(api).handled
       ? {handled:true}:{handled:false,error:'The previous Christmas scene needs cleanup before reopening'};
   }
   try{
     const existing=[...c.CacheDefinitions.getDefinitionArchiveBundles()];
     if(existing.some(bundle=>bundle.id===BUNDLE))throw new Error('Another owner has installed the Christmas archive');
-    const placements=[...source.placements,...vacantFloorTiles.map(row=>({...row,removeOnly:true}))];
+    const placements=[...source.placements,...vacantSceneryTiles.map(row=>({...row,removeOnly:true}))];
     const plan=placements.map(row=>{
       const location=new c.Location(row.x,row.y,row.z);
       c.RegionManager.loadMapFiles(row.x,row.y,false);
@@ -61,7 +62,7 @@ function open(api){
       const normal=[...(c.MapObjects.mapObjects.get(c.MapObjects.getHash(row.x,row.y,row.z))??[])]
         .filter(object=>globalObject(object)&&sameTile(object,row));
       if(normal.some(object=>!object.isMapOriginal()))throw new Error('Non-original scenery occupies a Christmas tile');
-      if(row.removeOnly&&(normal.length!==1||normal[0].getId()!==c.CacheDefinitions.getLocId(row.symbol)||normal[0].getFace()!==row.rotation))throw new Error('Native floor differs at a vacant Christmas tile');
+      if(row.removeOnly&&(normal.length!==1||normal[0].getId()!==c.CacheDefinitions.getLocId(row.symbol)||normal[0].getFace()!==row.rotation))throw new Error('Native scenery differs at a vacant Christmas tile');
       return {...row,location,normal};
     });
     const bundle=bundleFor(c);
@@ -79,6 +80,7 @@ function open(api){
       if(object)c.ObjectManager.register(object,true);
     }
     repairClipping(c,scene.rows);
+    const actors=Actors.open(api);if(!actors.handled)throw new Error(actors.error);
     scene.ready=true;
     return {handled:true};
   }catch(error){
@@ -93,6 +95,7 @@ function close(api){
     const installed=c.CacheDefinitions.getDefinitionArchiveBundles().find(bundle=>bundle.id===BUNDLE);
     if(JSON.stringify(installed)!==JSON.stringify(scene.bundle))throw new Error('Christmas archive has changed ownership');
     for(const row of scene.rows)if(foreignOnTile(c,row,owned))throw new Error('A different runtime owner now occupies a Christmas tile');
+    const actors=Actors.close(api);if(!actors.handled)throw new Error(actors.error);
     scene.ready=false;
     // Deregister while the old archived types still exist: collision removal
     // reads their old footprints. Then put back the exact original map objects.

@@ -4,6 +4,7 @@ const Progress=require('./Progress.ChristmasDinner');
 const Scene=require('./Scene.ChristmasDinner');
 const Dialogue=require('./Dialogue.ChristmasDinner');
 const Rewards=require('./Rewards.ChristmasDinner');
+const Music=require('./Music.ChristmasDinner');
 const Presentation=require('./Presentation.ChristmasDinner');
 const {actors,cutsceneActors}=require('./data/christmas-2025-scene.json');
 const sessions=new Map();
@@ -75,8 +76,6 @@ function tick(api,record){
     // earlier capacity checks authorize a later grant on changed state.
     if(!Rewards.claim(api,record.player,record.revision)){clear(api,record);return;}
     clear(api,record);
-    const track=api.core.Music.tracks().find(row=>row.name==='All the Trimmings');
-    if(track)api.emitCustomEvent('music:unlock-track',{player:record.player,trackId:track.id});
     Rewards.show(api,record.player);
   }
 }
@@ -89,6 +88,7 @@ function start(api,request){
     !Scene.objects().some(row=>row.object===object&&row.symbol===`xmas25_table_${table+1}`)||!c.World.getObjects().includes(object))return;
   let record;
   class DinnerArea extends c.PrivateArea{
+    getMusicTrack(){return Music.track(api);}
     process(character){if(character===player&&record&&!live(api,record))clear(api,{player});}
     postLeave(character,logout){if(character===player)clear(api,{player},true);super.postLeave(character,logout);}
     canAttack(){return false;}

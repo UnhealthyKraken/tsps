@@ -10,6 +10,7 @@ const Objects=require('./seasonal/Objects.ChristmasDinner');
 const Actors=require('./seasonal/Actors.ChristmasDinner');
 const Completion=require('./seasonal/Completion.ChristmasDinner');
 const Rewards=require('./seasonal/Rewards.ChristmasDinner');
+const Music=require('./seasonal/Music.ChristmasDinner');
 
 function calendar(api,event){
   if(event.key!=='christmas-2025')return;
@@ -37,6 +38,7 @@ function canBank(api,event){
 module.exports={
   name:'ChristmasDinner',
   register(api){
+    api.registerArea(Music.createArea(api));
     api.persistAttribute(Progress.PROGRESS_ATTRIBUTE,Progress.initial());
     api.onPlayerLogin(Sync.refresh.bind(null,api));
     api.onPlayerLogin(Actors.login.bind(null,api));

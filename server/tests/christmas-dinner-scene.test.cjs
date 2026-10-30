@@ -680,3 +680,55 @@ test('an external registered borrower prevents archive removal; partial cleanup 
     assert.ok(c.CacheDefinitions.getArchivedId('christmas-2025','loc',table.symbol));
   }finally{c.ObjectManager.deregister(borrowed,true);assert.equal(Scene.close(api).handled,true);}
 });
+
+test('Christmas music unlocks on active pub entry, restores on exit and respects private ownership',async t=>{
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const {AreaManager}=require('../dist/game/model/areas/AreaManager');
+  const MusicProgress=require('../plugins/world/Progress.Music');
+  const delivered=[],channel={isOpen:()=>true,send:frame=>delivered.push(Buffer.from(frame))};
+  const session=new PlayerSession(channel),player=new Player(session);session.setPlayer(player);player.setUsername('christmasmusic');
+  assert.equal(c.World.getPlayers().add(player),true);
+  let privateArea;
+  t.after(()=>{
+    privateArea?.destroy();PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+    if(player.getArea())player.getArea().leave(player,true);
+    player.setArea(null);c.World.getPlayers().remove(player);
+  });
+  const track=c.Music.tracks().find(row=>row.name==='All the Trimmings');assert.ok(track);
+  const normal=c.Music.forRegion((50<<8)|53);assert.notEqual(normal,track.id);
+  player.setLocation(new c.Location(3217,3395,0));player.setNeedsPlacement(false);
+  let tick=0;
+  async function flush(){
+    session.flush(++tick);
+    const songs=session.pendingPackets.filter(packet=>packet[0]===133).map(packet=>packet.readUInt16BE(packet.length-10));
+    await Promise.resolve();return songs;
+  }
+  function walk(x){
+    player.getMovementQueue().addSteps(new c.Location(x,3395,0));
+    for(let step=0;step<8&&player.getLocation().getX()!==x;step++){player.getMovementQueue().process();AreaManager.process(player);}
+    assert.equal(player.getLocation().getX(),x,'real movement crosses the pub entrance');
+  }
+  assert.deepEqual(await flush(),[normal]);walk(3218);
+  assert.deepEqual(await flush(),[],'inactive event retains the ordinary song');
+  assert.equal(MusicProgress.isUnlocked(player,track.id),false);
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  assert.deepEqual(await flush(),[track.id],'opening the event inside the pub selects its song before any conversation');
+  assert.equal(MusicProgress.isUnlocked(player,track.id),true);
+  assert.equal(require('../plugins/world/seasonal/Progress.ChristmasDinner').read(player).phase,'new');
+  assert.equal(session.getCurrentMusicTrack(),track.id);
+  assert.deepEqual(await flush(),[]);
+  walk(3217);assert.deepEqual(await flush(),[normal]);
+  walk(3218);assert.deepEqual(await flush(),[track.id]);
+  assert.equal(MusicProgress.unlockedTracks(player).filter(id=>id===track.id).length,1);
+  privateArea=new c.PrivateArea([new c.Boundary(3210,3245,3388,3420,0)]);
+  privateArea.enter(player);
+  assert.equal(player.getPrivateArea(),privateArea);
+  assert.deepEqual(await flush(),[normal],'an unrelated private owner is not assigned the public holiday music');
+  privateArea.leave(player,false);privateArea=null;AreaManager.process(player);
+  assert.deepEqual(await flush(),[track.id]);
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+  assert.deepEqual(await flush(),[normal],'calendar closure restores ordinary music without requiring a region move');
+  assert.equal(MusicProgress.isUnlocked(player,track.id),true,'closing the event does not erase the earned unlock');
+  assert.ok(delivered.length);
+});

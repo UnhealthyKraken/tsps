@@ -22,6 +22,28 @@ function clipping(){
 }
 function install(bundles){const request={bundles};PM.emitCustomEvent('definition-archives:install',request);assert.equal(request.handled,true,request.error);}
 
+test('original upstairs carpet boundary clears four modern blue tiles and restores them without stealing foreign floors',t=>{
+  // Original l50_53 has no floor decoration in this northmost modern rug row.
+  const rows=[['fai_varrock_rugcorner',3219,0],['fai_varrock_rugside',3220,0],['fai_varrock_rugside',3221,0],['fai_varrock_rugcorner',3222,1]];
+  const original=rows.map(([symbol,x,rotation])=>{
+    const location=new c.Location(x,3401,1),id=c.CacheDefinitions.getLocId(symbol),object=c.MapObjects.get(id,location,null);
+    assert.ok(object?.isMapOriginal(),'real active-cache rug '+symbol+' '+x);assert.equal(object.getFace(),rotation);
+    return {location,id,object};
+  });
+  let foreign;
+  t.after(()=>{if(foreign)c.ObjectManager.deregister(foreign,true);assert.equal(Scene.close(api).handled,true);});
+  assert.equal(Scene.open(api).handled,true);
+  for(const row of original)assert.equal(c.MapObjects.get(row.id,row.location,null),null,'blue strip remains outside the original red carpet');
+  assert.equal(Scene.objects().length,125,'vacant tiles are not fabricated scenery objects');
+  foreign=new c.GameObject(original[0].id,original[0].location.clone(),22,0,null);c.ObjectManager.register(foreign,true);
+  assert.equal(Scene.close(api).handled,false,'a later runtime floor keeps its ownership');
+  assert.ok(c.World.getObjects().includes(foreign));c.ObjectManager.deregister(foreign,true);foreign=null;
+  assert.equal(c.RegionManager.reloadRegion(c.RegionManager.regionIdForTile(3220,3401)),true);
+  for(const row of original)assert.equal(c.MapObjects.get(row.id,row.location,null),null,'region reload must replay the empty historical boundary');
+  assert.equal(Scene.close(api).handled,true);
+  for(const row of original)assert.equal(c.MapObjects.get(row.id,row.location,null),row.object,'exact saved native floor restored');
+});
+
 test('native Table Serve routes saved ingredients and cooked meals to their own guest only',async t=>{
   const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
   const {Player}=require('../dist/game/entity/impl/player/Player');

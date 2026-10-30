@@ -1,6 +1,7 @@
 "use strict";
 
 const source=require('./data/christmas-2025-archive.json');
+const {vacantFloorTiles}=require('./data/christmas-2025-scene.json');
 const BUNDLE='christmas-2025';
 let scene=null;
 
@@ -20,7 +21,7 @@ function bounds(object){
 }
 function repairClipping(core,rows){
   if(!rows.length)return;
-  const affected=rows.flatMap(row=>[row.object,...row.normal]).map(bounds);
+  const affected=rows.flatMap(row=>[row.object,...row.normal]).filter(Boolean).map(bounds);
   // Clip masks are shared OR bits, not per-object reference counts: removing
   // one footprint may clear a neighbouring object's bit. Reapply only standing
   // geometry overlapping the changed footprints, never a saved clip snapshot
@@ -43,13 +44,14 @@ function open(api){
   const c=api.core;
   if(scene){
     const owned=new Set(scene.rows.map(row=>row.object));
-    return scene.ready&&scene.rows.length===source.placements.length&&scene.rows.every(row=>c.World.getObjects().includes(row.object)&&!foreignOnTile(c,row,owned))
+    return scene.ready&&scene.rows.length===source.placements.length+vacantFloorTiles.length&&scene.rows.every(row=>(!row.object||c.World.getObjects().includes(row.object))&&!foreignOnTile(c,row,owned))
       ? {handled:true}:{handled:false,error:'The previous Christmas scene needs cleanup before reopening'};
   }
   try{
     const existing=[...c.CacheDefinitions.getDefinitionArchiveBundles()];
     if(existing.some(bundle=>bundle.id===BUNDLE))throw new Error('Another owner has installed the Christmas archive');
-    const plan=source.placements.map(row=>{
+    const placements=[...source.placements,...vacantFloorTiles.map(row=>({...row,removeOnly:true}))];
+    const plan=placements.map(row=>{
       const location=new c.Location(row.x,row.y,row.z);
       c.RegionManager.loadMapFiles(row.x,row.y,false);
       const region=c.RegionManager.getRegionid(c.RegionManager.regionIdForTile(row.x,row.y));
@@ -59,6 +61,7 @@ function open(api){
       const normal=[...(c.MapObjects.mapObjects.get(c.MapObjects.getHash(row.x,row.y,row.z))??[])]
         .filter(object=>globalObject(object)&&sameTile(object,row));
       if(normal.some(object=>!object.isMapOriginal()))throw new Error('Non-original scenery occupies a Christmas tile');
+      if(row.removeOnly&&(normal.length!==1||normal[0].getId()!==c.CacheDefinitions.getLocId(row.symbol)||normal[0].getFace()!==row.rotation))throw new Error('Native floor differs at a vacant Christmas tile');
       return {...row,location,normal};
     });
     const bundle=bundleFor(c);
@@ -68,12 +71,12 @@ function open(api){
     install(api,[...existing,bundle]);
     scene={bundle,rows:[],ready:false};
     for(const row of plan){
-      const id=c.CacheDefinitions.getArchivedId(BUNDLE,'loc',row.symbol);
-      if(id===null)throw new Error('Missing archived scene symbol '+row.symbol);
-      const object=new c.GameObject(id,row.location,row.shape,row.rotation,null);
+      const id=row.removeOnly?null:c.CacheDefinitions.getArchivedId(BUNDLE,'loc',row.symbol);
+      if(id===null&&!row.removeOnly)throw new Error('Missing archived scene symbol '+row.symbol);
+      const object=row.removeOnly?null:new c.GameObject(id,row.location,row.shape,row.rotation,null);
       const entry={...row,object};scene.rows.push(entry);
       for(const original of row.normal)c.ObjectManager.deregister(original,true);
-      c.ObjectManager.register(object,true);
+      if(object)c.ObjectManager.register(object,true);
     }
     repairClipping(c,scene.rows);
     scene.ready=true;
@@ -93,7 +96,7 @@ function close(api){
     scene.ready=false;
     // Deregister while the old archived types still exist: collision removal
     // reads their old footprints. Then put back the exact original map objects.
-    for(const row of scene.rows)if(c.World.getObjects().includes(row.object))c.ObjectManager.deregister(row.object,true);
+    for(const row of scene.rows)if(row.object&&c.World.getObjects().includes(row.object))c.ObjectManager.deregister(row.object,true);
     for(const row of scene.rows)for(const original of row.normal){
       if(c.MapObjects.get(original.getId(),original.getLocation(),null)!==original)c.ObjectManager.register(original,true);
     }
@@ -120,11 +123,11 @@ function replay(api,{regionId}){
     const standing=[...(c.MapObjects.mapObjects.get(c.MapObjects.getHash(row.x,row.y,row.z))??[])]
       .filter(object=>sameTile(object,row)&&object!==row.object);
     for(const original of standing)c.ObjectManager.deregister(original,true);
-    c.ObjectManager.register(row.object,true);
+    if(row.object)c.ObjectManager.register(row.object,true);
   }
   repairClipping(c,rows);return {handled:true};
 }
-function objects(){return scene?scene.rows.map(row=>({symbol:row.symbol,object:row.object})):[];}
+function objects(){return scene?scene.rows.filter(row=>row.object).map(row=>({symbol:row.symbol,object:row.object})):[];}
 function active(){return scene?.ready===true;}
 
 module.exports={open,close,objects,active,replay};

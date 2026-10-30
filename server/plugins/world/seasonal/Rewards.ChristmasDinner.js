@@ -28,6 +28,9 @@ const RARE_PLAY_SECONDS=25*60*60;
 const scrolls=new WeakSet();
 // IF_SETCOLOUR takes packed RGB555: red128 (the source scroll title), not RGB24.
 const SCROLL_TITLE_COLOUR=16<<10;
+// Wiki A Merry Christmas (Christmas2022), revision15353886; pinned jingle.sym
+// jingle_297 and active index11 group297/file0, CRC2546897257.
+const CHRISTMAS_COMPLETE_JINGLE=297;
 
 function show(api,player){
   const cache=api.core.CacheDefinitions,sender=player.getPacketSender();
@@ -38,6 +41,7 @@ function show(api,player){
   sender.sendString('The Old School team wishes you Happy Holidays!',cache.getComponentId('eventscroll:event_farewell_text'));
   sender.sendInterfaceModel(cache.getComponentId('eventscroll:event_model'),Progress.platterId(api),10);
   sender.sendInterfaceModel(cache.getComponentId('eventscroll:event_type_model'),itemId(api,'santa_hat'),10);
+  sender.sendJingle(CHRISTMAS_COMPLETE_JINGLE,0);
   scrolls.add(player);
 }
 function close(api,event){

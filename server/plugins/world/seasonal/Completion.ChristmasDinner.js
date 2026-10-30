@@ -4,7 +4,8 @@ const Progress=require('./Progress.ChristmasDinner');
 const Scene=require('./Scene.ChristmasDinner');
 const Dialogue=require('./Dialogue.ChristmasDinner');
 const Rewards=require('./Rewards.ChristmasDinner');
-const {actors}=require('./data/christmas-2025-scene.json');
+const Presentation=require('./Presentation.ChristmasDinner');
+const {actors,cutsceneActors}=require('./data/christmas-2025-scene.json');
 const sessions=new Map();
 // The source establishes this sequence, not its exact walk/camera or emote ticks.
 // These provisional presentation timings still need video calibration before release.
@@ -30,6 +31,7 @@ function clear(api,{player},leaving=false){
     if(ours)api.removeNpc(npc);
   }
   if(owned){
+    Presentation.clear(api,record);
     player.getMovementQueue().reset().setBlockMovement(record.blocked);
     player.setUntargetable(record.untargetable);
     player.performAnimation(api.core.Animation.DEFAULT_RESET_ANIMATION);
@@ -38,6 +40,18 @@ function clear(api,{player},leaving=false){
   if(!record.area.isDestroyed())record.area.destroy();
 }
 function cancelAll(api){for(const player of [...sessions.keys()])clear(api,{player});}
+function spawn(api,record,row){
+  const c=api.core,id=c.CacheDefinitions.getArchivedId('christmas-2025','npc',row.symbol);
+  if(id===null)throw new Error('Missing Christmas cutscene actor '+row.symbol);
+  const npc=api.spawnNpc({id,x:row.x,y:row.y,z:row.z,wanderRadius:0,owner:record.player,ownerOnly:true,
+    ...(row.face?{face:c.Direction[row.face].getId()}:{})});
+  if(!npc)throw new Error('Could not create Christmas cutscene actor '+row.symbol);
+  record.npcs.push(npc);record.area.enter(npc);
+  if(!npc.isRegistered())throw new Error('No world capacity for Christmas cutscene actor '+row.symbol);
+  npc.setScriptedMovement(true);
+  if(row.animation)npc.performAnimation(new c.Animation(c.CacheDefinitions.getSeqId(row.animation)));
+  return npc;
+}
 function emote(api,{player}){
   const record=sessions.get(player);
   if(!record||record.phase!=='speech'||!live(api,record))return;
@@ -51,6 +65,7 @@ function tick(api,record){
     if(!record.cook.getLocation().equals(record.target))return;
     record.cook.setPositionToFace(record.player.getLocation());
     record.player.setPositionToFace(record.cook.getLocation());
+    Presentation.delivery(api,record);
     record.phase='speech';
     if(!Dialogue.start(api,{player:record.player,npc:record.cook,
       variant:'completing-the-event-sitting-at-the-table',completion:record,
@@ -80,9 +95,9 @@ function start(api,request){
     canTeleport(){return false;}
     canTrade(){return false;}
   }
-  const area=new DinnerArea([new c.Boundary(3210,3230,3388,3415,0)]);
+  const area=new DinnerArea([new c.Boundary(3210,3245,3388,3420,0)]);
   if(!Scene.copyToPrivateArea(api,area).handled){area.destroy();return;}
-  record={player,area,revision,npcs:[],ticks:0,phase:'walk',returnLocation:player.getLocation().clone(),
+  record={player,area,revision,table,npcs:[],ticks:0,phase:'walk',returnLocation:player.getLocation().clone(),
     blocked:player.getMovementQueue().isMovementBlocked(),untargetable:player.isUntargetable()};
   sessions.set(player,record);
   try{
@@ -90,15 +105,14 @@ function start(api,request){
     player.setLocation(new c.Location(placement.x,placement.y,placement.z));
     // Source video shows the chef walking in with the plate. Exact route and
     // background cast positions are still open evidence gaps, not RSProx facts.
-    const cookId=c.CacheDefinitions.getArchivedId('christmas-2025','npc','xmas25_cutscene_chef_with_plate');
-    if(cookId===null)throw new Error('Missing Christmas cutscene chef');
-    const cook=api.spawnNpc({id:cookId,x:3225,y:3395,z:0,wanderRadius:0,owner:player,ownerOnly:true});
-    if(!cook)throw new Error('Could not create Christmas cutscene chef');
-    record.npcs.push(cook);area.enter(cook);record.cook=cook;
-    if(!cook.isRegistered())throw new Error('No world capacity for Christmas cutscene chef');
-    cook.setScriptedMovement(true);
+    const cook=spawn(api,record,{symbol:'xmas25_cutscene_chef_with_plate',x:3225,y:3395,z:0});record.cook=cook;
+    // Private-area visibility intentionally excludes the public actors. Copy
+    // the real morph parents so all three saved guests keep their own seats.
+    for(const row of actors)if(row.role!=='queue')spawn(api,record,row);
+    for(const row of cutsceneActors)spawn(api,record,row);
     record.target=new c.Location(3222,object.getLocation().getY(),placement.z);
     cook.getMovementQueue().addSteps(record.target);
+    Presentation.start(api,record);
     class DinnerTask extends c.Task{constructor(){super(1,record);}execute(){tick(api,record);}}
     c.TaskManager.submit(new DinnerTask());request.handled=true;
   }catch(error){clear(api,{player});api.log('Christmas completion: '+error.message);}

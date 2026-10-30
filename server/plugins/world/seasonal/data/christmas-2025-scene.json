@@ -6,8 +6,27 @@
     { "symbol": "xmas25_table_npc_2", "role": "seat", "table": 1, "x": 3221, "y": 3402, "z": 0, "face": "SOUTH" },
     { "symbol": "xmas25_table_npc_3", "role": "seat", "table": 2, "x": 3221, "y": 3397, "z": 0, "face": "NORTH" },
     { "symbol": "xmas25_table_npc_4", "role": "seat", "table": 3, "x": 3220, "y": 3397, "z": 0, "face": "NORTH" },
-    { "symbol": "xmas25_queue_npc_1", "role": "queue", "x": 3215, "y": 3395, "z": 0, "face": "EAST" }
+    { "symbol": "xmas25_queue_npc_1", "role": "queue", "x": 3215, "y": 3395, "z": 0, "face": "EAST" },
+    { "symbol": "xmas25_puffin", "role": "decoration", "x": 3230, "y": 3407, "z": 0, "face": "SOUTH" }
   ],
+  "puffinSource": "Wiki Puffin (2025 Christmas event), revision15208003, original map pin3230,3407. Facing is inferred; no interaction option is added.",
+  "cutsceneActorSource": "Original zMOOL1CZhhk6:11/6:20 shows the pub cast; models and animations are original archived cutscene NPCs. Exact tiles/facing here remain inferred from the video/room geometry and require further calibration, not RSProx evidence. Freddie cries outside the source puffin cell;3230,3404 is south of its actual wall.",
+  "cutsceneActors": [
+    { "symbol": "xmas25_cutscene_bartender", "x": 3226, "y": 3399, "z": 0, "face": "WEST" },
+    { "symbol": "xmas25_cutscene_woman1", "x": 3223, "y": 3395, "z": 0, "face": "NORTH" },
+    { "symbol": "xmas25_cutscene_jonny", "x": 3219, "y": 3395, "z": 0, "face": "NORTH" },
+    { "symbol": "xmas25_cutscene_dr_harlow", "x": 3224, "y": 3400, "z": 0, "face": "EAST" },
+    { "symbol": "xmas25_cutscene_barbarian", "x": 3224, "y": 3402, "z": 0, "face": "WEST" },
+    { "symbol": "xmas25_cutscene_freddie", "x": 3230, "y": 3404, "z": 0, "face": "NORTH", "animation": "emote_cry_loop" }
+  ],
+  "cameraSource": "Original zMOOL1CZhhk6:11 looks towards the bar, then6:16-6:23 towards the player's table. These provisional camera tiles/heights approximate those shots; exact motion/ticks still need source calibration.",
+  "camera": {
+    "bar": { "from": [3221, 3398, 400], "at": [3226, 3398, 150] },
+    "delivery": {
+      "north": { "from": [3224, 3397, 400], "at": [3221, 3401, 150] },
+      "south": { "from": [3224, 3402, 400], "at": [3221, 3398, 150] }
+    }
+  },
   "vacantSceneryTiles": [
     { "symbol": "fai_varrock_rugcorner", "x": 3219, "y": 3401, "z": 1, "shape": 22, "rotation": 0 },
     { "symbol": "fai_varrock_rugside", "x": 3220, "y": 3401, "z": 1, "shape": 22, "rotation": 0 },

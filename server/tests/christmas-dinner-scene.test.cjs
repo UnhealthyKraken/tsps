@@ -59,8 +59,13 @@ test('native final Table Serve enforces source capacity and calendar closure can
   const packets=[],channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:packet=>{packets.push(packet);return true;},close(){},onData(){},onError(){},onClose(){}};
   const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
   assert.equal(c.World.getPlayers().add(player),true);
+  player.getPacketSender().sendVarbit(c.CacheDefinitions.getVarbitId('fov_clamp'),3);
   t.after(()=>{PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});player.closeInterruptibleInterfaces();c.TaskManager.cancelTasks(player.getIndex());c.World.getPlayers().remove(player);});
   PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const puffinId=c.CacheDefinitions.getArchivedId('christmas-2025','npc','xmas25_puffin');
+  const publicPuffin=[...c.World.getNpcs()].find(npc=>npc?.getId()===puffinId&&!npc.getPrivateArea());
+  assert.ok(publicPuffin?.isRegistered(),'the source puffin remains visible at the public pillory during the window');
+  assert.equal(publicPuffin.getLocation().equals(new c.Location(3230,3407)),true);
   const apply=(name,...args)=>assert.equal(Progress[name](api,player,Progress.read(player).revision,...args),true);
   apply('begin');
   for(let guest=0;guest<3;guest++){
@@ -81,11 +86,29 @@ test('native final Table Serve enforces source capacity and calendar closure can
   assert.ok(packets.some(packet=>Buffer.from(packet).includes(Buffer.from('You need 1 more free inventory slot'))),'source one-slot refusal reaches the actual player packet');
   player.getInventory().deleteAtSlot(16,1);
   await click();const area=player.getPrivateArea();assert.ok(area,'the remaining table starts its isolated cutscene');
+  const cast=[...area.getNpcs()];
+  for(let seat=0;seat<3;seat++){
+    const id=c.CacheDefinitions.getArchivedId('christmas-2025','npc',`xmas25_table_npc_${seat+1}`);
+    const guest=cast.find(npc=>npc.getId()===id);assert.ok(guest,'served guests cannot disappear in the private scene');
+    const symbol=['xmas25_sir_prysin','xmas25_aggie','xmas25_jobless_jim'][seat];
+    assert.equal(guest.getCurrentDefinition(player).getId(),c.CacheDefinitions.getArchivedId('christmas-2025','npc',symbol));
+    assert.equal(guest.getOwner(),player);assert.equal(guest.isOwnerOnly(),true);
+  }
+  const freddie=cast.find(npc=>npc.getId()===c.CacheDefinitions.getArchivedId('christmas-2025','npc','xmas25_cutscene_freddie'));
+  assert.ok(freddie?.isRegistered(),'the original crying cameo belongs to this scene');
+  assert.equal(freddie.getAnimation().getId(),c.CacheDefinitions.getSeqId('emote_cry_loop'));
+  assert.ok(cast.some(npc=>npc.getId()===puffinId&&npc!==publicPuffin));
   assert.equal(player.getMovementQueue().isMovementBlocked(),true);assert.equal(player.isUntargetable(),true);
+  assert.equal(player.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('cutscene_status')),1,'native layout enters cutscene mode');
+  assert.equal(player.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('fov_clamp')),1,'native camera uses the fixed cutscene field of view');
   assert.equal(Progress.read(player).phase,'ready');
   PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
   assert.equal(player.getPrivateArea(),null);assert.equal(area.isDestroyed(),true);
+  assert.ok(cast.every(npc=>!npc.isRegistered()),'calendar cleanup removes each actual private actor');
+  assert.equal(publicPuffin.isRegistered(),false);
   assert.equal(player.getMovementQueue().isMovementBlocked(),false);assert.equal(player.isUntargetable(),false);
+  assert.equal(player.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('cutscene_status')),0,'calendar cancellation restores native gameframe mode');
+  assert.equal(player.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('fov_clamp')),3,'calendar cancellation restores the previous viewport policy');
   assert.equal(Progress.read(player).phase,'ready');assert.equal(player.getAttribute('holiday-rewards:unlocked'),undefined);
   assert.equal(player.getInventory().getAmount(32928),0);
   for(let tick=0;tick<60;tick++)c.TaskManager.process();
@@ -123,7 +146,10 @@ test('native final Table Serve enforces source capacity and calendar closure can
   assert.equal(player.getAttribute('holiday-rewards:unlocked').length,69);
   assert.equal(cook.getId(),c.CacheDefinitions.getArchivedId('christmas-2025','npc','xmas25_cutscene_chef_no_plate'));
   assert.equal(player.getInterfaceId(),c.CacheDefinitions.getInterfaceId('eventscroll'));
+  assert.equal(player.getPacketSender().getVarbit(c.CacheDefinitions.getVarbitId('fov_clamp')),3,'normal completion also restores the previous viewport policy');
   player.getSession().flushPackets();
+  const jingle=require('../dist/net/protocol/ClientProtocol').encodePlayJingle(297,0);
+  assert.ok(packets.some(packet=>Buffer.from(packet).includes(jingle)),'the real completion path sends the sourced Christmas jingle');
   assert.ok(packets.some(packet=>Buffer.from(packet).includes(Buffer.from('Christmas Din-Dins at the Blue Moon Inn'))));
   const close=c.CacheDefinitions.getComponentId('eventscroll:close_button');
   await connection.dispatch([{type:'widget_action',widgetId:close,groupId:close>>>16,childId:close&65535,buttonNum:1,slot:-1}]);connection.processTurnPackets();

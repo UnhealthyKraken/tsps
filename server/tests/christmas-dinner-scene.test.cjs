@@ -20,6 +20,69 @@ function clipping(){
   return flags;
 }
 function install(bundles){const request={bundles};PM.emitCustomEvent('definition-archives:install',request);assert.equal(request.handled,true,request.error);}
+
+test('native Table Serve routes saved ingredients and cooked meals to their own guest only',async t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const {ClientConnection}=require('../dist/net/NetworkBuilder');
+  require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
+  assert.equal(c.World.getPlayers().add(player),true);
+  t.after(()=>{player.closeInterruptibleInterfaces();c.TaskManager.cancelTasks(player.getIndex());c.World.getPlayers().remove(player);PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  const apply=(name,...args)=>assert.equal(Progress[name](api,player,Progress.read(player).revision,...args),true);
+  async function click(table){
+    player.closeInterruptibleInterfaces();
+    const object=Scene.objects().find(row=>row.symbol==='xmas25_table_'+(table+1)).object,p=object.getLocation();
+    player.setLocation(new c.Location(3220,3400));player.setNeedsPlacement(false);
+    assert.equal(c.RegionManager.getClipping(3220,3400,0)&0x100,0,'actual fixture starts outside solid scenery');
+    await connection.dispatch([{type:'object_option',id:object.getId(),x:p.getX(),y:p.getY(),clickType:1,action:'Serve'}]);connection.processTurnPackets();
+    for(let tick=0;tick<30;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+  }
+  async function resume(){
+    const group=[231,217,193,229].find(group=>player.getPacketSender().isChatboxInterface(group));assert.ok(group,'real chatbox is mounted');
+    await connection.dispatch([{type:'dialogue_continue',widgetId:(group<<16)|5,childIndex:-1}]);connection.processTurnPackets();
+  }
+  const text=()=>player.getDialogueManager().getCurrent()?.getText().replace(/\s+/g,' ');
+  apply('begin');
+  for(let customer=0;customer<3;customer++){
+    // Known orders isolate table delivery from unimplemented live order RNG.
+    const table=[3,0,2][customer];apply('greet',customer);apply('seat',table);
+    apply('orderDrink','beer');apply('takeDrink','beer');apply('serveDrink',table);apply('orderFood','trout',['cabbage','parsnips','stuffing']);
+    await click(table);assert.equal(text(),'I should go get all the ingredients for their Christmas dinner.');
+    await resume();assert.equal(text(),'I believe they wanted trout, with cabbage, parsnips and stuffing.');
+    if(customer===0){
+      player.closeInterruptibleInterfaces();
+      player.getInventory().deletes(new c.Item(Progress.platterId(api),1));
+      const revision=Progress.read(player).revision;
+      await click(table);assert.equal(text(),'I should really go get a new serving platter from the Cook before I try to serve a table.');
+      assert.equal(Progress.read(player).revision,revision,'missing physical platter refuses delivery');
+      player.closeInterruptibleInterfaces();apply('reclaim');
+    }
+    for(const ingredient of ['trout','cabbage','parsnips','stuffing'])apply('collect',ingredient);
+    await click(table);assert.equal(text(),'I should get the Cook to prepare these ingredients before I serve them.');
+    apply('cook');
+    const revision=Progress.read(player).revision;
+    await click(1);assert.equal(Progress.read(player).revision,revision,'empty fourth table must not receive another guest meal');
+    await click(table);assert.equal(text(),'Here is your meal. Enjoy!');
+    await resume();assert.equal(text(),'Thank you!');
+    if(customer===0){
+      PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});
+      await connection.dispatch([{type:'dialogue_continue',widgetId:(231<<16)|5,childIndex:-1}]);connection.processTurnPackets();
+      assert.equal(Progress.read(player).phase,'cooked','closed annual window cannot complete a pending delivery');
+      assert.equal(Progress.read(player).customer,0);
+      PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+      await click(table);await resume();assert.equal(text(),'Thank you!');
+    }
+    await resume();assert.equal(Progress.read(player).customer,customer+1);
+    assert.equal(Progress.read(player).phase,customer===2?'ready':'queue');
+    const served=Progress.read(player).revision;await click(table);
+    assert.equal(Progress.read(player).revision,served,'repeat Serve cannot deliver the same meal twice');
+  }
+  player.closeInterruptibleInterfaces();
+});
 test('original surface/cellar objects and real collision restore after two native scene lifecycles',()=>{
   const before=originals(),flags=clipping(),removed=[...c.World.getRemovedObjects()];
   assert.equal(before.filter(r=>r.objects.length).length,21,'actual current-cache map objects were loaded');

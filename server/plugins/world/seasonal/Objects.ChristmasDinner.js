@@ -20,6 +20,27 @@ const CRATE_VARIANTS=Object.freeze({
   xmas25_crate01_vegetable01:'serving-the-customers-searching-the-side-dish-crate',
   xmas25_crate01_broccoli01:'serving-the-customers-searching-the-side-dish-crate',
 });
+const GUESTS=Object.freeze(['xmas25_sir_prysin','xmas25_aggie','xmas25_jobless_jim']);
+function serve(api,{player,object}){
+  if(!Scene.active()||!Dialogue.active())return false;
+  const row=Scene.objects().find(row=>row.object===object),match=/^xmas25_table_([1-4])$/.exec(row?.symbol??'');
+  if(!match||!api.core.World.getObjects().includes(object))return false;
+  if(!player.isRegistered()||player.getHitpoints()<=0||player.busy())return true;
+  const state=Progress.read(player),table=Number(match[1])-1;
+  let variant;
+  if(!Progress.held(api,player))variant='serving-the-customers-attempting-to-serve-a-table-without-a-serving-platter-in-the-inventory';
+  else if(state.seats[state.customer]!==table)variant='serving-the-customers-serving-a-table-when-no-customer-is-waiting';
+  else if(state.phase==='ingredients')variant=state.gathered.length===4
+    ?'serving-the-customers-attempting-to-serve-a-customer-before-the-ingredients-have-been-cooked'
+    :'serving-the-customers-serving-the-table-after-getting-the-order';
+  else if(state.phase==='cooked')variant='serving-the-customers-serving-the-table-with-cooked-food';
+  // Seating/following and order generation need their own evidenced actor
+  // routes. Do not manufacture an order or advance those phases here.
+  if(!variant)return true;
+  const npcId=api.core.CacheDefinitions.getArchivedId('christmas-2025','npc',GUESTS[state.customer])
+    ??api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef');
+  return Dialogue.start(api,{player,npcId,variant,table});
+}
 function drink(api,{player,object}){
   if(!Scene.active()||!Dialogue.active())return false;
   const row=Scene.objects().find(row=>row.object===object),beverage=BAR_DRINKS[row?.symbol];
@@ -44,4 +65,4 @@ function search(api,{player,object}){
   return Dialogue.start(api,{player,npcId,variant});
 }
 
-module.exports={drink,search};
+module.exports={serve,drink,search};

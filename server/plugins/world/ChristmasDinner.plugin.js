@@ -42,6 +42,7 @@ module.exports={
     api.onRegionLoaded(regionLoaded.bind(null,api));
     api.onNpcDialogueCondition(Dialogue.condition.bind(null,api));
     api.onBeforeNpcInteraction(Npcs.interact.bind(null,api));
+    api.onObjectInteraction('Table',{Serve:Objects.serve.bind(null,api)});
     api.onObjectInteraction('Bar',{'Get Drink From':Objects.drink.bind(null,api)});
     api.onObjectInteraction('Crate',{Search:Objects.search.bind(null,api)});
     api.onCustomEvent('npc-dialogue:line',Dialogue.line.bind(null,api));

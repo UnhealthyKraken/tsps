@@ -251,6 +251,28 @@ test('four original crate packet paths open native main/side menus and collect a
   assert.deepEqual(Progress.read(player).gathered,['trout','cabbage']);
 });
 
+test('real cellar routing reaches six crates from beside the ladder while the source-blocked carrot remains unreachable',t=>{
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel));assert.equal(c.World.getPlayers().add(player),true);
+  t.after(()=>{c.TaskManager.cancelTasks(player.getIndex());c.World.getPlayers().remove(player);PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  // Actual cache ladder is3232,9802. This walkable adjacent tile is a route
+  // fixture, not evidence of the ladder transport's arrival or event timing.
+  const start=new c.Location(3232,9801);
+  assert.equal(c.RegionManager.getClipping(start.getX(),start.getY(),0)&0x100,0);
+  const crates=Scene.objects().filter(row=>row.symbol.includes('_crate01_'));assert.equal(crates.length,7);
+  for(const row of crates){
+    c.TaskManager.cancelTasks(player.getIndex());player.setLocation(start.clone());player.setNeedsPlacement(false);
+    let reached=0;player.getMovementQueue().walkToObject(row.object,{execute(){reached++;}},1);
+    for(let tick=0;tick<80;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+    // Wiki Crate (2025 Christmas event) explicitly identifies the carrot
+    // crate as blocked by other crates. No route override bypasses that.
+    assert.equal(reached,row.symbol==='xmas25_crate01_carrot01'?0:1,row.symbol);
+  }
+});
+
 test('annual window closure cancels its prior platter view while preserving a later real bank',async t=>{
   const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
   const {Player}=require('../dist/game/entity/impl/player/Player');

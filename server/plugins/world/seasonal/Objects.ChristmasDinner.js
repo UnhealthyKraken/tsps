@@ -32,10 +32,16 @@ function drink(api,{player,object}){
 }
 function search(api,{player,object}){
   if(!Scene.active()||!Dialogue.active())return false;
-  const row=Scene.objects().find(row=>row.object===object),variant=CRATE_VARIANTS[row?.symbol];
-  if(!variant||!api.core.World.getObjects().includes(object))return false;
-  if(!player.isRegistered()||player.getHitpoints()<=0||player.busy()||Progress.read(player).phase!=='ingredients'||!Progress.held(api,player))return true;
-  return Dialogue.start(api,{player,npcId:api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef'),variant});
+  const row=Scene.objects().find(row=>row.object===object);
+  if(!row?.symbol.startsWith('xmas25_crate01_')||!api.core.World.getObjects().includes(object))return false;
+  if(!player.isRegistered()||player.getHitpoints()<=0||player.busy())return true;
+  const state=Progress.read(player),npcId=api.core.CacheDefinitions.getNpcId('fai_varrock_bluemoon_chef');
+  if(state.phase==='new'||state.phase==='complete')return Dialogue.start(api,{player,npcId,
+    variant:'completing-the-event-searching-food-crates-before-or-after-completing-the-event'});
+  const variant=CRATE_VARIANTS[row.symbol];
+  if(!variant)return false;
+  if(state.phase!=='ingredients'||!Progress.held(api,player))return true;
+  return Dialogue.start(api,{player,npcId,variant});
 }
 
 module.exports={drink,search};

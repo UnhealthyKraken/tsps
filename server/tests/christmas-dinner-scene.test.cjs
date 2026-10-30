@@ -251,6 +251,30 @@ test('four original crate packet paths open native main/side menus and collect a
   assert.deepEqual(Progress.read(player).gathered,['trout','cabbage']);
 });
 
+test('native cellar crate searches refuse taking food before starting and in a seeded completed state',async t=>{
+  const Progress=require('../plugins/world/seasonal/Progress.ChristmasDinner');
+  const {Player}=require('../dist/game/entity/impl/player/Player');
+  const {PlayerSession}=require('../dist/net/PlayerSession');
+  const {ClientConnection}=require('../dist/net/NetworkBuilder');
+  require('../plugins/npcs/NpcDialogues.plugin').register(PM.createApi('NpcDialogues'));
+  const channel={kind:'test',remoteAddress:'127.0.0.1',isOpen:()=>true,send:()=>true,close(){},onData(){},onError(){},onClose(){}};
+  const player=new Player(new PlayerSession(channel)),connection=new ClientConnection(channel);connection.player=player;
+  assert.equal(c.World.getPlayers().add(player),true);
+  t.after(()=>{player.closeInterruptibleInterfaces();c.TaskManager.cancelTasks(player.getIndex());c.World.getPlayers().remove(player);PM.emitCustomEvent('events:active',{key:'christmas-2025',active:false});});
+  PM.emitCustomEvent('events:active',{key:'christmas-2025',active:true});
+  for(const phase of ['new','complete']){
+    player.setAttribute(Progress.PROGRESS_ATTRIBUTE,{...Progress.initial(),phase,...(phase==='complete'?{customer:3,seats:[0,1,2]}:{})});
+    for(const row of Scene.objects().filter(row=>row.symbol.includes('_crate01_')&&row.symbol!=='xmas25_crate01_carrot01')){
+      player.setLocation(new c.Location(3232,9801));player.setNeedsPlacement(false);const p=row.object.getLocation();
+      await connection.dispatch([{type:'object_option',id:row.object.getId(),x:p.getX(),y:p.getY(),clickType:1,action:'Search'}]);connection.processTurnPackets();
+      for(let tick=0;tick<80;tick++){c.TaskManager.processWalkTo(player.getIndex());player.getMovementQueue().process();c.TaskManager.process();}
+      assert.equal(player.getDialogueManager().getCurrent()?.getText().replace(/\s+/g,' '),"I probably shouldn't take what isn't mine on Christmas.",phase+' '+row.symbol);
+      assert.equal(Progress.read(player).phase,phase);assert.equal(player.getInventory().getFreeSlots(),28);
+      await connection.dispatch([{type:'interface_close'}]);connection.processTurnPackets();
+    }
+  }
+});
+
 test('real cellar routing reaches six crates from beside the ladder while the source-blocked carrot remains unreachable',t=>{
   const {Player}=require('../dist/game/entity/impl/player/Player');
   const {PlayerSession}=require('../dist/net/PlayerSession');
